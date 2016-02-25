@@ -1,0 +1,25 @@
+Notas
+=====
+
+crear un popup para agregar una actividad. Que puede tener nombre, hora inicio, duracion, lugar o lugar inicio y lugar final, y posibilidad de adjuntar cosas como un recibo o un comprobante
+
+
+Clave google maps: AIzaSyCmKe1N8GjOJCDAxCHm1TGcv6-z2gcyrFo
+
+
+Instalar el proyecto:
+npm install
+
+
+http://stackoverflow.com/questions/27341214/how-to-draw-a-route-between-two-markers-in-google-maps
+
+autocomplete: https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete?hl=es
+
+https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete-directions?hl=es
+
+
+TODO/Bugs
+====
+
+1. luego de buscar una ruta, el mapa principal hace zoom a la nueva ruta, perdiendose de vista rutas y markers que ya exisitan.
+2. la flecha para pasar al siguiente step se sale del popup o queda muy en el medio dependiendo el tamaño del browser

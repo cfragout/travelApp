@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TravelApp</title>
+	<meta name="viewport" content="initial-scale=1.0">
+	<meta charset="utf-8">
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+		#map, #popup-map {
+			height: 100%;
+		}
+		#floating-panel {
+  position: absolute;
+  top: 10px;
+  left: 25%;
+  z-index: 5;
+  background-color: #fff;
+  padding: 5px;
+  border: 1px solid #999;
+  text-align: center;
+  font-family: 'Roboto','sans-serif';
+  line-height: 30px;
+  padding-left: 10px;
+}
+.pac-container {
+    z-index: 1051 !important;
+}
+
+#directions-mode-selector {
+  color: #fff;
+  background-color: #4d90fe;
+  margin-left: 12px;
+  padding: 7px 11px 0px 11px;
+}
+
+#directions-mode-selector label {
+	font-family: Roboto;
+	font-size: 13px;
+	font-weight: 300;
+}
+
+.white-popup {
+  position: relative;
+  background: #FFF;
+  padding: 0px 0px 0px 0px;
+  width: auto;
+  min-width: 700px;
+  max-width: 60%;
+  margin: 20px auto;
+}
+    </style>
+	<!-- inject:styles -->
+	<link rel="stylesheet" href="/assets/css/main.css">
+	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
+	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
+	<link rel="stylesheet" href="/vendor/timepicki/timepicki.css">
+	<!-- endinject -->
+
+</head>
+	<body>
+
+		<!-- Map popup -->
+		<div id="popup" class="white-popup mfp-hide">
+			<div style="text-align:center;font-family:'Roboto';padding:10px 0px 10px 0px;color:#fff;background-color:#4D90FE;">
+							Actividad nueva
+			</div>
+			<div id="popup-content">
+				<!-- Popup step one -->
+				<div id="popup-step-one">
+					<input id="popup-activity-place" class="controls popup-map-input-text" type="text" placeholder="Louvre Museum" />
+					<input id="popup-activity-from" class="controls popup-map-input-text" type="text" placeholder="Rotorua, New Zealand" style="display:none"/>
+					<input id="popup-activity-to" class="controls popup-map-input-text" type="text" placeholder="Taupo, New Zealand" style="display:none"/>
+
+					<div id="directions-mode-selector" class="controls" style="display:none">
+						<label for="changemode-walking">
+							<input type="radio" name="type" id="changemode-walking" style="vertical-align:bottom;">Walking
+						</label>
+
+						<label for="changemode-transit">
+							<input type="radio" name="type" id="changemode-transit" style="vertical-align:bottom;">Transit
+						</label>
+
+						<label for="changemode-driving">
+							<input type="radio" name="type" id="changemode-driving" style="vertical-align:bottom;" checked="checked">Driving
+						</label>
+					</div>
+
+					<div id="activity-map-mode-selector" class="button blue controls" style="">
+					      Directions
+					</div>
+
+					<div id="popup-map"></div>
+				</div>
+				<!-- End popup step one -->
+				<!-- Popup step two -->
+				<div id="popup-step-two" style="text-align: center; background-color: #3367d6;">
+					<div style="padding-top:10px;">
+						<div>
+							<input id="popup-activity-name" class="controls popup-map-input-text" type="text" placeholder="Nombre" required="required" />
+						</div>
+						<div>
+							<input id="popup-activity-start" class="controls popup-map-input-text" type="text" placeholder="Comienzo" role="timepicker"/>
+						</div>
+						<div>
+							<input id="popup-activity-length" class="controls popup-map-input-text" type="text" placeholder="Finalizacion" role="timepicker" />
+						</div>
+						<div>
+							<div class="receipt-picker">
+								<div class="main-container">
+									<input type="file" name="file" id="popup-input-file" class="popup-input-file input-file" />
+									<label id="popup-input-file-label" for="popup-input-file">Comprobante</label>
+									<span class="cancel"></span>
+								</div>
+							</div>
+						</div>
+						<div>
+							<div class="colour-picker">
+								<span class="main-container">
+									<span>
+										<span style="display: inline-block;float: left;">Color</span>
+										<span class="colour-opt default selected">
+										</span>
+										<span style="display: inline-block;float: left;">|</span>
+										<span class="colour-opt grey"></span>
+										<span class="colour-opt orange"></span>
+										<span class="colour-opt yellow"></span>
+										<span class="colour-opt lime"></span>
+										<span class="colour-opt green"></span>
+										<span class="colour-opt aqcua"></span>
+										<span class="colour-opt blue"></span>
+										<span class="colour-opt light-blue"></span>
+										<span class="colour-opt purple"></span>
+										<span class="colour-opt pink"></span>
+									</span>
+								</span>
+							</div>
+						</div>
+						<div>
+							<select id="popup-activity-icon-one" class="popup-activity-icon-select">
+							</select>
+						</div>
+						<div>
+							<select id="popup-activity-icon-two" class="popup-activity-icon-select" style="display:none !important">
+							</select>
+						</div>
+					</div>
+
+					<div id="popup-cancel" role="button" class="uppercase button red button-medium control" href="#">Cancelar</div>
+					<div id="popup-accept" role="button" class="uppercase button blue button-medium control" href="#">Aceptar</div>
+
+				</div>
+				<!-- End popup stem two -->
+
+				<div id="activity-next-button" class="controls pressable">
+					>
+				</div>
+			</div>
+		</div>
+		<!-- End map popup -->
+
+		<div>
+			<h1>Placeholder for trip name</h1>
+		</div>
+		<div id="map-container">
+		    <div id="floating-panel">
+      <input id="address" type="textbox" value="Sydney, NSW">
+      <input id="submit" type="button" value="Geocode">
+    </div>
+			<div id="map"></div>
+		</div>
+
+<!-- <div role="button" class="s">Aceptar</div> -->
+
+
+		<div id="itinerary-container">
+			<div>
+				<button>Agregar dia</button>
+			</div>
+			<div>
+				<div id="time-grid">
+					<div class="time-hour">1</div>
+					<div class="time-hour">2</div>
+					<div class="time-hour">3</div>
+					<div class="time-hour">4</div>
+					<div class="time-hour">5</div>
+					<div class="time-hour">6</div>
+					<div class="time-hour">7</div>
+					<div class="time-hour">8</div>
+					<div class="time-hour">9</div>
+					<div class="time-hour">10</div>
+					<div class="time-hour">11</div>
+					<div class="time-hour">12</div>
+					<div class="time-hour">13</div>
+					<div class="time-hour">14</div>
+					<div class="time-hour">15</div>
+					<div class="time-hour">16</div>
+					<div class="time-hour">17</div>
+					<div class="time-hour">18</div>
+					<div class="time-hour">19</div>
+					<div class="time-hour">20</div>
+					<div class="time-hour">21</div>
+					<div class="time-hour">22</div>
+					<div class="time-hour">23</div>
+					<div class="time-hour">00</div>
+				</div>
+				<div id="days-container">
+					<div id="d0">
+						<h2 style="margin-bottom: 3px;">Dia 1</h2>
+						<div id="d0-activities-container" class="activities-container"></div>
+						<a href="#popup" class="open-popup-link">Agregar actividad</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+
+<!-- Activities template -->
+<div id="activity-template" style="position:absolute;background-color: yellow; display:none;">
+	<span class="activity-name">
+		Visita a Sydney Tower
+	</span>
+</div>
+<!-- End activities template -->
+
+	<script type="text/javascript">
+		var map;
+		var popupMap;
+		var directionsDisplay;
+		var directionsService;
+		var travel_mode;
+		var geocoder;
+		var mainMapMarkers = [];
+		var popupMapMarkers = [];
+		var mainMapRoutes = [];
+		var mainMapDirectionDisplays = [];
+		var mainMapBounds;
+		var days = [];
+
+
+		function initMap() {
+			map = new google.maps.Map(document.getElementById('map'), {
+				center: {lat: -34.397, lng: 150.644},
+				zoom: 8,
+				mapTypeId: google.maps.MapTypeId.ROADMAP
+			});
+
+		directionsService = new google.maps.DirectionsService;
+		travel_mode = google.maps.TravelMode.DRIVING;
+		geocoder = new google.maps.Geocoder();
+		mainMapBounds = new google.maps.LatLngBounds();
+  // Try HTML5 geolocation.
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      defaultLocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+      map.setCenter(defaultLocation);
+    }, function() {
+      handleLocationError(true, infoWindow, map.getCenter());
+    });
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+  }
+
+
+  document.getElementById('submit').addEventListener('click', function() {
+  	var address = document.getElementById('address').value;
+    geocodeAddress(geocoder, map, address);
+  });
+		}
+
+function handleLocationError(browserHasGeolocation) {
+	var msg = browserHasGeolocation ?
+				'Error: The Geolocation service failed.' :
+				'Error: Your browser doesn\'t support geolocation.';
+	alert(msg);
+}
+
+var defaultLocation;
+function geocodeAddress(geocoder, resultsMap, address) {
+  geocoder.geocode({'address': address}, function(results, status) {
+    if (status === google.maps.GeocoderStatus.OK) {
+    	defaultLocation = results[0].geometry.location
+      resultsMap.setCenter(results[0].geometry.location);
+      var marker = new google.maps.Marker({
+        map: resultsMap,
+        position: defaultLocation
+      });
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
+  });
+}
+
+	</script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmKe1N8GjOJCDAxCHm1TGcv6-z2gcyrFo&callback=initMap&libraries=places"
+	async defer></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+	<!-- inject:vendor-scripts -->
+	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
+	<script src="/vendor/select2/select2.min.js"></script>
+	<script src="/vendor/timepicki/timepicki.js"></script>
+	<!-- endinject -->
+	<!-- inject:user-scripts -->
+	<script src="/js/app.js"></script>
+	<!-- endinject -->
+</html>
