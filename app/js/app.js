@@ -45,22 +45,30 @@ $(function(){
 		{ value: 'tree', name: 'Arbol'}
 	];
 
+	// Load custom map markers into select2
 	$.each(predefinedMapMarkers, function(index, marker) {
 		$('.popup-activity-icon-select').append('<option value="'+ marker.value +'">'+ marker.name +'</option>')
+	});
+
+	$('.popup-activity-icon-select').select2({
+		templateResult: selectFormatterFunction,
+		minimumResultsForSearch: Infinity,
+		placeholder: 'Marcador por defecto'
+	});
+	$('#popup-activity-icon-two + span').hide();
+	$($('.select2-selection__arrow')[1]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
+	
+	$('#time-grid').mCustomScrollbar({
+		axis:"yx",
+		autoHideScrollbar: true,
+		setHeight:400,
+		theme: 'minimal'
 	});
 
 	$('.colour-opt').click(function(){
 		$('.colour-opt').removeClass('selected');
 		$(this).addClass('selected');
 	});
-
-	$('.popup-activity-icon-select').select2({
-		templateResult: selectFormatterFunction,
-		minimumResultsForSearch: Infinity
-	});
-	$('#popup-activity-icon-two + span').hide();
-	$($('.select2-selection__arrow')[1]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
-
 
 	$('#activity-map-mode-selector').click(function(){
 		if (placeModeEnabled) {
