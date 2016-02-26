@@ -62,8 +62,10 @@ $(function(){
 		axis:"yx",
 		autoHideScrollbar: true,
 		setHeight:400,
+		// setWidth:400
 		theme: 'minimal'
-	});
+	})
+	$('#time-grid').mCustomScrollbar('scrollTo', '#time-hour-8');
 
 	$('.colour-opt').click(function(){
 		$('.colour-opt').removeClass('selected');
