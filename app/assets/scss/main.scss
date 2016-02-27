@@ -3,6 +3,10 @@ body {
 }
 
 /* Button colours */
+$btn-gradient-default-one: #f5f5f5;
+$btn-gradient-default-two: #f1f1f1;
+$btn-gradient-default-three: #f8f8f8;
+
 $btn-gradient-blue-one: #4d90fe;
 $btn-gradient-blue-two: #4787ed;
 $btn-gradient-blue-three: #357ae8;
@@ -23,6 +27,73 @@ $activity-colour-purple: #6f3f91;
 $activity-colour-orange: #ef911a;
 $activity-colour-lime: #efef1a;
 $activity-colour-light-blue: #1b5a9b;
+
+
+/* Main */
+$activity-width: 135px;
+
+#itinerary-container {
+	font-family: Roboto;
+	font-weight: 300;
+}
+
+#scrollable-itinerary-container {
+	max-height: 400px;
+	overflow: auto;
+	clear:both;
+}
+
+#day-controls-container {
+	padding-left: 15px;
+
+	.day-control {
+		width: $activity-width;
+		float:left;
+		margin-left: 5px;
+	}
+}
+
+#days-container {
+	padding-left:10px;
+	float:left;
+	position:absolute;
+	margin-left: 10px;
+}
+
+#add-day {
+	font-weight: bold;
+	float:left;
+	display: inline-block;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	padding-bottom: 5px;
+}
+
+#time-grid {
+	float:left;
+	width: 100%;
+}
+
+.time-hour {
+	background-color: red;
+	height: 40px;
+	border-top: dotted 1px black;
+
+	span {
+		width: 20px;
+		display: inline-block;
+	}
+}
+
+.activity {
+	position:absolute;
+	background-color: $activity-colour-default;
+	display:none;
+	width:$activity-width;
+	font-family: Roboto;
+	font-weight: 300;
+	color:#fff;
+}
 
 /* Popup */
 #popup-content {
@@ -380,6 +451,36 @@ $activity-colour-light-blue: #1b5a9b;
 		}
 	}
 
+	&.default {
+		border: 1px solid #dcdcdc;
+		-webkit-border-radius: 2px;
+		-moz-border-radius: 2px;
+		-webkit-box-shadow: inset 0px 1px 2px rgba(0,0,0,.1);
+		-moz-box-shadow: inset 0px 1px 2px rgba(0,0,0,.1);
+		box-shadow: inset 0px 1px 2px rgba(0,0,0,.1);
+		color: black;
+		background-color: $btn-gradient-default-one;
+		background-image: -webkit-linear-gradient(top,$btn-gradient-default-one,$btn-gradient-default-two);
+		background-image: -moz-linear-gradient(top,$btn-gradient-default-one,$btn-gradient-default-two);
+		background-image: -ms-linear-gradient(top,$btn-gradient-default-one,$btn-gradient-default-two);
+		background-image: -o-linear-gradient(top,$btn-gradient-default-one,$btn-gradient-default-two);
+		background-image: linear-gradient(top,$btn-gradient-default-one,$btn-gradient-default-two);
+
+		&:hover {
+			background-color: #F8F8F8;
+			background-image: -webkit-linear-gradient(top,$btn-gradient-default-three,$btn-gradient-default-two);
+			background-image: -moz-linear-gradient(top,$btn-gradient-default-three,$btn-gradient-default-two);
+			background-image: -ms-linear-gradient(top,$btn-gradient-default-three,$btn-gradient-default-two);
+			background-image: -o-linear-gradient(top,$btn-gradient-default-three,$btn-gradient-default-two);
+			background-image: linear-gradient(top,$btn-gradient-default-three,$btn-gradient-default-two);
+			border: 1px solid #C6C6C6;
+			color: #333;
+			-webkit-box-shadow: 0px 1px 1px rgba(0,0,0,.1);
+			-moz-box-shadow: 0px 1px 1px rgba(0,0,0,.1);
+			box-shadow: 0px 1px 1px rgba(0,0,0,.1);
+		}
+	}
+
 	&:active {
 		-webkit-box-shadow: inset 0px 1px 2px rgba(0,0,0,.3) !important;
 		-moz-box-shadow: inset 0px 1px 2px rgba(0,0,0,.3) !important;
@@ -440,27 +541,6 @@ $activity-colour-light-blue: #1b5a9b;
 
 
 /*************/
-#days-container {
-	padding-left:10px;
-	float:left;
-	position:absolute;
-	margin-left: 10px;
-}
-
-#time-grid {
-	max-height: 400px;
-	overflow: auto;
-	margin-top:50px;
-	float:left;
-	width: 100%;
-}
-
-.time-hour {
-	background-color: red;
-	height: 40px;
-	border-top: dotted 1px black;
-}
-
 .noselect {
 	-webkit-touch-callout: none; /* iOS Safari */
 	-webkit-user-select: none;   /* Chrome/Safari/Opera */
