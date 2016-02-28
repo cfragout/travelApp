@@ -53,6 +53,7 @@ $(function(){
 
 	$('#add-day').click(function(){
 		addDay();
+		$('#itinerary-container').mCustomScrollbar('scrollTo', '#add-day');
 	});
 
 	$('.popup-activity-icon-select').select2({
@@ -67,9 +68,19 @@ $(function(){
 		axis:"yx",
 		autoHideScrollbar: true,
 		setHeight:400,
-		theme: 'minimal'
+		// setWidth: 300,
+		// theme: 'minimal'
+		theme: 'dark-thin'
 	});
 	scrollToElementId('#time-hour-eight');
+
+	$('#itinerary-container').mCustomScrollbar({
+		axis:"x",
+		// theme:"minimal",
+		theme:"dark-thin",
+		advanced:{autoExpandHorizontalScroll:true}
+	});
+
 
 	$('.colour-opt').click(function(){
 		$('.colour-opt').removeClass('selected');
@@ -139,7 +150,7 @@ $(function(){
 
 	function addActivity(activity) {
 		var dayIndex = currentDay;
-console.log("-----> days[dayIndex", days[dayIndex]);
+
 		days[dayIndex].activities.push(activity);
 
 		// Get the default template and adapt it for the new activity.
@@ -154,7 +165,7 @@ console.log("-----> days[dayIndex", days[dayIndex]);
 
 		// Add the new activity to the proper day, at the proper time of day and with the proper length in the grid (height);
 		var containerId = '#d'+ dayIndex +'-activities-container';
-		console.log("-----> $(containerId)", $(containerId));
+
 		$(containerId).append(activityHTML);
 		$(activityHTML).fadeIn();
 
@@ -185,7 +196,6 @@ console.log("-----> days[dayIndex", days[dayIndex]);
 		$(dayControlHtml).fadeIn();
 
 		// Get the default template for days container
-		/*days-container*/
 		var dayContainerHTML = $('#day-container-template').clone()[0];
 		var dayConatinerId = 'd' + dayIndex + 'c';
 		$(dayContainerHTML).attr('id', dayConatinerId);
@@ -258,12 +268,10 @@ console.log("-----> days[dayIndex", days[dayIndex]);
 		var cssHeight = activity.length * hourTotalHeight;
 
 		// Horizontal offset
-		var dayOffset = getCSSPropertyValueAsInt('.day-control', 'width');
+		var dayOffset = getCSSPropertyValueAsInt('.day-control', 'width') + getCSSPropertyValueAsInt('.day-control', 'padding-right') + getCSSPropertyValueAsInt('.day-control', 'padding-left');
 		var timeHourTextOffset = getCSSPropertyValueAsInt('.time-hour span', 'width') / 2;
 		var cssLeft = (dayOffset * currentDay) + timeHourTextOffset;
-console.log("-----> currentDay", currentDay);
-console.log("-----> cssLeft", cssLeft);
-console.log("-----> cssHeight", cssHeight);
+
 		return {
 			'top': cssPosition + 'px',
 			'left': cssLeft + 'px',
