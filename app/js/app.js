@@ -3,7 +3,7 @@ $(function(){
 	var origin_place_id = null;
 	var destination_place_id = null;
 	var popupSelectedRoute = null;
-	var placeModeEnabled = true;
+	var placeModeEnabled = true; // use this var to know whether the user is adding a place or directions
 	var currentDay = 0; // Use this var to know which day is currently having activities added
 	var predefinedMapMarkers = [
 		{ value: 'alligator', name: 'Cocodrilo'},
@@ -230,8 +230,28 @@ $(function(){
 	}
 
 	$('#activity-next-button').click(function(){
+		// Try to guess activity information and autocomplete the second step
+		autoCompleteActivityInfo();
 		goToPopupStep();
 	});
+
+	function autoCompleteActivityInfo() {
+		var activityName = '';
+		if (placeModeEnabled) {
+			var place = $('#popup-activity-place').val();
+			if (place != '') {
+				activityName = place.split(',')[0];
+			}
+		} else {
+			var from = $('#popup-activity-from').val();
+			var to = $('#popup-activity-to').val();
+			if ((to != '') && (from != '')) {
+				activityName = from.split(',')[0] + ' a ' + to.split(',')[0];
+			}
+		}
+		$('#popup-activity-name').val(activityName);
+
+	}
 
 	function scrollToElementId(elementId) {
 		$('#scrollable-itinerary-container').mCustomScrollbar('scrollTo', elementId);
@@ -389,6 +409,9 @@ $(function(){
 
 	function resetPopupMapControls() {
 		$('.popup-map-input-text').val('');
+		$('#directions-distance').text('');
+		$('#directions-time').text('');
+		$('#directions-information').animate({'top': '500px'});
 	}
 
 	function resetMarkers(markers) {
