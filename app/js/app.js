@@ -4,6 +4,7 @@ $(function(){
 	var destination_place_id = null;
 	var popupSelectedRoute = null;
 	var placeModeEnabled = true;
+	var currentDay = 0; // Use this var to know which day is currently having activities added
 	var predefinedMapMarkers = [
 		{ value: 'alligator', name: 'Cocodrilo'},
 		{ value: 'airport', name: 'Aeropuerto'},
@@ -50,6 +51,11 @@ $(function(){
 		$('.popup-activity-icon-select').append('<option value="'+ marker.value +'">'+ marker.name +'</option>')
 	});
 
+	$('#add-day').click(function(){
+		addDay();
+		$('#itinerary-container').mCustomScrollbar('scrollTo', '#add-day');
+	});
+
 	$('.popup-activity-icon-select').select2({
 		templateResult: selectFormatterFunction,
 		minimumResultsForSearch: Infinity,
@@ -57,15 +63,24 @@ $(function(){
 	});
 	$('#popup-activity-icon-two + span').hide();
 	$($('.select2-selection__arrow')[1]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
-	
-	$('#time-grid').mCustomScrollbar({
+
+	$('#scrollable-itinerary-container').mCustomScrollbar({
 		axis:"yx",
 		autoHideScrollbar: true,
 		setHeight:400,
-		// setWidth:400
-		theme: 'minimal'
-	})
-	$('#time-grid').mCustomScrollbar('scrollTo', '#time-hour-8');
+		// setWidth: 300,
+		// theme: 'minimal'
+		theme: 'dark-thin'
+	});
+	scrollToElementId('#time-hour-eight');
+
+	$('#itinerary-container').mCustomScrollbar({
+		axis:"x",
+		// theme:"minimal",
+		theme:"dark-thin",
+		advanced:{autoExpandHorizontalScroll:true}
+	});
+
 
 	$('.colour-opt').click(function(){
 		$('.colour-opt').removeClass('selected');
@@ -88,24 +103,14 @@ $(function(){
 		google.maps.event.trigger(popupMap, 'resize'); // Trigger resize so that controls are updated
 	});
 
-	$('.open-popup-link').magnificPopup({
-		type:'inline',
-		removalDelay: 300,
-		mainClass: 'mfp-fade',
-		midClick: true,
-		callbacks: {
-			open: function() {
-				initPopupMapAndUI();
-			},
-			close: function() {
-				resetPopup();
-			}
-		}
-	});
-
 	$('#popup-cancel').click(function(){
 		$.magnificPopup.close();
 		resetPopup();
+	});
+
+	// Update currentDay. This lets us know where will the new activity be added.
+	$('#day-controls-container').on('click', '.open-popup-link', function(){
+		currentDay = $(this).attr('data-day-index');
 	});
 
 	$('#popup-accept').click(function(){
@@ -115,7 +120,8 @@ $(function(){
 			name: $('#popup-activity-name').val(),
 			start: startTime,
 			length: length,
-			isRoute: placeModeEnabled
+			isRoute: placeModeEnabled,
+			colour: $('.colour-opt.selected').css('background-color')
 		};
 
 		if (placeModeEnabled) {
@@ -142,9 +148,94 @@ $(function(){
 		resetPopup();
 	});
 
+	function addActivity(activity) {
+		var dayIndex = currentDay;
+
+		days[dayIndex].activities.push(activity);
+
+		// Get the default template and adapt it for the new activity.
+		var activityHTML = $('#activity-template').clone()[0];
+		var activityId = 'd'+ dayIndex +'a' + days[dayIndex].activities.length;
+		$(activityHTML).attr('id', activityId);
+		var activityNameHTML = $(activityHTML).find('.activity-name')[0];
+		$(activityNameHTML).text(activity.name);
+
+		// Calculate the activity height and top.
+		$(activityHTML).css(getActivityCSS(activity));
+
+		// Add the new activity to the proper day, at the proper time of day and with the proper length in the grid (height);
+		var containerId = '#d'+ dayIndex +'-activities-container';
+
+		$(containerId).append(activityHTML);
+		$(activityHTML).fadeIn();
+
+		scrollToElementId('#' + activityId);
+	}
+
+	function addDay() {
+		var dayIndex = days.length;
+
+		if (days[dayIndex] == null) {
+			days[dayIndex] = {
+				activities: []
+			};
+		}
+
+		// Get the default template for days controls
+		var dayControlHtml = $('#day-template').clone()[0];
+		var dayControlId = 'd' + dayIndex;
+		$(dayControlHtml).attr('id', dayControlId);
+		var dayNameHTML = $(dayControlHtml).find('.day-name')[0];
+		$(dayNameHTML).text('Dia ' + (dayIndex + 1));
+
+		var openPopupLinkHTML = $(dayControlHtml).find('a')[0];
+		var openPopupLinkId = dayControlId + '-popup-trigger';
+		$(openPopupLinkHTML).attr('id', openPopupLinkId);
+		$(openPopupLinkHTML).attr('data-day-index', dayIndex);
+		$('#day-controls-container').append(dayControlHtml);
+		$(dayControlHtml).fadeIn();
+
+		// Get the default template for days container
+		var dayContainerHTML = $('#day-container-template').clone()[0];
+		var dayConatinerId = 'd' + dayIndex + 'c';
+		$(dayContainerHTML).attr('id', dayConatinerId);
+		var dayActivitiesContainerHTML = $(dayContainerHTML).find('div')[0];
+		$(dayActivitiesContainerHTML).attr('id', 'd'+ dayIndex +'-activities-container');
+		$('#days-container').append(dayContainerHTML);
+		$(dayContainerHTML).fadeIn();
+
+		// Move add day button and place it to the right of the newly added day
+		var addDayButtonHTML = $('#add-day').detach();
+		$('#day-controls-container').append(addDayButtonHTML);
+
+		// Initialize the popup plugin for the newly created link
+		initializePopupPlugin('#' + openPopupLinkId);
+	}
+
+	function initializePopupPlugin(triggerElementSelector) {
+		$(triggerElementSelector).magnificPopup({
+			type:'inline',
+			removalDelay: 300,
+			mainClass: 'mfp-fade',
+			midClick: true,
+			callbacks: {
+				open: function() {
+					initPopupMapAndUI();
+				},
+				close: function() {
+					resetPopup();
+				}
+			}
+		});
+	}
+
 	$('#activity-next-button').click(function(){
 		goToPopupStep();
 	});
+
+	function scrollToElementId(elementId) {
+		$('#scrollable-itinerary-container').mCustomScrollbar('scrollTo', elementId);
+	}
 
 	function selectFormatterFunction(state) {
 		if (!state.id) {
@@ -157,33 +248,6 @@ $(function(){
 		return $state;
 	}
 
-	function addActivity(activity) {
-		var dayIndex = 0;
-
-		if (days[dayIndex] == null) {
-			days[dayIndex] = {
-				activities: []
-			};
-		}
-
-		days[dayIndex].activities.push(activity);
-
-		// Get the default template and adapt it for the new activity.
-		var activityHTML = $('#activity-template').clone()[0];
-		$(activityHTML).attr('id', 'a' + days[dayIndex].activities.length);
-		var activityNameHTML = $(activityHTML).find('.activity-name')[0];
-		$(activityNameHTML).text(activity.name);
-
-		var containerId = '#d'+ dayIndex +'-activities-container';
-
-		// Calculate the activity height and top.
-		$(activityHTML).css(getActivityCSS(activity));
-
-		// Add the new activity to the proper day, at the proper time of day and with the proper length in the grid (height);
-		$(containerId).append(activityHTML);
-		$(activityHTML).fadeIn();
-	}
-
 	function getCSSPropertyValueAsInt(selector, property) {
 		var intValue = parseInt($(selector).css(property));
 		if (isNaN(intValue)) {
@@ -194,19 +258,86 @@ $(function(){
 	}
 
 	function getActivityCSS(activity) {
+		// Vertical Offset and height
 		var hourOffset = getCSSPropertyValueAsInt('.time-hour', 'height');
 		var timeHourBorderTop = getCSSPropertyValueAsInt('.time-hour', 'border-top');
 		var timeHourBorderBottom = getCSSPropertyValueAsInt('.time-hour', 'border-bottom');
 		var timeGridMargin = getCSSPropertyValueAsInt('#time-grid', 'margin-top');
 		var hourTotalHeight = hourOffset + timeHourBorderTop + timeHourBorderBottom; // Total height of an hour is its height + its borders top and bottom
-
 		var cssPosition = ((activity.start - 1) * hourTotalHeight) + timeGridMargin;
 		var cssHeight = activity.length * hourTotalHeight;
 
+		// Horizontal offset
+		var dayOffset = getCSSPropertyValueAsInt('.day-control', 'width') + getCSSPropertyValueAsInt('.day-control', 'padding-right') + getCSSPropertyValueAsInt('.day-control', 'padding-left');
+		var timeHourTextOffset = getCSSPropertyValueAsInt('.time-hour span', 'width') / 2;
+		var cssLeft = (dayOffset * currentDay) + timeHourTextOffset;
+
 		return {
 			'top': cssPosition + 'px',
-			'height': cssHeight + 'px'
+			'left': cssLeft + 'px',
+			'height': cssHeight + 'px',
+			'background-color': activity.colour
 		};
+	}
+
+	function computeTotalTimeAndDistance(result) {
+		var distance = 0;
+		var time = 0;
+		var route = result.routes[0];
+
+		for (var i = 0; i < route.legs.length; i++) {
+			distance += route.legs[i].distance.value;
+			time += route.legs[i].duration.value;
+		}
+
+		distance = distance / 1000;
+		distance = distance.toFixed(2);
+		$('#directions-distance').text(distance + ' km');
+		$('#directions-time').text(secondsToFriendlyTime(time));
+		$('#directions-information').animate({'top': '395px'});
+	}
+
+	// Translate seconds to an easy to read representation
+	function secondsToFriendlyTime(secondsCount) {
+		var remainingTime = secondsCount;
+		var days = Math.floor((remainingTime / 3600) / 24);
+		var result;
+
+		if (days > 0) {
+			remainingTime = secondsCount - (days * 3600 * 24);
+		}
+
+		var hours = Math.floor(remainingTime / 3600);
+		var minutes = Math.floor((remainingTime - (hours * 3600)) / 60);
+		var seconds = remainingTime - (hours * 3600) - (minutes * 60);
+
+		if (days > 0) {
+			result = days + ' dia';
+
+			if (days > 1) result += 's';
+		}
+
+		if (hours > 0) {
+			if (days > 0) {
+				result += ' ' + hours + ' hora';
+			} else {
+				result = hours + ' hora';
+			}
+
+			if (hours > 1) result += 's';
+		}
+
+		if (minutes > 0) {
+			if (hours > 0) {
+				result += ' ' + minutes + ' minuto';
+			} else {
+				result = minutes + ' minuto';
+			}
+
+			if (minutes > 1) result += 's';
+		}
+
+		return result;
 	}
 
 	function goToPopupStep(stepIndex) {
@@ -307,6 +438,7 @@ $(function(){
 		// Update results if user drags the route
 		directionsDisplay.addListener('directions_changed', function() {
 			popupSelectedRoute = directionsDisplay.getDirections();
+			computeTotalTimeAndDistance(popupSelectedRoute);
 		});
 
 		initPlacesAutocomplete();
@@ -448,6 +580,7 @@ $(function(){
 				directionsDisplay.setDirections(response);
 				directionsDisplay.setMap(popupMap);
 				popupSelectedRoute = response;
+				computeTotalTimeAndDistance(popupSelectedRoute);
 			} else {
 				window.alert('Directions request failed due to ' + status);
 			}

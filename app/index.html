@@ -57,175 +57,187 @@
 	<link rel="stylesheet" href="/assets/css/main.css">
 	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
-	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
 	<link rel="stylesheet" href="/vendor/timepicki/timepicki.css">
+	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
 	<!-- endinject -->
 
 </head>
-	<body>
+<body>
 
-		<!-- Map popup -->
-		<div id="popup" class="white-popup mfp-hide">
-			<div style="text-align:center;font-family:'Roboto';padding:10px 0px 10px 0px;color:#fff;background-color:#4D90FE;">
-							Actividad nueva
-			</div>
-			<div id="popup-content">
-				<!-- Popup step one -->
-				<div id="popup-step-one">
-					<input id="popup-activity-place" class="controls popup-map-input-text" type="text" placeholder="Louvre Museum" />
-					<input id="popup-activity-from" class="controls popup-map-input-text" type="text" placeholder="Rotorua, New Zealand" style="display:none"/>
-					<input id="popup-activity-to" class="controls popup-map-input-text" type="text" placeholder="Taupo, New Zealand" style="display:none"/>
+	<!-- Map popup -->
+	<div id="popup" class="white-popup mfp-hide">
+		<div style="text-align:center;font-family:'Roboto';padding:10px 0px 10px 0px;color:#fff;background-color:#4D90FE;">
+						Actividad nueva
+		</div>
+		<div id="popup-content">
+			<!-- Popup step one -->
+			<div id="popup-step-one">
+				<input id="popup-activity-place" class="controls popup-map-input-text" type="text" placeholder="Louvre Museum" />
+				<input id="popup-activity-from" class="controls popup-map-input-text" type="text" placeholder="Rotorua, New Zealand" style="display:none"/>
+				<input id="popup-activity-to" class="controls popup-map-input-text" type="text" placeholder="Taupo, New Zealand" style="display:none"/>
 
-					<div id="directions-mode-selector" class="controls" style="display:none">
-						<label for="changemode-walking">
-							<input type="radio" name="type" id="changemode-walking" style="vertical-align:bottom;">Walking
-						</label>
+				<div id="directions-mode-selector" class="controls" style="display:none">
+					<label for="changemode-walking">
+						<input type="radio" name="type" id="changemode-walking" style="vertical-align:bottom;">Walking
+					</label>
 
-						<label for="changemode-transit">
-							<input type="radio" name="type" id="changemode-transit" style="vertical-align:bottom;">Transit
-						</label>
+					<label for="changemode-transit">
+						<input type="radio" name="type" id="changemode-transit" style="vertical-align:bottom;">Transit
+					</label>
 
-						<label for="changemode-driving">
-							<input type="radio" name="type" id="changemode-driving" style="vertical-align:bottom;" checked="checked">Driving
-						</label>
-					</div>
-
-					<div id="activity-map-mode-selector" class="button blue controls" style="">
-					      Directions
-					</div>
-
-					<div id="popup-map"></div>
+					<label for="changemode-driving">
+						<input type="radio" name="type" id="changemode-driving" style="vertical-align:bottom;" checked="checked">Driving
+					</label>
 				</div>
-				<!-- End popup step one -->
-				<!-- Popup step two -->
-				<div id="popup-step-two" style="text-align: center; background-color: #3367d6;">
-					<div style="padding-top:10px;">
-						<div>
-							<input id="popup-activity-name" class="controls popup-map-input-text" type="text" placeholder="Nombre" required="required" />
-						</div>
-						<div>
-							<input id="popup-activity-start" class="controls popup-map-input-text" type="text" placeholder="Comienzo" role="timepicker"/>
-						</div>
-						<div>
-							<input id="popup-activity-length" class="controls popup-map-input-text" type="text" placeholder="Finalizacion" role="timepicker" />
-						</div>
-						<div>
-							<div class="receipt-picker">
-								<div class="main-container">
-									<input type="file" name="file" id="popup-input-file" class="popup-input-file input-file" />
-									<label id="popup-input-file-label" for="popup-input-file">Comprobante</label>
-									<span class="cancel"></span>
-								</div>
+
+				<div id="activity-map-mode-selector" class="button blue controls">
+				      Directions
+				</div>
+
+				<div id="directions-information">
+					<span style="color:#ccc">Distancia:</span>
+					<span id="directions-distance"></span>
+					/
+					<span style="color:#ccc">Tiempo:</span>
+					<span id="directions-time"></span>
+				</div>
+
+				<div id="popup-map"></div>
+			</div>
+			<!-- End popup step one -->
+			<!-- Popup step two -->
+			<div id="popup-step-two">
+				<div style="padding-top:10px;">
+					<div>
+						<input id="popup-activity-name" class="controls popup-map-input-text" type="text" placeholder="Nombre" required="required" />
+					</div>
+					<div>
+						<input id="popup-activity-start" class="controls popup-map-input-text" type="text" placeholder="Comienzo" role="timepicker"/>
+					</div>
+					<div>
+						<input id="popup-activity-length" class="controls popup-map-input-text" type="text" placeholder="Finalizacion" role="timepicker" />
+					</div>
+					<div>
+						<div class="receipt-picker">
+							<div class="main-container">
+								<input type="file" name="file" id="popup-input-file" class="popup-input-file input-file" />
+								<label id="popup-input-file-label" for="popup-input-file">Comprobante</label>
+								<span class="cancel"></span>
 							</div>
 						</div>
-						<div>
-							<div class="colour-picker">
-								<span class="main-container">
-									<span>
-										<span style="display: inline-block;float: left;">Color</span>
-										<span class="colour-opt default selected">
-										</span>
-										<span style="display: inline-block;float: left;">|</span>
-										<span class="colour-opt grey"></span>
-										<span class="colour-opt orange"></span>
-										<span class="colour-opt yellow"></span>
-										<span class="colour-opt lime"></span>
-										<span class="colour-opt green"></span>
-										<span class="colour-opt aqcua"></span>
-										<span class="colour-opt blue"></span>
-										<span class="colour-opt light-blue"></span>
-										<span class="colour-opt purple"></span>
-										<span class="colour-opt pink"></span>
+					</div>
+					<div>
+						<div class="colour-picker">
+							<span class="main-container">
+								<span>
+									<span style="display: inline-block;float: left;">Color</span>
+									<span class="colour-opt default selected">
 									</span>
+									<span style="display: inline-block;float: left;">|</span>
+									<span class="colour-opt grey"></span>
+									<span class="colour-opt orange"></span>
+									<span class="colour-opt yellow"></span>
+									<span class="colour-opt lime"></span>
+									<span class="colour-opt green"></span>
+									<span class="colour-opt aqcua"></span>
+									<span class="colour-opt blue"></span>
+									<span class="colour-opt light-blue"></span>
+									<span class="colour-opt purple"></span>
+									<span class="colour-opt pink"></span>
 								</span>
-							</div>
-						</div>
-						<div>
-							<select id="popup-activity-icon-one" class="popup-activity-icon-select">
-								<option></option>
-							</select>
-						</div>
-						<div>
-							<select id="popup-activity-icon-two" class="popup-activity-icon-select" style="display:none !important">
-								<option></option>
-							</select>
+							</span>
 						</div>
 					</div>
-
-					<div id="popup-cancel" role="button" class="uppercase button red button-medium control" href="#">Cancelar</div>
-					<div id="popup-accept" role="button" class="uppercase button blue button-medium control" href="#">Aceptar</div>
-
-				</div>
-				<!-- End popup stem two -->
-
-				<div id="activity-next-button" class="controls pressable">
-					>
-				</div>
-			</div>
-		</div>
-		<!-- End map popup -->
-
-		<div>
-			<h1>Placeholder for trip name</h1>
-		</div>
-		<div id="map-container">
-		    <div id="floating-panel">
-      <input id="address" type="textbox" value="Sydney, NSW">
-      <input id="submit" type="button" value="Geocode">
-    </div>
-			<div id="map"></div>
-		</div>
-
-<!-- <div role="button" class="s">Aceptar</div> -->
-
-
-		<div id="itinerary-container">
-			<div>
-				<button>Agregar dia</button>
-			</div>
-			<div>
-				<div id="time-grid">
-					<div class="time-hour">1</div>
-					<div class="time-hour">2</div>
-					<div class="time-hour">3</div>
-					<div class="time-hour">4</div>
-					<div class="time-hour">5</div>
-					<div class="time-hour">6</div>
-					<div class="time-hour">7</div>
-					<div id="time-hour-8" class="time-hour">8</div>
-					<div class="time-hour">9</div>
-					<div class="time-hour">10</div>
-					<div class="time-hour">11</div>
-					<div class="time-hour">12</div>
-					<div class="time-hour">13</div>
-					<div class="time-hour">14</div>
-					<div class="time-hour">15</div>
-					<div class="time-hour">16</div>
-					<div class="time-hour">17</div>
-					<div class="time-hour">18</div>
-					<div class="time-hour">19</div>
-					<div class="time-hour">20</div>
-					<div class="time-hour">21</div>
-					<div class="time-hour">22</div>
-					<div class="time-hour">23</div>
-					<div class="time-hour">00</div>
-				</div>
-				<div id="days-container">
-					<div id="d0">
-						<h2 style="margin-bottom: 3px;">Dia 1</h2>
-						<div id="d0-activities-container" class="activities-container"></div>
-						<a href="#popup" class="open-popup-link">Agregar actividad</a>
+					<div>
+						<select id="popup-activity-icon-one" class="popup-activity-icon-select">
+							<option></option>
+						</select>
+					</div>
+					<div>
+						<select id="popup-activity-icon-two" class="popup-activity-icon-select" style="display:none !important">
+							<option></option>
+						</select>
 					</div>
 				</div>
+
+				<div id="popup-cancel" role="button" class="uppercase button red button-medium control" href="#">Cancelar</div>
+				<div id="popup-accept" role="button" class="uppercase button blue button-medium control" href="#">Aceptar</div>
+
+			</div>
+			<!-- End popup stem two -->
+
+			<div id="activity-next-button" class="controls pressable">
+				>
 			</div>
 		</div>
-	</body>
+	</div>
+	<!-- End map popup -->
 
+	<div>
+		<h1>Placeholder for trip name</h1>
+	</div>
+	<div id="map-container">
+		<div id="floating-panel">
+			<input id="address" type="textbox" value="Sydney, NSW">
+			<input id="submit" type="button" value="Geocode">
+		</div>
+		<div id="map"></div>
+	</div>
+
+	<div id="itinerary-container">
+		<div id="day-controls-container">
+			<div id="add-day" role="button" class="button default control" href="#">Nuevo dia</div>
+		</div>
+		<div id="scrollable-itinerary-container">
+			<div id="time-grid">
+				<div class="time-hour"><span>1</span></div>
+				<div class="time-hour"><span>2</span></div>
+				<div class="time-hour"><span>3</span></div>
+				<div class="time-hour"><span>4</span></div>
+				<div class="time-hour"><span>5</span></div>
+				<div class="time-hour"><span>6</span></div>
+				<div class="time-hour"><span>7</span></div>
+				<div id="time-hour-eight" class="time-hour"><span>8</span></div>
+				<div class="time-hour"><span>9</span></div>
+				<div class="time-hour"><span>10</span></div>
+				<div class="time-hour"><span>11</span></div>
+				<div class="time-hour"><span>12</span></div>
+				<div class="time-hour"><span>13</span></div>
+				<div class="time-hour"><span>14</span></div>
+				<div class="time-hour"><span>15</span></div>
+				<div class="time-hour"><span>16</span></div>
+				<div class="time-hour"><span>17</span></div>
+				<div class="time-hour"><span>18</span></div>
+				<div class="time-hour"><span>19</span></div>
+				<div class="time-hour"><span>20</span></div>
+				<div class="time-hour"><span>21</span></div>
+				<div class="time-hour"><span>22</span></div>
+				<div class="time-hour"><span>23</span></div>
+				<div class="time-hour"><span>00</span></div>
+			</div>
+			<div id="days-container">
+			</div>
+		</div>
+	</div>
+</body>
+
+<!-- Day container template -->
+<div id="day-container-template" style="display:none !important;">
+	<div id="dx-activities-container" class="activities-container"></div>
+</div>
+<!-- End day container template -->
+
+<!-- Day control template -->
+<div id="day-template" class="day-control" style="display:none !important;">
+	<h2 class="day-name" style="margin-bottom: 3px;">Dia 1</h2>
+	<a href="#popup" data-day-index="" class="open-popup-link">Nueva actividad</a>
+</div>
+<!-- End day contrl template -->
 
 <!-- Activities template -->
-<div id="activity-template" style="position:absolute;background-color: yellow; display:none;">
+<div id="activity-template" class="activity">
 	<span class="activity-name">
-		Visita a Sydney Tower
+		Some random text
 	</span>
 </div>
 <!-- End activities template -->
@@ -310,8 +322,8 @@ function geocodeAddress(geocoder, resultsMap, address) {
 	<!-- inject:vendor-scripts -->
 	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<script src="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
-	<script src="/vendor/select2/select2.min.js"></script>
 	<script src="/vendor/timepicki/timepicki.js"></script>
+	<script src="/vendor/select2/select2.min.js"></script>
 	<!-- endinject -->
 	<!-- inject:user-scripts -->
 	<script src="/js/app.js"></script>
