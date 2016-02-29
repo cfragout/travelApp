@@ -274,6 +274,24 @@ body {
   font-size: 13px;
   font-weight: 300; }
 
+#directions-information {
+  position: absolute;
+  z-index: 51;
+  background-color: #3367d6;
+  line-height: 22px;
+  color: #fff;
+  top: 500px;
+  left: 5px;
+  width: auto;
+  height: 27px;
+  padding: 5px 11px 0px 11px;
+  font-family: 'Roboto','sans-serif';
+  font-size: 13px;
+  font-weight: 300;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+  cursor: default; }
+
 #popup-accept {
   padding-bottom: 3px;
   margin-right: 50px;
@@ -305,9 +323,13 @@ body {
   font-family: 'Roboto';
   font-weight: 300;
   opacity: 0.3;
-  -webkit-transition: all 0.5s ease-out;
-  -moz-transition: all 0.5s ease-out;
-  transition: all 0.5s ease-out; }
+  transition-property: opacity;
+  transition-duration: 0.5s;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none; }
   #activity-next-button:hover {
     opacity: 1; }
 

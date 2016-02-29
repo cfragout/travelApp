@@ -57,7 +57,7 @@ $activity-width: 135px;
 }
 
 #day-controls-container {
-	background-color: $main-blue;
+	background-color: $secondary-blue;
 	height: 70px;
 	color: #fff;
 	padding-left: 20px;
@@ -379,12 +379,12 @@ $activity-width: 135px;
 #directions-information {
 	position: absolute;
 	z-index: 51;
-	background-color: $main-blue;
+	background-color: $secondary-blue;
 	line-height: 22px;
 	color: #fff;
-	top: 50px;
-	left: 80px;
-	width: 49%;
+	top: 500px;
+	left: 5px;
+	width: auto;
 	height: 27px;
 	padding: 5px 11px 0px 11px;
 	font-family: 'Roboto','sans-serif';
@@ -392,6 +392,7 @@ $activity-width: 135px;
 	font-weight: 300;
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 	border-radius: 2px;
+	cursor:default;
 }
 
 #popup-accept {
@@ -427,9 +428,13 @@ $activity-width: 135px;
 	font-family: 'Roboto';
 	font-weight: 300;
 	opacity: 0.3;
-	/*@include transition(0.5s);*/
-		transition-property: opacity;
+	transition-property: opacity;
 	transition-duration: 0.5s;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 
 	&:hover {
 		opacity:1;

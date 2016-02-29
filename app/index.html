@@ -57,8 +57,8 @@
 	<link rel="stylesheet" href="/assets/css/main.css">
 	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
-	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
 	<link rel="stylesheet" href="/vendor/timepicki/timepicki.css">
+	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
 	<!-- endinject -->
 
 </head>
@@ -92,6 +92,14 @@
 
 				<div id="activity-map-mode-selector" class="button blue controls">
 				      Directions
+				</div>
+
+				<div id="directions-information">
+					<span style="color:#ccc">Distancia:</span>
+					<span id="directions-distance"></span>
+					/
+					<span style="color:#ccc">Tiempo:</span>
+					<span id="directions-time"></span>
 				</div>
 
 				<div id="popup-map"></div>
@@ -169,10 +177,10 @@
 		<h1>Placeholder for trip name</h1>
 	</div>
 	<div id="map-container">
-	    <div id="floating-panel">
-  <input id="address" type="textbox" value="Sydney, NSW">
-  <input id="submit" type="button" value="Geocode">
-</div>
+		<div id="floating-panel">
+			<input id="address" type="textbox" value="Sydney, NSW">
+			<input id="submit" type="button" value="Geocode">
+		</div>
 		<div id="map"></div>
 	</div>
 
@@ -208,12 +216,6 @@
 				<div class="time-hour"><span>00</span></div>
 			</div>
 			<div id="days-container">
-<!-- 				<div id="d0">
-					<div id="d0-activities-container" class="activities-container"></div>
-				</div>
-				<div id="d1">
-					<div id="d1-activities-container" class="activities-container"></div>
-				</div> -->
 			</div>
 		</div>
 	</div>
@@ -320,8 +322,8 @@ function geocodeAddress(geocoder, resultsMap, address) {
 	<!-- inject:vendor-scripts -->
 	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<script src="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
-	<script src="/vendor/select2/select2.min.js"></script>
 	<script src="/vendor/timepicki/timepicki.js"></script>
+	<script src="/vendor/select2/select2.min.js"></script>
 	<!-- endinject -->
 	<!-- inject:user-scripts -->
 	<script src="/js/app.js"></script>

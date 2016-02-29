@@ -280,6 +280,66 @@ $(function(){
 		};
 	}
 
+	function computeTotalTimeAndDistance(result) {
+		var distance = 0;
+		var time = 0;
+		var route = result.routes[0];
+
+		for (var i = 0; i < route.legs.length; i++) {
+			distance += route.legs[i].distance.value;
+			time += route.legs[i].duration.value;
+		}
+
+		distance = distance / 1000;
+		distance = distance.toFixed(2);
+		$('#directions-distance').text(distance + ' km');
+		$('#directions-time').text(secondsToFriendlyTime(time));
+		$('#directions-information').animate({'top': '395px'});
+	}
+
+	// Translate seconds to an easy to read representation
+	function secondsToFriendlyTime(secondsCount) {
+		var remainingTime = secondsCount;
+		var days = Math.floor((remainingTime / 3600) / 24);
+		var result;
+
+		if (days > 0) {
+			remainingTime = secondsCount - (days * 3600 * 24);
+		}
+
+		var hours = Math.floor(remainingTime / 3600);
+		var minutes = Math.floor((remainingTime - (hours * 3600)) / 60);
+		var seconds = remainingTime - (hours * 3600) - (minutes * 60);
+
+		if (days > 0) {
+			result = days + ' dia';
+
+			if (days > 1) result += 's';
+		}
+
+		if (hours > 0) {
+			if (days > 0) {
+				result += ' ' + hours + ' hora';
+			} else {
+				result = hours + ' hora';
+			}
+
+			if (hours > 1) result += 's';
+		}
+
+		if (minutes > 0) {
+			if (hours > 0) {
+				result += ' ' + minutes + ' minuto';
+			} else {
+				result = minutes + ' minuto';
+			}
+
+			if (minutes > 1) result += 's';
+		}
+
+		return result;
+	}
+
 	function goToPopupStep(stepIndex) {
 		var effectDuration = 600;
 		var showingFirstStep = parseInt($('#popup-step-one').css('left')) == 0;
@@ -378,6 +438,7 @@ $(function(){
 		// Update results if user drags the route
 		directionsDisplay.addListener('directions_changed', function() {
 			popupSelectedRoute = directionsDisplay.getDirections();
+			computeTotalTimeAndDistance(popupSelectedRoute);
 		});
 
 		initPlacesAutocomplete();
@@ -519,6 +580,7 @@ $(function(){
 				directionsDisplay.setDirections(response);
 				directionsDisplay.setMap(popupMap);
 				popupSelectedRoute = response;
+				computeTotalTimeAndDistance(popupSelectedRoute);
 			} else {
 				window.alert('Directions request failed due to ' + status);
 			}
