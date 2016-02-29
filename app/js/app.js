@@ -124,6 +124,10 @@ $(function(){
 			colour: $('.colour-opt.selected').css('background-color')
 		};
 
+		var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // Update this
+		var markerImgExtention = ".png";
+		var markerStart = $("#popup-activity-icon-one").val();
+
 		if (placeModeEnabled) {
 			var placeMarker = popupMapMarkers.pop();
 			placeMarker.setMap(map);
@@ -133,13 +137,15 @@ $(function(){
 		} else {
 			mainMapRoutes.push(popupSelectedRoute);
 			var routeDisplay = new google.maps.DirectionsRenderer();
+			routeDisplay.setOptions( { suppressMarkers: true } ); // Disable markers. Then, add custom ones, or create default markers
 			routeDisplay.setDirections(popupSelectedRoute);
 			routeDisplay.setMap(map);
 			mainMapBounds.union(popupSelectedRoute.routes[0].bounds);
 			mainMapDirectionDisplays.push(routeDisplay);
 			activity.routeDisplay = routeDisplay;
 		}
-
+		
+		replaceMarkers(popupSelectedRoute, activity);
 
 		addActivity(activity);
 
@@ -147,6 +153,42 @@ $(function(){
 		$.magnificPopup.close();
 		resetPopup();
 	});
+
+	function replaceMarkers(popupSelectedRoute, activity) {
+		// If necessary, change route markers. Otherwise create a default one, and add it to the map
+		var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // Update this
+		var markerImgExtention = ".png";
+		var markerStart = $("#popup-activity-icon-one").val();
+		var markerEnd = $("#popup-activity-icon-two").val();
+		var markerStartImgUrl = "http://maps.google.com/mapfiles/markerA.png"; 
+		var markerEndImgUrl = "http://maps.google.com/mapfiles/markerB.png";
+		
+
+		if (placeModeEnabled) {
+			if (markerStart != "") {
+				activity.marker.icon = baseMarkerUrl + $("#popup-activity-icon-one").val() + markerImgExtention;
+			}
+		} else {
+			var leg = popupSelectedRoute.routes[0].legs[0];
+			if (markerStart != "") {
+				markerStartImgUrl = baseMarkerUrl + markerStart + markerImgExtention;
+			}
+			var startMarkerImage = new google.maps.MarkerImage(markerStartImgUrl,
+																new google.maps.Size(45, 45), new google.maps.Point(0, 0),
+																new google.maps.Point(22, 32));
+			makeMarker(leg.start_location, startMarkerImage, '', map);
+
+			if (markerEnd != "") {
+				markerEndImgUrl = baseMarkerUrl + markerEnd + markerImgExtention;
+			}
+			var endMarkerImage = new google.maps.MarkerImage(markerEndImgUrl,
+																new google.maps.Size(45, 45), new google.maps.Point(0, 0),
+																new google.maps.Point(22, 32));
+			makeMarker(leg.end_location, endMarkerImage, '', map);		
+		}
+	}
+
+
 
 	function addActivity(activity) {
 		var dayIndex = currentDay;
@@ -645,5 +687,14 @@ $(function(){
 		$('#popup-input-file-label + .cancel').hide();
 		$('#popup-input-file-label').text('Comprobante').css({'color': '#8D97AD'});
 		$('#popup-input-file-label + .cancel').hide();
+	}
+
+	function makeMarker(position, icon, title, map) {
+		new google.maps.Marker({
+			position: position,
+			map: map,
+			icon: icon,
+			title: title
+		});
 	}
 });
