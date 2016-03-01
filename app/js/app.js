@@ -162,6 +162,7 @@ $(function(){
 		var markerEnd = $("#popup-activity-icon-two").val();
 		var markerStartImgUrl = "http://maps.google.com/mapfiles/markerA.png"; 
 		var markerEndImgUrl = "http://maps.google.com/mapfiles/markerB.png";
+		var markerPointX = 10; // Default x value to center default pins over the route
 		
 
 		if (placeModeEnabled) {
@@ -172,18 +173,20 @@ $(function(){
 			var leg = popupSelectedRoute.routes[0].legs[0];
 			if (markerStart != "") {
 				markerStartImgUrl = baseMarkerUrl + markerStart + markerImgExtention;
+				markerPointX = 17;
 			}
 			var startMarkerImage = new google.maps.MarkerImage(markerStartImgUrl,
 																new google.maps.Size(45, 45), new google.maps.Point(0, 0),
-																new google.maps.Point(22, 32));
+																new google.maps.Point(markerPointX, 32));
 			makeMarker(leg.start_location, startMarkerImage, '', map);
 
 			if (markerEnd != "") {
 				markerEndImgUrl = baseMarkerUrl + markerEnd + markerImgExtention;
+				markerPointX = 17;
 			}
 			var endMarkerImage = new google.maps.MarkerImage(markerEndImgUrl,
 																new google.maps.Size(45, 45), new google.maps.Point(0, 0),
-																new google.maps.Point(22, 32));
+																new google.maps.Point(markerPointX, 32));
 			makeMarker(leg.end_location, endMarkerImage, '', map);		
 		}
 	}
