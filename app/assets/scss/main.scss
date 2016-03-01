@@ -628,40 +628,6 @@ $activity-width: 135px;
 }
 
 /*******************************/
-.timepicki-input {
-	background-color: transparent !important;
-	border:none !important;
-	font-family: 'Roboto';
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	font-size: 13pt;
-}
-
-.timepicker_wrap {
-	width: 160px;
-	left: 50% !important;
-	padding: 10px;
-	margin-left: -150px !important; /* width - padding */
-	border-radius: 2px !important;
-
-	.prev, .next {
-		border-radius: 0px !important;
-		border: none !important;
-	}
-
-	.prev {
-		border-bottom: solid 1px $main-blue !important;
-	}
-
-	.next {
-		border-top: solid 1px $main-blue !important;
-	}
-
-}
-
 /* Select2*/
 .select2-container {
 	width: 302px !important;

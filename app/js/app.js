@@ -120,8 +120,8 @@ $(function(){
 	});
 
 	$('#popup-accept').click(function(){
-		var startTime = parseInt($('#popup-activity-start').val());
-		var length = parseInt($('#popup-activity-length').val()) - startTime;
+		var startTime = $('#popup-activity-start').timepicker('getTime').getHours();
+		var length = $('#popup-activity-length').timepicker('getTime').getHours() - startTime;
 		var activity = {
 			name: $('#popup-activity-name').val(),
 			start: startTime,
@@ -489,14 +489,29 @@ console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one")
 			return;
 		}
 
-		$('[role="timepicker"]').timepicki({
-				show_meridian:false,
-				min_hour_value:0,
-				max_hour_value:23,
-				step_size_minutes:15,
-				start_time:['12','00','AM'],
-				increase_direction:'up',
-				disable_keyboard_mobile: true});
+		var timepickerOptions = {
+			'timeFormat': 'H:i',
+			'step': 15
+		}
+
+		$('#popup-activity-length').timepicker(timepickerOptions);
+
+		$('#popup-activity-start').timepicker(timepickerOptions)
+		.on('change', function() {
+			var startTime = $('#popup-activity-start').timepicker('getTime');
+			var endTime = $('#popup-activity-length').timepicker('getTime');
+
+			if (endTime != null) {
+				if (endTime < startTime) {
+					$('#popup-activity-length').timepicker('setTime', startTime);
+				}
+			}
+
+			$('#popup-activity-length').timepicker('option', {
+				'minTime': startTime,
+				'maxTime': 0
+			});
+		});
 
 		var sydneyLocation = {lat: -34.397, lng: 150.644};
 		popupMap = new google.maps.Map(document.getElementById('popup-map'), {
