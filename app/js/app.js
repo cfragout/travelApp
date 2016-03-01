@@ -6,6 +6,7 @@ $(function(){
 	var placeModeEnabled = true; // use this var to know whether the user is adding a place or directions
 	var currentDay = 0; // Use this var to know which day is currently having activities added
 	var predefinedMapMarkers = [
+		{ value: 'default', name: 'Marcador por defecto'},
 		{ value: 'alligator', name: 'Cocodrilo'},
 		{ value: 'airport', name: 'Aeropuerto'},
 		{ value: 'aquarium', name: 'Acuario'},
@@ -60,6 +61,11 @@ $(function(){
 		templateResult: selectFormatterFunction,
 		minimumResultsForSearch: Infinity,
 		placeholder: 'Marcador por defecto'
+	}).on('change', function(){
+		// If 'default marker' option is selected, then delete any select2 previous value
+		if ($(this).val() == 'default') {
+			$(this).select2('val','');
+		}
 	});
 	$('#popup-activity-icon-two + span').hide();
 	$($('.select2-selection__arrow')[1]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
@@ -164,14 +170,16 @@ $(function(){
 		var markerEndImgUrl = "http://maps.google.com/mapfiles/markerB.png";
 		var markerPointX = 10; // Default x value to center default pins over the route
 		
+console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one").val())
+
 
 		if (placeModeEnabled) {
-			if (markerStart != "") {
+			if (!isEmpty(markerStart)) {
 				activity.marker.icon = baseMarkerUrl + $("#popup-activity-icon-one").val() + markerImgExtention;
 			}
 		} else {
 			var leg = popupSelectedRoute.routes[0].legs[0];
-			if (markerStart != "") {
+			if (!isEmpty(markerStart)) {
 				markerStartImgUrl = baseMarkerUrl + markerStart + markerImgExtention;
 				markerPointX = 17;
 			}
@@ -180,7 +188,7 @@ $(function(){
 																new google.maps.Point(markerPointX, 32));
 			makeMarker(leg.start_location, startMarkerImage, '', map);
 
-			if (markerEnd != "") {
+			if (!isEmpty(markerEnd)) {
 				markerEndImgUrl = baseMarkerUrl + markerEnd + markerImgExtention;
 				markerPointX = 17;
 			}
@@ -190,8 +198,6 @@ $(function(){
 			makeMarker(leg.end_location, endMarkerImage, '', map);		
 		}
 	}
-
-
 
 	function addActivity(activity) {
 		var dayIndex = currentDay;
@@ -457,6 +463,7 @@ $(function(){
 		$('#directions-distance').text('');
 		$('#directions-time').text('');
 		$('#directions-information').animate({'top': '500px'});
+		$('.popup-activity-icon-select').select2('val','');
 	}
 
 	function resetMarkers(markers) {
@@ -684,6 +691,10 @@ $(function(){
 	$('#popup-input-file-label + .cancel').click(function(){
 		resetReceiptComponent();
 	});
+
+	function isEmpty(str) {
+		return (str == '') || (str == null);
+	}
 
 	function resetReceiptComponent() {
 		$('#popup-input-file').val();
