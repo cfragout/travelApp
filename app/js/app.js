@@ -120,11 +120,16 @@ $(function(){
 	});
 
 	$('#popup-accept').click(function(){
-		var startTime = $('#popup-activity-start').timepicker('getTime').getHours();
-		var length = $('#popup-activity-length').timepicker('getTime').getHours() - startTime;
+		var startTime = $('#popup-activity-start').timepicker('getTime');
+		var endTime = $('#popup-activity-length').timepicker('getTime');
+		var length = endTime - startTime;
+
 		var activity = {
 			name: $('#popup-activity-name').val(),
-			start: startTime,
+			startHour: startTime.getHours(),
+			startMinute: startTime.getMinutes(),
+			startTime: startTime,
+			endTime: endTime,
 			length: length,
 			isRoute: placeModeEnabled,
 			colour: $('.colour-opt.selected').css('background-color')
@@ -170,9 +175,6 @@ $(function(){
 		var markerEndImgUrl = "http://maps.google.com/mapfiles/markerB.png";
 		var markerPointX = 10; // Default x value to center default pins over the route
 		
-console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one").val())
-
-
 		if (placeModeEnabled) {
 			if (!isEmpty(markerStart)) {
 				activity.marker.icon = baseMarkerUrl + $("#popup-activity-icon-one").val() + markerImgExtention;
@@ -329,14 +331,17 @@ console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one")
 	}
 
 	function getActivityCSS(activity) {
+		var length = (activity.length / 1000) / 3600; // Miliseconds to hours
+
 		// Vertical Offset and height
 		var hourOffset = getCSSPropertyValueAsInt('.time-hour', 'height');
 		var timeHourBorderTop = getCSSPropertyValueAsInt('.time-hour', 'border-top');
 		var timeHourBorderBottom = getCSSPropertyValueAsInt('.time-hour', 'border-bottom');
 		var timeGridMargin = getCSSPropertyValueAsInt('#time-grid', 'margin-top');
 		var hourTotalHeight = hourOffset + timeHourBorderTop + timeHourBorderBottom; // Total height of an hour is its height + its borders top and bottom
-		var cssPosition = ((activity.start - 1) * hourTotalHeight) + timeGridMargin;
-		var cssHeight = activity.length * hourTotalHeight;
+		var cssTop = ((activity.startHour - 1) * hourTotalHeight) + timeGridMargin; // Top position only for the starting hour
+		cssTop += (activity.startMinute / 60) * hourTotalHeight; // Add px corresponding to the time minutes
+		var cssHeight = length * hourTotalHeight;
 
 		// Horizontal offset
 		var dayOffset = getCSSPropertyValueAsInt('.day-control', 'width') + getCSSPropertyValueAsInt('.day-control', 'padding-right') + getCSSPropertyValueAsInt('.day-control', 'padding-left');
@@ -344,14 +349,14 @@ console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one")
 		var cssLeft = (dayOffset * currentDay) + timeHourTextOffset;
 
 		return {
-			'top': cssPosition + 'px',
+			'top': cssTop + 'px',
 			'left': cssLeft + 'px',
 			'height': cssHeight + 'px',
 			'background-color': activity.colour
 		};
 	}
 
-	function computeTotalTimeAndDistance(result) {
+	function calculateTotalTimeAndDistance(result) {
 		var distance = 0;
 		var time = 0;
 		var route = result.routes[0];
@@ -368,11 +373,9 @@ console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one")
 		$('#directions-information').animate({'top': '395px'});
 	}
 
-	// Translate seconds to an easy to read representation
-	function secondsToFriendlyTime(secondsCount) {
+	function secondsToDayHourMinuteObj(secondsCount) {
 		var remainingTime = secondsCount;
 		var days = Math.floor((remainingTime / 3600) / 24);
-		var result;
 
 		if (days > 0) {
 			remainingTime = secondsCount - (days * 3600 * 24);
@@ -380,35 +383,50 @@ console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one")
 
 		var hours = Math.floor(remainingTime / 3600);
 		var minutes = Math.floor((remainingTime - (hours * 3600)) / 60);
-		var seconds = remainingTime - (hours * 3600) - (minutes * 60);
+		//var seconds = remainingTime - (hours * 3600) - (minutes * 60);
+
+		return {
+			days: days,
+			hours: hours,
+			minutes: minutes
+		};
+	}
+
+	// Translate seconds to an easy to read representation
+	function secondsToFriendlyTime(secondsCount) {
+		var dayHourMinuteObj = secondsToDayHourMinuteObj(secondsCount);
+		var friendlyTimeStr;
+		var days = dayHourMinuteObj.days;
+		var hours = dayHourMinuteObj.hours;
+		var minutes = dayHourMinuteObj.minutes;
 
 		if (days > 0) {
-			result = days + ' dia';
+			friendlyTimeStr = days + ' dia';
 
-			if (days > 1) result += 's';
+			if (days > 1) friendlyTimeStr += 's';
 		}
 
 		if (hours > 0) {
 			if (days > 0) {
-				result += ' ' + hours + ' hora';
+				friendlyTimeStr += ' ' + hours + ' hora';
 			} else {
-				result = hours + ' hora';
+				friendlyTimeStr = hours + ' hora';
 			}
 
-			if (hours > 1) result += 's';
+			if (hours > 1) friendlyTimeStr += 's';
 		}
 
 		if (minutes > 0) {
 			if (hours > 0) {
-				result += ' ' + minutes + ' minuto';
+				friendlyTimeStr += ' ' + minutes + ' minuto';
 			} else {
-				result = minutes + ' minuto';
+				friendlyTimeStr = minutes + ' minuto';
 			}
 
-			if (minutes > 1) result += 's';
+			if (minutes > 1) friendlyTimeStr += 's';
 		}
 
-		return result;
+		return friendlyTimeStr;
 	}
 
 	function goToPopupStep(stepIndex) {
@@ -499,7 +517,9 @@ console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one")
 		$('#popup-activity-start').timepicker(timepickerOptions)
 		.on('change', function() {
 			var startTime = $('#popup-activity-start').timepicker('getTime');
+			var startTimeStr = $('#popup-activity-start').val();
 			var endTime = $('#popup-activity-length').timepicker('getTime');
+			var options = { minTime: startTime };
 
 			if (endTime != null) {
 				if (endTime < startTime) {
@@ -507,10 +527,11 @@ console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one")
 				}
 			}
 
-			$('#popup-activity-length').timepicker('option', {
-				'minTime': startTime,
-				'maxTime': 0
-			});
+			if (startTimeStr != '00:00') {
+				options.maxTime = 0;
+			}
+
+			$('#popup-activity-length').timepicker('option', options);
 		});
 
 		var sydneyLocation = {lat: -34.397, lng: 150.644};
@@ -528,7 +549,7 @@ console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one")
 		// Update results if user drags the route
 		directionsDisplay.addListener('directions_changed', function() {
 			popupSelectedRoute = directionsDisplay.getDirections();
-			computeTotalTimeAndDistance(popupSelectedRoute);
+			calculateTotalTimeAndDistance(popupSelectedRoute);
 		});
 
 		initPlacesAutocomplete();
@@ -670,7 +691,7 @@ console.log('$("#popup-activity-icon-one").val()', $("#popup-activity-icon-one")
 				directionsDisplay.setDirections(response);
 				directionsDisplay.setMap(popupMap);
 				popupSelectedRoute = response;
-				computeTotalTimeAndDistance(popupSelectedRoute);
+				calculateTotalTimeAndDistance(popupSelectedRoute);
 			} else {
 				window.alert('Directions request failed due to ' + status);
 			}
