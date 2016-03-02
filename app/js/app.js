@@ -357,6 +357,7 @@ $(function(){
 			callbacks: {
 				open: function() {
 					initPopupMapAndUI();
+
 				},
 				close: function() {
 					resetPopup();
@@ -599,6 +600,9 @@ $(function(){
 		$('.activities-container').removeClass('unselected selected');
 
 		if (popupMap != null) {
+			popupMap.fitBounds(mainMapBounds);
+			popupMap.setCenter(map.getCenter());
+			popupMap.setZoom(8);
 			return;
 		}
 
