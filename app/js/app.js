@@ -105,6 +105,9 @@ $(function(){
 			$('#popup-activity-place').show();
 			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').hide();
 		}
+		resetMap(popupMap, popupMapMarkers)
+		$('.popup-map-input-text').val('');
+		resetMapInformationBox();
 		placeModeEnabled = !placeModeEnabled;
 		google.maps.event.trigger(popupMap, 'resize'); // Trigger resize so that controls are updated
 	});
@@ -524,27 +527,36 @@ $(function(){
 	}
 
 	function resetPopup() {
-		resetMap(popupMap, popupMapMarkers);
+		resetMap(popupMap, popupMapMarkers, true);
 		resetPopupMapControls();
-		popupSelectedRoute = null;
-		directionsDisplay.setMap(null);
 		goToPopupStep(0);
 		// Reset receipt component
 		resetReceiptComponent();
 	}
 
-	function resetMap(map, mapMarkers) {
-		map.setCenter(defaultLocation);
-		map.setZoom(8)
+	function resetMap(map, mapMarkers, fullReset) {
+		popupSelectedRoute = null;
+		directionsDisplay.setMap(null);
+		origin_place_id = null;
+		destination_place_id = null;
 		resetMarkers(mapMarkers);
+		if (fullReset) {
+			map.setCenter(defaultLocation);
+			map.setZoom(8)
+		}
+		popupMapMarkers = [];
 	}
 
 	function resetPopupMapControls() {
 		$('.popup-map-input-text').val('');
+		$('.popup-activity-icon-select').select2('val','');
+		resetMapInformationBox();
+	}
+
+	function resetMapInformationBox() {
 		$('#directions-distance').text('');
 		$('#directions-time').text('');
 		$('#directions-information').animate({'top': '500px'});
-		$('.popup-activity-icon-select').select2('val','');
 	}
 
 	function resetMarkers(markers) {
@@ -695,8 +707,7 @@ $(function(){
 
 		var origin_autocomplete = new google.maps.places.Autocomplete(origin_input);
 		origin_autocomplete.bindTo('bounds', popupMap);
-		var destination_autocomplete =
-		new google.maps.places.Autocomplete(destination_input);
+		var destination_autocomplete = new google.maps.places.Autocomplete(destination_input);
 		destination_autocomplete.bindTo('bounds', popupMap);
 
 		setupClickListener('changemode-walking', google.maps.TravelMode.WALKING);
