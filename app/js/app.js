@@ -404,6 +404,7 @@ $(function(){
 		var cssTop = (activity.startHour * hourTotalHeight) + timeGridMargin; // Top position only for the starting hour
 		cssTop += (activity.startMinute / 60) * hourTotalHeight; // Add px corresponding to the time minutes
 		var cssHeight = length * hourTotalHeight;
+		cssHeight = cssHeight == 0 ? 1 : cssHeight;
 
 		// Horizontal offset
 		var dayOffset = getCSSPropertyValueAsInt('.day-control', 'width') + getCSSPropertyValueAsInt('.day-control', 'padding-right') + getCSSPropertyValueAsInt('.day-control', 'padding-left');
@@ -583,7 +584,7 @@ $(function(){
 			var startTime = $('#popup-activity-start').timepicker('getTime');
 			var startTimeStr = $('#popup-activity-start').val();
 			var endTime = $('#popup-activity-length').timepicker('getTime');
-			var options = { minTime: startTime };
+			var options = { minTime: startTime, maxTime: '11:59pm' };
 
 			if (endTime != null) {
 				if (endTime < startTime) {
@@ -591,9 +592,9 @@ $(function(){
 				}
 			}
 
-			if (startTimeStr != '00:00') {
-				options.maxTime = 0;
-			}
+/*			if ($('#popup-activity-start').timepicker('getTime').getHours() == 0) {
+				options.maxTime = '11:59pm';
+			}*/
 
 			$('#popup-activity-length').timepicker('option', options);
 		});
