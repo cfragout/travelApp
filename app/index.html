@@ -4,55 +4,6 @@
 	<title>TravelApp</title>
 	<meta name="viewport" content="initial-scale=1.0">
 	<meta charset="utf-8">
-	<style>
-		html, body {
-			height: 100%;
-			margin: 0;
-			padding: 0;
-		}
-		#map, #popup-map {
-			height: 100%;
-		}
-		#floating-panel {
-  position: absolute;
-  top: 10px;
-  left: 25%;
-  z-index: 5;
-  background-color: #fff;
-  padding: 5px;
-  border: 1px solid #999;
-  text-align: center;
-  font-family: 'Roboto','sans-serif';
-  line-height: 30px;
-  padding-left: 10px;
-}
-.pac-container {
-    z-index: 1051 !important;
-}
-
-#directions-mode-selector {
-  color: #fff;
-  background-color: #4d90fe;
-  margin-left: 12px;
-  padding: 7px 11px 0px 11px;
-}
-
-#directions-mode-selector label {
-	font-family: Roboto;
-	font-size: 13px;
-	font-weight: 300;
-}
-
-.white-popup {
-  position: relative;
-  background: #FFF;
-  padding: 0px 0px 0px 0px;
-  width: auto;
-  min-width: 700px;
-  max-width: 60%;
-  margin: 20px auto;
-}
-    </style>
 	<!-- inject:styles -->
 	<link rel="stylesheet" href="/assets/css/main.css">
 	<link rel="stylesheet" href="/vendor/jquery.timepicker/jquery.timepicker.css">
@@ -60,10 +11,8 @@
 	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
 	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
 	<!-- endinject -->
-
 </head>
 <body>
-
 	<!-- Map popup -->
 	<div id="popup" class="white-popup mfp-hide">
 		<div style="text-align:center;font-family:'Roboto';padding:10px 0px 10px 0px;color:#fff;background-color:#4D90FE;">
@@ -91,7 +40,7 @@
 				</div>
 
 				<div id="activity-map-mode-selector" class="button blue controls">
-				      Directions
+					  Directions
 				</div>
 
 				<div id="directions-information">
@@ -264,56 +213,55 @@
 				mapTypeId: google.maps.MapTypeId.ROADMAP
 			});
 
-		directionsService = new google.maps.DirectionsService;
-		travel_mode = google.maps.TravelMode.DRIVING;
-		geocoder = new google.maps.Geocoder();
-		mainMapBounds = new google.maps.LatLngBounds();
-  // Try HTML5 geolocation.
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      defaultLocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
+			directionsService = new google.maps.DirectionsService;
+			travel_mode = google.maps.TravelMode.DRIVING;
+			geocoder = new google.maps.Geocoder();
+			mainMapBounds = new google.maps.LatLngBounds();
+			// Try HTML5 geolocation.
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(position) {
+					defaultLocation = {
+						lat: position.coords.latitude,
+						lng: position.coords.longitude
+					};
 
-      map.setCenter(defaultLocation);
-    }, function() {
-      handleLocationError(true, infoWindow, map.getCenter());
-    });
-  } else {
-    // Browser doesn't support Geolocation
-    handleLocationError(false, infoWindow, map.getCenter());
-  }
+					map.setCenter(defaultLocation);
+				}, function() {
+					handleLocationError(true, infoWindow, map.getCenter());
+				});
+			} else {
+				// Browser doesn't support Geolocation
+				handleLocationError(false, infoWindow, map.getCenter());
+			}
 
-
-  document.getElementById('submit').addEventListener('click', function() {
-  	var address = document.getElementById('address').value;
-    geocodeAddress(geocoder, map, address);
-  });
+			document.getElementById('submit').addEventListener('click', function() {
+				var address = document.getElementById('address').value;
+				geocodeAddress(geocoder, map, address);
+			});
 		}
 
-function handleLocationError(browserHasGeolocation) {
-	var msg = browserHasGeolocation ?
-				'Error: The Geolocation service failed.' :
-				'Error: Your browser doesn\'t support geolocation.';
-	alert(msg);
-}
+	function handleLocationError(browserHasGeolocation) {
+		var msg = browserHasGeolocation ?
+					'Error: The Geolocation service failed.' :
+					'Error: Your browser doesn\'t support geolocation.';
+		alert(msg);
+	}
 
-var defaultLocation;
-function geocodeAddress(geocoder, resultsMap, address) {
-  geocoder.geocode({'address': address}, function(results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-    	defaultLocation = results[0].geometry.location
-      resultsMap.setCenter(results[0].geometry.location);
-      var marker = new google.maps.Marker({
-        map: resultsMap,
-        position: defaultLocation
-      });
-    } else {
-      alert('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-}
+	var defaultLocation;
+	function geocodeAddress(geocoder, resultsMap, address) {
+		geocoder.geocode({'address': address}, function(results, status) {
+			if (status === google.maps.GeocoderStatus.OK) {
+				defaultLocation = results[0].geometry.location
+				resultsMap.setCenter(results[0].geometry.location);
+				var marker = new google.maps.Marker({
+					map: resultsMap,
+					position: defaultLocation
+				});
+			} else {
+				alert('Geocode was not successful for the following reason: ' + status);
+			}
+		});
+	}
 
 	</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmKe1N8GjOJCDAxCHm1TGcv6-z2gcyrFo&callback=initMap&libraries=places"

@@ -38,8 +38,23 @@ $activity-colour-light-blue: #1b5a9b;
 	transition: all $time ease-out;
 }
 
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
 body {
 	height: 100%;
+}
+
+#map, #popup-map {
+	height: 100%;
+}
+
+/* Autocomplete container */
+.pac-container {
+	z-index: 1051 !important;
 }
 
 /* Main */
@@ -168,6 +183,16 @@ $activity-width: 135px;
 }
 
 /* Popup */
+.white-popup {
+	position: relative;
+	background: #FFF;
+	padding: 0px 0px 0px 0px;
+	width: auto;
+	min-width: 700px;
+	max-width: 60%;
+	margin: 20px auto;
+}
+
 #popup-content {
 	overflow:hidden;
 	height: 430px;
@@ -383,6 +408,19 @@ $activity-width: 135px;
 	padding: 5px 11px 0px 11px;
 	font-family: 'Roboto','sans-serif';
 	line-height: 22px;
+	font-size: 13px;
+	font-weight: 300;
+}
+
+#directions-mode-selector {
+	color: #fff;
+	background-color: #4d90fe;
+	margin-left: 12px;
+	padding: 7px 11px 0px 11px;
+}
+
+#directions-mode-selector label {
+	font-family: Roboto;
 	font-size: 13px;
 	font-weight: 300;
 }
