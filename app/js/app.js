@@ -119,10 +119,110 @@ $(function(){
 		currentDay = $(this).attr('data-day-index');
 	});
 
+	// Highlight only the activities related to the selected day
+	$('#day-controls-container').on('click', '.day-name', function(){
+		var dayIndex = $(this).attr('data-day-index');
+		var containerId = 'd' + dayIndex + '-activities-container';
+		var containerIdHashtag = '#' + containerId;
+
+		if ($(containerIdHashtag).hasClass('selected')) {
+			$(containerIdHashtag).removeClass('selected');
+			$('.activities-container').removeClass('unselected');
+		} else {
+			$(containerIdHashtag).removeClass('unselected').addClass('selected');
+			$('.activities-container[id!='+ containerId +']').removeClass('selected').addClass('unselected');
+		}
+
+		// Hide or show activities on the map
+		if ($('.activities-container.selected').length > 0) {
+			$.each(days, function(index, day){
+				if (index != dayIndex) {
+					// Hide activities for unselected days
+					$.each(day.activities, function(j, activity){
+						toggleActivity(activity, false);
+					});
+				} else {
+					// Display activities for the selected day
+					$.each(day.activities, function(j, activity){
+						toggleActivity(activity, true);
+					});
+				}
+			});
+		} else {
+			// If there is no specific day selected, display every activity
+			$.each(days, function(index, day){
+				$.each(day.activities, function(j, activity){
+					toggleActivity(activity, true);
+				});
+			});
+		}
+
+	});
+
 	$('#popup-accept').click(function(){
+		addActivity();
+
+		map.fitBounds(mainMapBounds);
+		$.magnificPopup.close();
+		resetPopup();
+	});
+
+	function toggleActivity(activity, shouldShow) {
+		var activityMap = shouldShow ? map : null;
+		if (activity.isRoute) {
+			activity.routeDisplay.setMap(activityMap);
+			activity.routeMarkers.start.setVisible(shouldShow);
+			activity.routeMarkers.end.setVisible(shouldShow);
+		} else {
+			activity.marker.setVisible(shouldShow);
+		}
+	}
+
+	function replaceMarkers(popupSelectedRoute, activity) {
+		// If necessary, change route markers. Otherwise create a default one, and add it to the map
+		var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // Update this
+		var markerImgExtention = ".png";
+		var markerStart = $("#popup-activity-icon-one").val();
+		var markerEnd = $("#popup-activity-icon-two").val();
+		var markerStartImgUrl = "http://maps.google.com/mapfiles/markerA.png"; 
+		var markerEndImgUrl = "http://maps.google.com/mapfiles/markerB.png";
+		var markerPointX = 10; // Default x value to center default pins over the route
+
+		if (placeModeEnabled) {
+			if (!isEmpty(markerStart)) {
+				activity.marker.icon = baseMarkerUrl + $("#popup-activity-icon-one").val() + markerImgExtention;
+			}
+		} else {
+			var leg = popupSelectedRoute.routes[0].legs[0];
+			var routeMarkers = {};
+
+			if (!isEmpty(markerStart)) {
+				markerStartImgUrl = baseMarkerUrl + markerStart + markerImgExtention;
+				markerPointX = 17;
+			}
+			var startMarkerImage = new google.maps.MarkerImage(markerStartImgUrl,
+																new google.maps.Size(45, 45), new google.maps.Point(0, 0),
+																new google.maps.Point(markerPointX, 32));
+			routeMarkers.start = makeMarker(leg.start_location, startMarkerImage, '', map);
+
+			if (!isEmpty(markerEnd)) {
+				markerEndImgUrl = baseMarkerUrl + markerEnd + markerImgExtention;
+				markerPointX = 17;
+			}
+			var endMarkerImage = new google.maps.MarkerImage(markerEndImgUrl,
+																new google.maps.Size(45, 45), new google.maps.Point(0, 0),
+																new google.maps.Point(markerPointX, 32));
+			routeMarkers.end = makeMarker(leg.end_location, endMarkerImage, '', map);
+
+			activity.routeMarkers = routeMarkers;
+		}
+	}
+
+	function addActivity() {
 		var startTime = $('#popup-activity-start').timepicker('getTime');
 		var endTime = $('#popup-activity-length').timepicker('getTime');
 		var length = endTime - startTime;
+		var activityId = 'd'+ currentDay +'a' + days[currentDay].activities.length;
 
 		var activity = {
 			name: $('#popup-activity-name').val(),
@@ -131,8 +231,9 @@ $(function(){
 			startTime: startTime,
 			endTime: endTime,
 			length: length,
-			isRoute: placeModeEnabled,
-			colour: $('.colour-opt.selected').css('background-color')
+			isRoute: !placeModeEnabled,
+			colour: $('.colour-opt.selected').css('background-color'),
+			htmlId: activityId
 		};
 
 		var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // Update this
@@ -155,61 +256,21 @@ $(function(){
 			mainMapDirectionDisplays.push(routeDisplay);
 			activity.routeDisplay = routeDisplay;
 		}
-		
+
 		replaceMarkers(popupSelectedRoute, activity);
 
-		addActivity(activity);
-
-		map.fitBounds(mainMapBounds);
-		$.magnificPopup.close();
-		resetPopup();
-	});
-
-	function replaceMarkers(popupSelectedRoute, activity) {
-		// If necessary, change route markers. Otherwise create a default one, and add it to the map
-		var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // Update this
-		var markerImgExtention = ".png";
-		var markerStart = $("#popup-activity-icon-one").val();
-		var markerEnd = $("#popup-activity-icon-two").val();
-		var markerStartImgUrl = "http://maps.google.com/mapfiles/markerA.png"; 
-		var markerEndImgUrl = "http://maps.google.com/mapfiles/markerB.png";
-		var markerPointX = 10; // Default x value to center default pins over the route
-		
-		if (placeModeEnabled) {
-			if (!isEmpty(markerStart)) {
-				activity.marker.icon = baseMarkerUrl + $("#popup-activity-icon-one").val() + markerImgExtention;
-			}
-		} else {
-			var leg = popupSelectedRoute.routes[0].legs[0];
-			if (!isEmpty(markerStart)) {
-				markerStartImgUrl = baseMarkerUrl + markerStart + markerImgExtention;
-				markerPointX = 17;
-			}
-			var startMarkerImage = new google.maps.MarkerImage(markerStartImgUrl,
-																new google.maps.Size(45, 45), new google.maps.Point(0, 0),
-																new google.maps.Point(markerPointX, 32));
-			makeMarker(leg.start_location, startMarkerImage, '', map);
-
-			if (!isEmpty(markerEnd)) {
-				markerEndImgUrl = baseMarkerUrl + markerEnd + markerImgExtention;
-				markerPointX = 17;
-			}
-			var endMarkerImage = new google.maps.MarkerImage(markerEndImgUrl,
-																new google.maps.Size(45, 45), new google.maps.Point(0, 0),
-																new google.maps.Point(markerPointX, 32));
-			makeMarker(leg.end_location, endMarkerImage, '', map);		
-		}
+		addActivityToTimeGrid(activity);
 	}
 
-	function addActivity(activity) {
+	function addActivityToTimeGrid(activity) {
 		var dayIndex = currentDay;
 
 		days[dayIndex].activities.push(activity);
 
 		// Get the default template and adapt it for the new activity.
 		var activityHTML = $('#activity-template').clone()[0];
-		var activityId = 'd'+ dayIndex +'a' + days[dayIndex].activities.length;
-		$(activityHTML).attr('id', activityId);
+		// var activityId = 'd'+ dayIndex +'a' + days[dayIndex].activities.length;
+		$(activityHTML).attr('id', activity.htmlId);
 		var activityNameHTML = $(activityHTML).find('.activity-name')[0];
 		$(activityNameHTML).text(activity.name);
 
@@ -222,7 +283,7 @@ $(function(){
 		$(containerId).append(activityHTML);
 		$(activityHTML).fadeIn();
 
-		scrollToElementId('#' + activityId);
+		scrollToElementId('#' + activity.htmlId);
 	}
 
 	function addDay() {
@@ -240,7 +301,7 @@ $(function(){
 		$(dayControlHtml).attr('id', dayControlId);
 		var dayNameHTML = $(dayControlHtml).find('.day-name')[0];
 		$(dayNameHTML).text('Dia ' + (dayIndex + 1));
-
+		$(dayNameHTML).attr('data-day-index', dayIndex);
 		var openPopupLinkHTML = $(dayControlHtml).find('a')[0];
 		var openPopupLinkId = dayControlId + '-popup-trigger';
 		$(openPopupLinkHTML).attr('id', openPopupLinkId);
@@ -254,6 +315,7 @@ $(function(){
 		$(dayContainerHTML).attr('id', dayConatinerId);
 		var dayActivitiesContainerHTML = $(dayContainerHTML).find('div')[0];
 		$(dayActivitiesContainerHTML).attr('id', 'd'+ dayIndex +'-activities-container');
+		$(dayActivitiesContainerHTML).attr('class', 'activities-container');
 		$('#days-container').append(dayContainerHTML);
 		$(dayContainerHTML).fadeIn();
 
@@ -339,7 +401,7 @@ $(function(){
 		var timeHourBorderBottom = getCSSPropertyValueAsInt('.time-hour', 'border-bottom');
 		var timeGridMargin = getCSSPropertyValueAsInt('#time-grid', 'margin-top');
 		var hourTotalHeight = hourOffset + timeHourBorderTop + timeHourBorderBottom; // Total height of an hour is its height + its borders top and bottom
-		var cssTop = ((activity.startHour - 1) * hourTotalHeight) + timeGridMargin; // Top position only for the starting hour
+		var cssTop = (activity.startHour * hourTotalHeight) + timeGridMargin; // Top position only for the starting hour
 		cssTop += (activity.startMinute / 60) * hourTotalHeight; // Add px corresponding to the time minutes
 		var cssHeight = length * hourTotalHeight;
 
@@ -503,6 +565,8 @@ $(function(){
 	}
 
 	function initPopupMapAndUI() {
+		$('.activities-container').removeClass('unselected selected');
+
 		if (popupMap != null) {
 			return;
 		}
@@ -740,7 +804,7 @@ $(function(){
 	}
 
 	function makeMarker(position, icon, title, map) {
-		new google.maps.Marker({
+		return new google.maps.Marker({
 			position: position,
 			map: map,
 			icon: icon,

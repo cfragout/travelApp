@@ -103,6 +103,14 @@ $activity-width: 135px;
 	float:left;
 	position:absolute;
 	margin-left: 10px;
+
+}
+
+.activities-container.unselected {
+		.activity {
+			background-color: grey !important;
+			color: rgba(21, 20, 20, 0.64);
+		}
 }
 
 #add-day {
