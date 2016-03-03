@@ -164,22 +164,10 @@ $(function(){
 	});
 
 	$('#activity-map-mode-selector').click(function(){
-/*		if (placeModeEnabled) {
-			$('#popup-activity-place').hide();
-			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').show();
-			$('#activity-map-mode-selector').text('Lugares');
-			$('#popup-activity-icon-two + span').show();
-		} else {
-			$('#popup-activity-icon-two + span').hide();
-			$('#activity-map-mode-selector').text('Rutas');
-			$('#popup-activity-place').show();
-			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').hide();
-		}*/
 		togglePopupMode();
 		resetMap(popupMap, popupMapMarkers)
 		$('.popup-map-input-text').val('');
 		resetMapInformationBox();
-		google.maps.event.trigger(popupMap, 'resize'); // Trigger resize so that controls are updated
 	});
 
 	$('#popup-cancel').click(function(){
@@ -259,6 +247,8 @@ $(function(){
 			$('#popup-activity-place').show();
 			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').hide();
 		}
+
+		google.maps.event.trigger(popupMap, 'resize'); // Trigger resize so that controls are updated
 	}
 
 	function togglePointsOfReference(show) {
