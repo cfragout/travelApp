@@ -384,7 +384,7 @@ body {
   border-radius: 2px;
   cursor: default; }
 
-#popup-accept {
+#popup-accept, #popup-accept-point-of-reference {
   padding-bottom: 3px;
   margin-right: 50px;
   position: absolute;

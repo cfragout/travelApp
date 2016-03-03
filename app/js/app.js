@@ -138,7 +138,7 @@ $(function(){
 			},
 			close: function() {
 				$('#popup-point-of-reference-group, #popup-accept-point-of-reference').hide();
-				$('#activity-map-mode-selector, .colour-picker, .receipt-picker, #popup-activity-length, #popup-activity-start').show();
+				$('#popup-accept, #activity-map-mode-selector, .colour-picker, .receipt-picker, #popup-activity-length, #popup-activity-start').show();
 				$('#popup-header').text('Nueva actividad');
 				resetPopup();
 			}
