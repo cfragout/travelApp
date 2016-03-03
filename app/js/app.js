@@ -1,8 +1,11 @@
 $(function(){
 	"user strict";
 	var origin_place_id = null;
+	var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // Update this
+	var markerImgExtention = ".png";
 	var destination_place_id = null;
 	var popupSelectedRoute = null;
+	var pointsOfReference = [];
 	var placeModeEnabled = true; // use this var to know whether the user is adding a place or directions
 	var currentDay = 0; // Use this var to know which day is currently having activities added
 	var predefinedMapMarkers = [
@@ -70,9 +73,6 @@ $(function(){
 		{ value: 'smallcity', name: 'Ciudad'},
 		{ value: 'tree', name: 'Arbol'},
 		{ value: 'alligator', name: 'Cocodrilo'}
-
-
-
 	];
 
 	// Load custom map markers into select2
@@ -119,6 +119,54 @@ $(function(){
 		$(this).toggleClass('disabled');
 	});
 
+	$('#add-point-of-reference-button').magnificPopup({
+		items: {
+			src: '#popup',
+			type: 'inline'
+		},
+		type:'inline',
+		removalDelay: 300,
+		mainClass: 'mfp-fade',
+		midClick: true,
+		callbacks: {
+			open: function() {
+				// Points of reference are only places
+				$('#popup-accept, #activity-map-mode-selector, .colour-picker, .receipt-picker, #popup-activity-length, #popup-activity-start').hide();
+				$('#popup-header').text('Nuevo punto de referencia');
+				$('#popup-point-of-reference-group, #popup-accept-point-of-reference').show();
+				initPopupMapAndUI();
+			},
+			close: function() {
+				$('#popup-point-of-reference-group, #popup-accept-point-of-reference').hide();
+				$('#activity-map-mode-selector, .colour-picker, .receipt-picker, #popup-activity-length, #popup-activity-start').show();
+				$('#popup-header').text('Nueva actividad');
+				resetPopup();
+			}
+		}
+	});
+
+	$('#popup-accept-point-of-reference').click(function(){
+		var pointsOfReferenceMarker = popupMapMarkers.pop();
+
+		pointsOfReferenceMarker.setMap(map);
+		mainMapMarkers.push(pointsOfReferenceMarker);
+		mainMapBounds.extend(pointsOfReferenceMarker.position);
+
+		var markerStart = $("#popup-activity-icon-one").val();
+		if (!isEmpty(markerStart)) {
+			pointsOfReferenceMarker.icon = baseMarkerUrl + markerStart + markerImgExtention;
+		}
+
+		var pointOfReference = {
+			group: $('#popup-point-of-reference-group').val(),
+			marker: pointsOfReferenceMarker
+		};
+		pointsOfReference.push(pointOfReference);
+
+		$.magnificPopup.close();
+		resetPopup();
+	});
+
 	$('.colour-opt').click(function(){
 		$('.colour-opt').removeClass('selected');
 		$(this).addClass('selected');
@@ -128,11 +176,11 @@ $(function(){
 		if (placeModeEnabled) {
 			$('#popup-activity-place').hide();
 			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').show();
-			$('#activity-map-mode-selector').text('Places');
+			$('#activity-map-mode-selector').text('Lugares');
 			$('#popup-activity-icon-two + span').show();
 		} else {
 			$('#popup-activity-icon-two + span').hide();
-			$('#activity-map-mode-selector').text('Directions');
+			$('#activity-map-mode-selector').text('Rutas');
 			$('#popup-activity-place').show();
 			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').hide();
 		}
@@ -195,7 +243,6 @@ $(function(){
 
 	$('#popup-accept').click(function(){
 		addActivity();
-
 		map.fitBounds(mainMapBounds);
 		$.magnificPopup.close();
 		resetPopup();
@@ -214,11 +261,9 @@ $(function(){
 
 	function replaceMarkers(popupSelectedRoute, activity) {
 		// If necessary, change route markers. Otherwise create a default one, and add it to the map
-		var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // Update this
-		var markerImgExtention = ".png";
 		var markerStart = $("#popup-activity-icon-one").val();
 		var markerEnd = $("#popup-activity-icon-two").val();
-		var markerStartImgUrl = "http://maps.google.com/mapfiles/markerA.png"; 
+		var markerStartImgUrl = "http://maps.google.com/mapfiles/markerA.png";
 		var markerEndImgUrl = "http://maps.google.com/mapfiles/markerB.png";
 		var markerPointX = 10; // Default x value to center default pins over the route
 
@@ -275,6 +320,7 @@ $(function(){
 		var markerStart = $("#popup-activity-icon-one").val();
 
 		if (placeModeEnabled) {
+			// Pop the first search result from the autocomplete
 			var placeMarker = popupMapMarkers.pop();
 			placeMarker.setMap(map);
 			mainMapMarkers.push(placeMarker);
@@ -370,7 +416,6 @@ $(function(){
 			callbacks: {
 				open: function() {
 					initPopupMapAndUI();
-
 				},
 				close: function() {
 					resetPopup();

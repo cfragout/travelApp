@@ -7,16 +7,16 @@
 	<!-- inject:styles -->
 	<link rel="stylesheet" href="/assets/css/main.css">
 	<link rel="stylesheet" href="/vendor/jquery.timepicker/jquery.timepicker.css">
-	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
 	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
+	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<!-- endinject -->
 </head>
 <body>
 	<!-- Map popup -->
 	<div id="popup" class="white-popup mfp-hide">
-		<div style="text-align:center;font-family:'Roboto';padding:10px 0px 10px 0px;color:#fff;background-color:#4D90FE;">
-						Actividad nueva
+		<div id="popup-header" style="text-align:center;font-family:'Roboto';padding:10px 0px 10px 0px;color:#fff;background-color:#4D90FE;">
+						Nueva actividad
 		</div>
 		<div id="popup-content">
 			<!-- Popup step one -->
@@ -40,7 +40,7 @@
 				</div>
 
 				<div id="activity-map-mode-selector" class="button blue controls">
-					  Directions
+					  Rutas
 				</div>
 
 				<div id="directions-information">
@@ -58,7 +58,10 @@
 			<div id="popup-step-two">
 				<div style="padding-top:10px;">
 					<div>
-						<input id="popup-activity-name" class="controls popup-map-input-text" type="text" placeholder="Nombre" required="required" />
+						<input id="popup-activity-name" class="controls popup-map-input-text" type="text" placeholder="Nombre" />
+					</div>
+					<div>
+						<input id="popup-point-of-reference-group" class="controls popup-map-input-text" type="text" placeholder="Grupo" style="display: none;" />
 					</div>
 					<div>
 						<input id="popup-activity-start" class="controls popup-map-input-text" type="text" placeholder="Comienzo" role="timepicker"/>
@@ -111,6 +114,7 @@
 
 				<div id="popup-cancel" role="button" class="uppercase button red button-medium control" href="#">Cancelar</div>
 				<div id="popup-accept" role="button" class="uppercase button blue button-medium control" href="#">Aceptar</div>
+				<div id="popup-accept-point-of-reference" role="button" class="uppercase button blue button-medium control" href="#" style="display:none;">Aceptar</div>
 
 			</div>
 			<!-- End popup stem two -->
@@ -131,7 +135,7 @@
 			<input id="submit" type="button" value="Geocode">
 		</div>
 		<div id="points-of-reference-control-container">
-			<div id="add-point-of-reference-button" class="points-of-reference-button" role="button">Nueva ubicacion</div>
+			<div id="add-point-of-reference-button" class="pressable points-of-reference-button" role="button">Nueva ubicacion</div>
 			<div id="toggle-points-of-reference-button" class="points-of-reference-button" role="button"></div>
 			<div id="points-of-reference-dropdown-button" class="disabled points-of-reference-button" role="dropdown"><b role="presentation">&#9662;</b></div>
 		</div>
@@ -274,9 +278,9 @@
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 	<!-- inject:vendor-scripts -->
 	<script src="/vendor/jquery.timepicker/jquery.timepicker.min.js"></script>
-	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<script src="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
 	<script src="/vendor/select2/select2.min.js"></script>
+	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<!-- endinject -->
 	<!-- inject:user-scripts -->
 	<script src="/js/app.js"></script>
