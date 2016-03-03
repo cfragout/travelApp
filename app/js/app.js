@@ -21,6 +21,8 @@ $(function(){
 		{ value: 'busstop', name: 'Colectivo'},
 		{ value: 'airport', name: 'Aeropuerto'},
 
+		{ value: 'travel_agency', name: 'Viaje'},
+
 		{ value: 'lodging-2', name: 'Alojamiento'},
 
 		{ value: 'fillingstation', name: 'Estacion de servicio'},
@@ -29,15 +31,19 @@ $(function(){
 
 		{ value: 'campfire-2', name: 'Fogata'},
 		{ value: 'camping-2', name: 'Camping'},
+		{ value: 'kayak1', name: 'Kayak'},
 		{ value: 'walkingtour', name: 'Caminata'},
 		{ value: 'fishing', name: 'Pesca'},
-		{ value: 'beautifulview', name: 'Punto panoramico'},
+		{ value: 'photo', name: 'Punto panoramico'},
+		{ value: 'beautifulview', name: 'Punto panoramico 2'},
 		{ value: 'waterfall-2', name: 'Cascada'},
 		{ value: 'volcano-2', name: 'Volcan'},
 		{ value: 'palm-tree-export', name: 'Playa'},
 
 		{ value: 'caution', name: 'Precaucion'},
 		{ value: 'information', name: 'Informacion'},
+		{ value: 'firstaid', name: 'Salud 1'},
+		{ value: 'ambulance', name: 'Salud 2'},
 
 		{ value: 'theater', name: 'Teatro'},
 		{ value: 'themepark', name: 'Parque de atracciones'},
@@ -54,6 +60,7 @@ $(function(){
 		{ value: 'harbor', name: 'Puerto'},
 		{ value: 'drink', name: 'Bebida'},
 		{ value: 'burger', name: 'Comida'},
+		{ value: 'supermarket', name: 'Mercado'},
 		{ value: 'congress', name: 'Gobierno'},
 		{ value: 'postal', name: 'Correo'},
 		{ value: 'castle-2', name: 'Castillo'},
@@ -63,6 +70,9 @@ $(function(){
 		{ value: 'smallcity', name: 'Ciudad'},
 		{ value: 'tree', name: 'Arbol'},
 		{ value: 'alligator', name: 'Cocodrilo'}
+
+
+
 	];
 
 	// Load custom map markers into select2
@@ -105,6 +115,9 @@ $(function(){
 		advanced:{autoExpandHorizontalScroll:true}
 	});
 
+	$('#toggle-points-of-reference-button').click(function(){
+		$(this).toggleClass('disabled');
+	});
 
 	$('.colour-opt').click(function(){
 		$('.colour-opt').removeClass('selected');
