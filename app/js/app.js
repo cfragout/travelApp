@@ -132,6 +132,7 @@ $(function(){
 		callbacks: {
 			open: function() {
 				// Points of reference are only places
+				togglePopupMode('PLACES');
 				$('#popup-accept, #activity-map-mode-selector, .colour-picker, .receipt-picker, #popup-activity-length, #popup-activity-start').hide();
 				$('#popup-header').text('Nuevo punto de referencia');
 				$('#popup-point-of-reference-group, #popup-accept-point-of-reference').show();
@@ -163,7 +164,7 @@ $(function(){
 	});
 
 	$('#activity-map-mode-selector').click(function(){
-		if (placeModeEnabled) {
+/*		if (placeModeEnabled) {
 			$('#popup-activity-place').hide();
 			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').show();
 			$('#activity-map-mode-selector').text('Lugares');
@@ -173,11 +174,11 @@ $(function(){
 			$('#activity-map-mode-selector').text('Rutas');
 			$('#popup-activity-place').show();
 			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').hide();
-		}
+		}*/
+		togglePopupMode();
 		resetMap(popupMap, popupMapMarkers)
 		$('.popup-map-input-text').val('');
 		resetMapInformationBox();
-		placeModeEnabled = !placeModeEnabled;
 		google.maps.event.trigger(popupMap, 'resize'); // Trigger resize so that controls are updated
 	});
 
@@ -237,6 +238,28 @@ $(function(){
 		$.magnificPopup.close();
 		resetPopup();
 	});
+
+	function togglePopupMode(mode) {
+		var newMode = placeModeEnabled ? 'ROUTE' : 'PLACES';
+
+		if (!isEmpty(mode)) {
+			newMode = mode;
+		}
+
+		if (newMode == 'ROUTE') {
+			$('#popup-activity-place').hide();
+			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').show();
+			$('#activity-map-mode-selector').text('Lugares');
+			$('#popup-activity-icon-two + span').show();
+			placeModeEnabled = false;
+		} else if (newMode == 'PLACES') {
+			placeModeEnabled = true;
+			$('#popup-activity-icon-two + span').hide();
+			$('#activity-map-mode-selector').text('Rutas');
+			$('#popup-activity-place').show();
+			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').hide();
+		}
+	}
 
 	function togglePointsOfReference(show) {
 		$.each(pointsOfReference, function(index, point){
