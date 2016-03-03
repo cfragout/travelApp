@@ -146,6 +146,10 @@ $(function(){
 		}
 	});
 
+	$('#points-of-reference-dropdown-button').click(function(){
+
+	});
+
 	$('#popup-accept-point-of-reference').click(function(){
 		addPointOfReference();
 

@@ -61,6 +61,7 @@ body {
 $activity-width: 135px;
 
 
+
 #points-of-reference-control-container {
 	position: absolute;
 	z-index: 50;
@@ -130,6 +131,24 @@ $activity-width: 135px;
 				background-color: rgb(255, 255, 255) !important;
 				cursor:default;
 			}
+		}
+	}
+
+	#points-of-reference-dropdown-menu {
+		width: 100px;
+		height: auto;
+		color: rgb(86, 86, 86);
+		font-family: Roboto, Arial, sans-serif;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		font-size: 11px;
+		box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px;
+		background-color: rgb(255, 255, 255);
+		
+		ul {
+			list-style-type: none;
 		}
 	}
 }
