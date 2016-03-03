@@ -182,6 +182,11 @@ $(function(){
 
 	// Highlight only the activities related to the selected day
 	$('#day-controls-container').on('click', '.day-name', function(){
+		// If days are hidden, do nothing
+		if ($('#toggle-days-button').hasClass('disabled')) {
+			return;
+		}
+
 		var dayIndex = $(this).attr('data-day-index');
 		var containerId = 'd' + dayIndex + '-activities-container';
 		var containerIdHashtag = '#' + containerId;
@@ -220,12 +225,25 @@ $(function(){
 
 	});
 
+	$('#toggle-days-button').click(function(){
+		$(this).toggleClass('disabled');
+		toggleDays(!$(this).hasClass('disabled'));
+	})
+
 	$('#popup-accept').click(function(){
 		addActivity();
 		map.fitBounds(mainMapBounds);
 		$.magnificPopup.close();
 		resetPopup();
 	});
+
+	function toggleDays(show) {
+		$.each(days, function(index, day){
+			$.each(day.activities, function(j, activity){
+				toggleActivity(activity, show);
+			});
+		});
+	}
 
 	function togglePopupMode(mode) {
 		var newMode = placeModeEnabled ? 'ROUTE' : 'PLACES';
@@ -369,6 +387,9 @@ $(function(){
 		}
 
 		replaceMarkers(popupSelectedRoute, activity);
+
+		// If days are hidden on the map, hide the new activity		
+		toggleActivity(activity, !$('#toggle-days-button').hasClass('disabled'));
 
 		addActivityToTimeGrid(activity);
 	}
