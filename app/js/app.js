@@ -175,6 +175,11 @@ $(function(){
 		resetPopup();
 	});
 
+	$('#days-container').on('click', '.edit-activity', function(){
+		var activityId = $(this).closest('.activity')[0].id;
+		var activity = findActivityById(activityId);
+	});
+
 	// Update currentDay. This lets us know where will the new activity be added.
 	$('#day-controls-container').on('click', '.open-popup-link', function(){
 		currentDay = $(this).attr('data-day-index');
@@ -236,6 +241,24 @@ $(function(){
 		$.magnificPopup.close();
 		resetPopup();
 	});
+
+	function findActivityById(id) {
+		var activity;
+		$.each(days, function(index, day) {
+
+			for (var i = day.activities.length - 1; i >= 0; i--) {
+				
+				if (day.activities[i].htmlId == id) {
+					activity = day.activities[i];
+					break;
+				}
+
+			}
+
+		});
+
+		return activity;
+	}
 
 	function toggleDays(show) {
 		$.each(days, function(index, day){
