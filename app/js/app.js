@@ -117,6 +117,7 @@ $(function(){
 
 	$('#toggle-points-of-reference-button').click(function(){
 		$(this).toggleClass('disabled');
+		togglePointsOfReference(!$(this).hasClass('disabled'));
 	});
 
 	$('#add-point-of-reference-button').magnificPopup({
@@ -146,22 +147,7 @@ $(function(){
 	});
 
 	$('#popup-accept-point-of-reference').click(function(){
-		var pointsOfReferenceMarker = popupMapMarkers.pop();
-
-		pointsOfReferenceMarker.setMap(map);
-		mainMapMarkers.push(pointsOfReferenceMarker);
-		mainMapBounds.extend(pointsOfReferenceMarker.position);
-
-		var markerStart = $("#popup-activity-icon-one").val();
-		if (!isEmpty(markerStart)) {
-			pointsOfReferenceMarker.icon = baseMarkerUrl + markerStart + markerImgExtention;
-		}
-
-		var pointOfReference = {
-			group: $('#popup-point-of-reference-group').val(),
-			marker: pointsOfReferenceMarker
-		};
-		pointsOfReference.push(pointOfReference);
+		addPointOfReference();
 
 		$.magnificPopup.close();
 		resetPopup();
@@ -248,6 +234,12 @@ $(function(){
 		resetPopup();
 	});
 
+	function togglePointsOfReference(show) {
+		$.each(pointsOfReference, function(index, point){
+			point.marker.setVisible(show);
+		});
+	}
+
 	function toggleActivity(activity, shouldShow) {
 		var activityMap = shouldShow ? map : null;
 		if (activity.isRoute) {
@@ -295,6 +287,28 @@ $(function(){
 
 			activity.routeMarkers = routeMarkers;
 		}
+	}
+
+	function addPointOfReference() {
+		var pointsOfReferenceMarker = popupMapMarkers.pop();
+
+		pointsOfReferenceMarker.setMap(map);
+		mainMapMarkers.push(pointsOfReferenceMarker);
+		mainMapBounds.extend(pointsOfReferenceMarker.position);
+
+		var markerStart = $("#popup-activity-icon-one").val();
+		if (!isEmpty(markerStart)) {
+			pointsOfReferenceMarker.icon = baseMarkerUrl + markerStart + markerImgExtention;
+		}
+
+
+		var point = {
+			group: $('#popup-point-of-reference-group').val(),
+			marker: pointsOfReferenceMarker
+		};
+		// If points of reference are disable, hide marker
+		point.marker.setVisible(!$('#toggle-points-of-reference-button').hasClass('disabled'));
+		pointsOfReference.push(point);
 	}
 
 	function addActivity() {
