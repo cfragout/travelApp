@@ -73,20 +73,6 @@ body {
       #points-of-reference-control-container #points-of-reference-dropdown-button.disabled:hover {
         background-color: white !important;
         cursor: default; }
-  #points-of-reference-control-container #points-of-reference-dropdown-menu {
-    width: 100px;
-    height: auto;
-    color: #565656;
-    font-family: Roboto, Arial, sans-serif;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    font-size: 11px;
-    box-shadow: rgba(0, 0, 0, 0.29804) 0px 1px 4px -1px;
-    background-color: white; }
-    #points-of-reference-control-container #points-of-reference-dropdown-menu ul {
-      list-style-type: none; }
 
 #itinerary-container {
   font-family: Roboto;
@@ -466,10 +452,6 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
 
 .button {
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   cursor: pointer;
   background-color: #4d90fe;
   margin-left: 12px;
