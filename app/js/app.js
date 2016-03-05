@@ -134,11 +134,11 @@ $(function(){
 		callbacks: {
 			open: function() {
 				// Points of reference are only places
-				togglePopupMode('PLACES');
 				$('#popup-accept, #activity-map-mode-selector, .colour-picker, .receipt-picker, #popup-activity-length, #popup-activity-start').hide();
 				$('#popup-header').text('Nuevo punto de referencia');
 				$('#popup-point-of-reference-group, #popup-accept-point-of-reference').show();
 				initPopupMapAndUI();
+				togglePopupMode('PLACES');
 			},
 			close: function() {
 				$('#popup-point-of-reference-group, #popup-accept-point-of-reference').hide();
