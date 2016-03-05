@@ -5,7 +5,8 @@ $(function(){
 	var markerImgExtention = ".png";
 	var destination_place_id = null;
 	var popupSelectedRoute = null;
-	var groupCount = 0; // Use this var to enable or disable the points of reference dropdown
+	var pointsOfReferenceGroupCount = 0; // Use this var to enable or disable the points of reference dropdown
+	var pointsOfReferenceGroups = [];
 	var pointsOfReference = [];
 	var placeModeEnabled = true; // Use this var to know whether the user is adding a place or directions
 	var currentDay = 0; // Use this var to know which day is currently having activities added
@@ -88,6 +89,7 @@ $(function(){
 
 	$('.popup-activity-icon-select').select2({
 		templateResult: selectFormatterFunction,
+		closeOnSelect: false,
 		minimumResultsForSearch: Infinity,
 		placeholder: 'Marcador por defecto'
 	}).on('change', function(){
@@ -148,8 +150,15 @@ $(function(){
 		}
 	});
 
+	$('#points-of-reference-dropdown-list').on('change', '.por-li-check', function(){
+		var shouldShow = $(this).is(':checked');
+		var group = $($(this).closest('li')).attr('data-group');
+
+		togglePointsOfReferenceByGroup(group, shouldShow);
+	});
+
 	$('#points-of-reference-dropdown-button').click(function(){
-		if ($(this).hasClass('disabled')) {
+		if (pointsOfReferenceGroupCount < 1) {
 			return;
 		}
 
@@ -164,7 +173,6 @@ $(function(){
 
 	$('#popup-accept-point-of-reference').click(function(){
 		addPointOfReference();
-
 		$.magnificPopup.close();
 		resetPopup();
 	});
@@ -258,7 +266,7 @@ $(function(){
 		$.each(days, function(index, day) {
 
 			for (var i = day.activities.length - 1; i >= 0; i--) {
-				
+
 				if (day.activities[i].htmlId == id) {
 					activity = day.activities[i];
 					break;
@@ -269,6 +277,15 @@ $(function(){
 		});
 
 		return activity;
+	}
+
+	// Check if there is at lest one point of reference that belongs to a group in order to enable the dropdown button
+	function togglePointsOfReferenceDropdownButton() {
+		if (pointsOfReferenceGroupCount > 0) {
+			$('#points-of-reference-dropdown-button').removeClass('disabled');
+		} else {
+			$('#points-of-reference-dropdown-button').addClass('disabled');
+		}
 	}
 
 	function toggleDays(show) {
@@ -306,6 +323,14 @@ $(function(){
 	function togglePointsOfReference(show) {
 		$.each(pointsOfReference, function(index, point){
 			point.marker.setVisible(show);
+		});
+	}
+
+	function togglePointsOfReferenceByGroup(group, show) {
+		$.each(pointsOfReference, function(index, point){
+			if (point.group == group) {
+				point.marker.setVisible(show);
+			}
 		});
 	}
 
@@ -375,9 +400,36 @@ $(function(){
 			group: $('#popup-point-of-reference-group').val(),
 			marker: pointsOfReferenceMarker
 		};
+
+
+		if (!isEmpty(point.group)) {
+			pointsOfReferenceGroupCount++;
+			togglePointsOfReferenceDropdownButton();
+			addPointOfReferenceToMenu(point);
+		}
+
 		// If points of reference are disable, hide marker
 		point.marker.setVisible(!$('#toggle-points-of-reference-button').hasClass('disabled'));
 		pointsOfReference.push(point);
+	}
+
+	// Add point of reference group to the dropdown menu
+	function addPointOfReferenceToMenu(point) {
+		for (var i = pointsOfReferenceGroups.length - 1; i >= 0; i--) {
+			if (pointsOfReferenceGroups[i] == point.group) return;
+		}
+
+		pointsOfReferenceGroups.push(point.group);
+
+		var liHTML = $('#points-of-reference-li-template').clone()[0];
+		var liId = 'por-' + point.group.replace(' ', '-');
+		$(liHTML).attr('id', liId);
+		var spanHTML = $(liHTML).find('.por-text');
+		$(spanHTML).text(point.group)[0];
+		$(liHTML).attr('data-group', point.group);
+
+		$('#points-of-reference-dropdown-list').append(liHTML);
+		$(liHTML).show();
 	}
 
 	function addActivity() {
@@ -749,6 +801,10 @@ $(function(){
 			popupMap.setZoom(8);
 			return;
 		}
+
+		$('#popup-point-of-reference-group').easyAutocomplete({
+			data: pointsOfReferenceGroups
+		});
 
 		var timepickerOptions = {
 			'timeFormat': 'H:i',

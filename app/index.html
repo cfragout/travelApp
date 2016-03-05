@@ -6,6 +6,7 @@
 	<meta charset="utf-8">
 	<!-- inject:styles -->
 	<link rel="stylesheet" href="/assets/css/main.css">
+	<link rel="stylesheet" href="/vendor/EasyAutocomplete/easy-autocomplete.min.css">
 	<link rel="stylesheet" href="/vendor/jquery.timepicker/jquery.timepicker.css">
 	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
@@ -139,18 +140,9 @@
 		<div id="points-of-reference-control-container">
 			<div id="add-point-of-reference-button" class="pressable points-of-reference-button" role="button">Nueva ubicacion</div>
 			<div id="toggle-points-of-reference-button" class="points-of-reference-button" role="button" title="Ocultar puntos de referencia"></div>
-			<div id="points-of-reference-dropdown-button" class=" points-of-reference-button" role="dropdown"><b role="presentation">&#9662;</b></div>
+			<div id="points-of-reference-dropdown-button" class="disabled points-of-reference-button" role="dropdown"><b role="presentation">&#9662;</b></div>
 			<div id="points-of-reference-dropdown-menu" style="display: none !important">
-				<ul>
-					<li>
-						<label><input type="checkbox">Hoteles</label>
-					</li>
-					<li>
-						<label><input type="checkbox">Aeropuertos</label>
-					</li>
-					<li>
-						<label><input type="checkbox">Ciudades</label>
-					</li>
+				<ul id="points-of-reference-dropdown-list">
 				</ul>
 			</div>
 		</div>
@@ -194,6 +186,15 @@
 		</div>
 	</div>
 </body>
+
+<!-- Points of reference li template -->
+<li id="points-of-reference-li-template" class="por-li" data-group="" style="display: none !important;">
+	<label>
+		<input class="por-li-check" type="checkbox" checked="checked">
+		<span class="por-text"></span>
+	</label>
+</li>
+<!-- End points of reference li template -->
 
 <!-- Day container template -->
 <div id="day-container-template" style="display:none !important;">
@@ -293,6 +294,7 @@
 	async defer></script>
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 	<!-- inject:vendor-scripts -->
+	<script src="/vendor/EasyAutocomplete/jquery.easy-autocomplete.min.js"></script>
 	<script src="/vendor/jquery.timepicker/jquery.timepicker.min.js"></script>
 	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<script src="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>

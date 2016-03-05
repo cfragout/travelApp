@@ -94,7 +94,9 @@ body {
         padding-top: 2px; }
         #points-of-reference-control-container #points-of-reference-dropdown-menu ul li label {
           cursor: pointer;
-          line-height: 20px; }
+          line-height: 20px;
+          width: 100%;
+          display: inline-block; }
           #points-of-reference-control-container #points-of-reference-dropdown-menu ul li label input {
             vertical-align: sub;
             cursor: pointer; }
@@ -240,6 +242,7 @@ body {
     border-left: none;
     border-right: none;
     border-bottom: solid 1px rgba(174, 172, 212, 0.87059);
+    border-radius: 0px;
     color: #fff;
     text-align: start;
     width: 300px;
@@ -452,6 +455,9 @@ body {
   #activity-next-button:hover {
     opacity: 1; }
 
+#popup-point-of-reference-group {
+  margin-left: 12px; }
+
 .popup-map-input-text {
   background-color: #fff;
   font-family: Roboto;
@@ -565,6 +571,11 @@ body {
     box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.3) !important; }
 
 .pressable:active {
+  -webkit-box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.3) !important;
+  -moz-box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.3) !important; }
+
+.pressed {
   -webkit-box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.3) !important;
   -moz-box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.3) !important;
   box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.3) !important; }
@@ -689,3 +700,15 @@ span.select2-option-text {
 
 #mCSB_1_container_wrapper {
   margin-right: 0px; }
+
+/* Easy autocomplete */
+.easy-autocomplete {
+  width: 310px !important;
+  display: inline-block; }
+
+.easy-autocomplete-container {
+  left: 8px !important;
+  width: 304px !important;
+  font-family: Roboto; }
+  .easy-autocomplete-container li:hover {
+    background-color: #5897fb !important; }
