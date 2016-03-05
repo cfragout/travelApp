@@ -135,7 +135,6 @@ $activity-width: 135px;
 	}
 
 	#points-of-reference-dropdown-menu {
-		width: 100px;
 		height: auto;
 		color: rgb(86, 86, 86);
 		font-family: Roboto, Arial, sans-serif;
@@ -146,9 +145,32 @@ $activity-width: 135px;
 		font-size: 11px;
 		box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px;
 		background-color: rgb(255, 255, 255);
+		text-align: left;
 
 		ul {
 			list-style-type: none;
+			margin:0px;
+			padding:0px;
+			margin-top: 29px;
+
+			li {
+				padding-top: 2px;
+
+				label {
+					cursor: pointer;
+					line-height: 20px;
+
+					input {
+						vertical-align: sub;
+						cursor: pointer;
+					}
+				}
+
+				&:hover {
+					background-color:rgb(235,235,235);
+				}
+
+			}
 		}
 	}
 }

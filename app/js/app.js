@@ -5,8 +5,9 @@ $(function(){
 	var markerImgExtention = ".png";
 	var destination_place_id = null;
 	var popupSelectedRoute = null;
+	var groupCount = 0; // Use this var to enable or disable the points of reference dropdown
 	var pointsOfReference = [];
-	var placeModeEnabled = true; // use this var to know whether the user is adding a place or directions
+	var placeModeEnabled = true; // Use this var to know whether the user is adding a place or directions
 	var currentDay = 0; // Use this var to know which day is currently having activities added
 	var predefinedMapMarkers = [
 		{ value: 'default', name: 'Marcador por defecto'},
@@ -148,7 +149,17 @@ $(function(){
 	});
 
 	$('#points-of-reference-dropdown-button').click(function(){
+		if ($(this).hasClass('disabled')) {
+			return;
+		}
 
+		if ($("#points-of-reference-dropdown-menu").is(':hidden')) {
+			$('#points-of-reference-dropdown-menu').show();
+			$('#points-of-reference-dropdown-button b').html('&#9652;');
+		} else {
+			$('#points-of-reference-dropdown-button b').html('&#9662;');
+			$('#points-of-reference-dropdown-menu').hide();
+		}
 	});
 
 	$('#popup-accept-point-of-reference').click(function(){
