@@ -733,12 +733,14 @@ $(function(){
 			// Go to second step
 			$('#popup-step-one').animate({"left": '-2000'}, effectDuration);
 			$('#popup-step-two').animate({"left": '0'}, effectDuration);
-			$('#activity-next-button').animate({"left": '3%'}, effectDuration).text('<');
+			$('#activity-next-button').animate({"left": '3%'}, effectDuration);
+			$('#activity-next-button span').removeClass('step-0').addClass('step-1');
 		} else {
 			// Go to first step
+			$('#activity-next-button span').removeClass('step-1').addClass('step-0');
 			$('#popup-step-two').animate({"left": '800px'}, effectDuration);
 			$('#popup-step-one').animate({"left": '0'}, effectDuration);
-			$('#activity-next-button').animate({"left": '85%'}, effectDuration).text('>');
+			$('#activity-next-button').animate({"left": '85%'}, effectDuration);
 		}
 	}
 

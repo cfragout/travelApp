@@ -450,6 +450,17 @@ body {
   -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none; }
+  #activity-next-button span {
+    -webkit-transition: all 0.7s ease-out;
+    -moz-transition: all 0.7s ease-out;
+    transition: all 0.7s ease-out;
+    display: inline-block; }
+  #activity-next-button span.step-0 {
+    transform: rotate(0deg); }
+  #activity-next-button span.step-1 {
+    margin-top: 4px;
+    margin-right: 5px;
+    transform: rotate(180deg); }
   #activity-next-button:hover {
     opacity: 1; }
 
