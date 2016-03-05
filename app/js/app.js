@@ -89,7 +89,6 @@ $(function(){
 
 	$('.popup-activity-icon-select').select2({
 		templateResult: selectFormatterFunction,
-		closeOnSelect: false,
 		minimumResultsForSearch: Infinity,
 		placeholder: 'Marcador por defecto'
 	}).on('change', function(){
