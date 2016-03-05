@@ -63,10 +63,8 @@ $activity-width: 135px;
 
 
 #points-of-reference-control-container {
-	position: absolute;
-	z-index: 50;
-	right: 10px;
-	top: 111px;
+	padding-top:10px;
+	padding-right:10px;
 
 	.points-of-reference-button {
 		color: rgb(86, 86, 86);

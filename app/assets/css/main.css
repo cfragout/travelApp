@@ -20,10 +20,8 @@ body {
 
 /* Main */
 #points-of-reference-control-container {
-  position: absolute;
-  z-index: 50;
-  right: 10px;
-  top: 111px; }
+  padding-top: 10px;
+  padding-right: 10px; }
   #points-of-reference-control-container .points-of-reference-button {
     color: #565656;
     font-family: Roboto, Arial, sans-serif;
