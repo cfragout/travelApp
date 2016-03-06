@@ -4,6 +4,9 @@ $secondary-blue: #3367d6;
 
 /* Map icons colour */
 $map-icon-colour: #2a6beb;
+$map-icon-colour-two: #093180;
+$map-icon-colour-three: #c72222;
+$map-icon-colour-four: #229dd6;
 
 /* Button colours */
 $btn-gradient-default-one: #f5f5f5;
@@ -95,17 +98,26 @@ $activity-width: 135px;
 		border-bottom-right-radius: 0px;
 	}
 
-	#toggle-points-of-reference-button {
+	.toggle-markers-button {
 		background-size: 22px 22px;
 		background-repeat: no-repeat;
 		background-position: 5px 4px;
-		background-image: url('../map-icons/symbol_blank.png');
 		width: 32px;
 		height: 29px;
 		border-radius: 0px;
 
+		&#toggle-points-of-reference-button {
+			background-image: url('../map-icons/por_symbol_blank.png');
+		}
+
+		&#toggle-days-button {
+			background-image: url('../map-icons/pr_symbol_blank.png');
+			margin-right: 10px;
+			border-radius: 2px;
+		}
+
 		&.disabled {
-			background-image: url('../map-icons/symbol_blank_hidden.png');
+			background-image: url('../map-icons/symbol_blank_hidden.png') !important;
 			-webkit-box-shadow: inset 0px 1px 2px rgba(0,0,0,.3);
 			-moz-box-shadow: inset 0px 1px 2px rgba(0,0,0,.3);
 			box-shadow: inset 0px 1px 2px rgba(0,0,0,.3);

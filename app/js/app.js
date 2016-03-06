@@ -1,7 +1,10 @@
 $(function(){
 	"user strict";
 	var origin_place_id = null;
-	var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // Update this
+	var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // May need Update this
+	var placeRouteSelectedMarkerUrl = baseMarkerUrl + "/pr-selected/";
+	var placeRouteMarkerUrl = baseMarkerUrl + "/pr/";
+	var pointOfReferenceMarkerUrl = baseMarkerUrl + "/por/";
 	var markerImgExtention = ".png";
 	var destination_place_id = null;
 	var popupSelectedRoute = null;
@@ -43,6 +46,10 @@ $(function(){
 		{ value: 'beautifulview', name: 'Punto panoramico 2'},
 		{ value: 'waterfall-2', name: 'Cascada'},
 		{ value: 'volcano-2', name: 'Volcan'},
+		{ value: 'canyon-2', name: 'Cañon'},
+		{ value: 'desert-2', name: 'Desierto'},
+		{ value: 'forest2', name: 'Bosque'},
+		{ value: 'mountains', name: 'Montaña'},
 		{ value: 'palm-tree-export', name: 'Playa'},
 
 		{ value: 'caution', name: 'Precaucion'},
@@ -50,6 +57,11 @@ $(function(){
 		{ value: 'firstaid', name: 'Salud 1'},
 		{ value: 'ambulance', name: 'Salud 2'},
 
+		{ value: 'paragliding', name: 'Paracaidas'},
+		{ value: 'scubadiving', name: 'Buceo'},
+		{ value: 'skiing', name: 'Ski'},
+		{ value: 'snorkeling', name: 'Snorkel'},
+		{ value: 'stadium', name: 'Estadio'},
 		{ value: 'theater', name: 'Teatro'},
 		{ value: 'themepark', name: 'Parque de atracciones'},
 		{ value: 'aquarium', name: 'Acuario'},
@@ -74,31 +86,16 @@ $(function(){
 		{ value: 'shintoshrine', name: 'Atraccion'},
 		{ value: 'smallcity', name: 'Ciudad'},
 		{ value: 'tree', name: 'Arbol'},
+		{ value: 'deer', name: 'Ciervo'},
+		{ value: 'kangaroo2', name: 'Canguro'},
 		{ value: 'alligator', name: 'Cocodrilo'}
 	];
 
-	// Load custom map markers into select2
-	$.each(predefinedMapMarkers, function(index, marker) {
-		$('.popup-activity-icon-select').append('<option value="'+ marker.value +'">'+ marker.name +'</option>')
-	});
 
 	$('#add-day').click(function(){
 		addDay();
 		$('#itinerary-container').mCustomScrollbar('scrollTo', '#add-day');
 	});
-
-	$('.popup-activity-icon-select').select2({
-		templateResult: selectFormatterFunction,
-		minimumResultsForSearch: Infinity,
-		placeholder: 'Marcador por defecto'
-	}).on('change', function(){
-		// If 'default marker' option is selected, then delete any select2 previous value
-		if ($(this).val() == 'default') {
-			$(this).select2('val','');
-		}
-	});
-	$('#popup-activity-icon-two + span').hide();
-	$($('.select2-selection__arrow')[1]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
 
 	$('#scrollable-itinerary-container').mCustomScrollbar({
 		axis:"yx",
@@ -134,17 +131,17 @@ $(function(){
 		callbacks: {
 			open: function() {
 				// Points of reference are only places
-				$('#popup-accept, #activity-map-mode-selector, .colour-picker, .receipt-picker, #popup-activity-length, #popup-activity-start').hide();
+				$('#popup-activity-icon-one-container, #popup-accept, #activity-map-mode-selector, .colour-picker, .receipt-picker, #popup-activity-length, #popup-activity-start').hide();
 				$('#popup-header').text('Nuevo punto de referencia');
 				$('#popup-point-of-reference-group, #popup-accept-point-of-reference').show();
-				$('#popup-point-of-reference-group-container').show();
+				$('#popup-point-of-reference-group-container, #popup-point-of-reference-icon-container').show();
 				initPopupMapAndUI();
 				togglePopupMode('PLACES');
 			},
 			close: function() {
-				$('#popup-point-of-reference-group-container').hide();
+				$('#popup-point-of-reference-group-container, #popup-point-of-reference-icon-container').hide();
 				$('#popup-point-of-reference-group, #popup-accept-point-of-reference').hide();
-				$('#popup-accept, #activity-map-mode-selector, .colour-picker, .receipt-picker, #popup-activity-length, #popup-activity-start').show();
+				$('#popup-activity-icon-one-container, #popup-accept, #activity-map-mode-selector, .colour-picker, .receipt-picker, #popup-activity-length, #popup-activity-start').show();
 				$('#popup-header').text('Nueva actividad');
 				resetPopup();
 			}
@@ -356,14 +353,14 @@ $(function(){
 
 		if (placeModeEnabled) {
 			if (!isEmpty(markerStart)) {
-				activity.marker.icon = baseMarkerUrl + $("#popup-activity-icon-one").val() + markerImgExtention;
+				activity.marker.icon = placeRouteMarkerUrl + $("#popup-activity-icon-one").val() + markerImgExtention;
 			}
 		} else {
 			var leg = popupSelectedRoute.routes[0].legs[0];
 			var routeMarkers = {};
 
 			if (!isEmpty(markerStart)) {
-				markerStartImgUrl = baseMarkerUrl + markerStart + markerImgExtention;
+				markerStartImgUrl = placeRouteMarkerUrl + markerStart + markerImgExtention;
 				markerPointX = 17;
 			}
 			var startMarkerImage = new google.maps.MarkerImage(markerStartImgUrl,
@@ -372,7 +369,7 @@ $(function(){
 			routeMarkers.start = makeMarker(leg.start_location, startMarkerImage, '', map);
 
 			if (!isEmpty(markerEnd)) {
-				markerEndImgUrl = baseMarkerUrl + markerEnd + markerImgExtention;
+				markerEndImgUrl = placeRouteMarkerUrl + markerEnd + markerImgExtention;
 				markerPointX = 17;
 			}
 			var endMarkerImage = new google.maps.MarkerImage(markerEndImgUrl,
@@ -391,9 +388,9 @@ $(function(){
 		mainMapMarkers.push(pointsOfReferenceMarker);
 		mainMapBounds.extend(pointsOfReferenceMarker.position);
 
-		var markerStart = $("#popup-activity-icon-one").val();
+		var markerStart = $("#popup-point-of-reference-icon").val();
 		if (!isEmpty(markerStart)) {
-			pointsOfReferenceMarker.icon = baseMarkerUrl + markerStart + markerImgExtention;
+			pointsOfReferenceMarker.icon = pointOfReferenceMarkerUrl + markerStart + markerImgExtention;
 		}
 
 
@@ -451,7 +448,6 @@ $(function(){
 			htmlId: activityId
 		};
 
-		var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // Update this
 		var markerImgExtention = ".png";
 		var markerStart = $("#popup-activity-icon-one").val();
 
@@ -475,7 +471,7 @@ $(function(){
 
 		replaceMarkers(popupSelectedRoute, activity);
 
-		// If days are hidden on the map, hide the new activity		
+		// If days are hidden on the map, hide the new activity
 		toggleActivity(activity, !$('#toggle-days-button').hasClass('disabled'));
 
 		addActivityToTimeGrid(activity);
@@ -597,7 +593,18 @@ $(function(){
 		}
 
 		var $state = $(
-			'<span><img src="../assets/map-icons/' + state.element.value.toLowerCase() + '.png" class="img-marker" /> <span class="select2-option-text">' + state.text + '</span></span>'
+			'<span><img src="' + placeRouteMarkerUrl + state.element.value.toLowerCase() + markerImgExtention + '" class="img-marker" /> <span class="select2-option-text">' + state.text + '</span></span>'
+		);
+		return $state;
+	}
+
+	function porSelectFormatterFunction(state) {
+		if (!state.id) {
+			return state.text;
+		}
+
+		var $state = $(
+			'<span><img src="' + pointOfReferenceMarkerUrl + state.element.value.toLowerCase() + markerImgExtention + '" class="img-marker" /> <span class="select2-option-text">' + state.text + '</span></span>'
 		);
 		return $state;
 	}
@@ -767,7 +774,7 @@ $(function(){
 
 	function resetPopupMapControls() {
 		$('.popup-map-input-text').val('');
-		$('.popup-activity-icon-select').select2('val','');
+		$('.popup-select').select2('val','');
 		resetMapInformationBox();
 	}
 
@@ -804,6 +811,8 @@ $(function(){
 			popupMap.setZoom(8);
 			return;
 		}
+
+		initIconSelects();
 
 		$('#popup-point-of-reference-group').easyAutocomplete({
 			data: pointsOfReferenceGroups
@@ -856,6 +865,39 @@ $(function(){
 
 		initPlacesAutocomplete();
 		initDirectionsAutocompletes();
+	}
+
+	function initIconSelects() {
+		// Load custom map markers into select2
+		$.each(predefinedMapMarkers, function(index, marker) {
+			$('.popup-select').append('<option value="'+ marker.value +'">'+ marker.name +'</option>')
+		});
+
+		$('.popup-activity-icon-select').select2({
+			templateResult: selectFormatterFunction,
+			minimumResultsForSearch: Infinity,
+			placeholder: 'Marcador por defecto'
+		}).on('change', function(){
+			// If 'default marker' option is selected, then delete any select2 previous value
+			if ($(this).val() == 'default') {
+				$(this).select2('val','');
+			}
+		});
+		$('#popup-activity-icon-two + span').hide();
+
+		$('#popup-point-of-reference-icon').select2({
+			templateResult: porSelectFormatterFunction,
+			minimumResultsForSearch: Infinity,
+			placeholder: 'Marcador por defecto'
+		}).on('change', function(){
+			// If 'default marker' option is selected, then delete any select2 previous value
+			if ($(this).val() == 'default') {
+				$(this).select2('val','');
+			}
+		});
+		$('#popup-activity-icon-two + span').hide();
+		$($('.select2-selection__arrow')[2]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
+		$($('.select2-selection__arrow')[0]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
 	}
 
 	function initPlacesAutocomplete() {

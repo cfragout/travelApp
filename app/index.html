@@ -101,13 +101,18 @@
 							</span>
 						</div>
 					</div>
-					<div>
-						<select id="popup-activity-icon-one" class="popup-activity-icon-select">
+					<div id="popup-point-of-reference-icon-container" style="display:none !important;">
+						<select id="popup-point-of-reference-icon" class="popup-point-of-reference-icon-select popup-select">
+							<option></option>
+						</select>
+					</div>
+					<div id="popup-activity-icon-one-container">
+						<select id="popup-activity-icon-one" class="popup-select popup-activity-icon-select">
 							<option></option>
 						</select>
 					</div>
 					<div>
-						<select id="popup-activity-icon-two" class="popup-activity-icon-select" style="display:none !important">
+						<select id="popup-activity-icon-two" class="popup-select popup-activity-icon-select" style="display:none !important">
 							<option></option>
 						</select>
 					</div>
@@ -129,7 +134,6 @@
 
 	<div>
 		<h1>Placeholder for trip name</h1>
-			<div id="toggle-days-button" style="position:absolute;left:300px;cursor:pointer" class="" role="button" title="Ocultar puntos de referencia">ocultar dias</div>
 
 	</div>
 	<div id="map-container">
@@ -138,8 +142,9 @@
 			<input id="submit" type="button" value="Geocode">
 		</div>
 		<div id="points-of-reference-control-container">
+			<div id="toggle-days-button" class="toggle-markers-button points-of-reference-button" role="button" title="Ocultar dias"></div>
 			<div id="add-point-of-reference-button" class="pressable points-of-reference-button" role="button">Nueva ubicacion</div>
-			<div id="toggle-points-of-reference-button" class="points-of-reference-button" role="button" title="Ocultar puntos de referencia"></div>
+			<div id="toggle-points-of-reference-button" class="toggle-markers-button points-of-reference-button" role="button" title="Ocultar puntos de referencia"></div>
 			<div id="points-of-reference-dropdown-button" class="disabled points-of-reference-button" role="dropdown"><b role="presentation">&#9662;</b></div>
 			<div id="points-of-reference-dropdown-menu" style="display: none !important">
 				<ul id="points-of-reference-dropdown-list">
