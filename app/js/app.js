@@ -216,6 +216,7 @@ $(function(){
 		$.magnificPopup.close();
 	});
 
+	$('document').on()
 
 	$('#days-container').on('click', '.edit-activity', function(){
 		var activityId = $(this).closest('.activity')[0].id;
@@ -632,7 +633,41 @@ $(function(){
 
 		addActivityToTimeGrid(activity);
 
+		addMarkerListener(activity);
+
 		activity.day = currentDay;
+	}
+
+	function addMarkerListener(activity) {
+		console.log(activity);
+
+		if (activity.isRoute) {
+
+		} else {
+			activity.marker.addListener('click', function() {
+				$('#' + activity.htmlId).addClass('selected');
+				$('.activity[id!="' + activity.htmlId + '"]').addClass('unselected');
+				
+				var infoWindowHTML = $('#marker-info-template').clone()[0];
+				$(infoWindowHTML).find('span').text(activity.name);
+				$(infoWindowHTML).show();
+
+				
+				var infoWindow = new google.maps.InfoWindow({
+					content: infoWindowHTML,
+					position: {lat: activity.marker.getPosition().lat() - 0.00007, lng: activity.marker.getPosition().lng() + 0.00008}
+				});
+				
+
+
+				infoWindow.open(map);
+
+$('.gm-style-iw').prev().remove();
+
+
+			});
+		}
+
 	}
 
 	function addActivityToTimeGrid(activity) {

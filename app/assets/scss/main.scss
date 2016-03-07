@@ -308,6 +308,11 @@ $activity-width: 135px;
 	&:hover{
     	box-shadow:0 5px 6px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset
 	}
+
+	&.unselected {
+		background-color: grey !important;
+		color: rgba(21, 20, 20, 0.64);
+	}
 }
 
 /* Confirm popup */
