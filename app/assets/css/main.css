@@ -208,6 +208,25 @@ body {
   .activity:hover {
     box-shadow: 0 5px 6px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset; }
 
+/* Confirm popup */
+#popup-confirm {
+  font-family: Roboto;
+  color: #fff;
+  background-color: #3367d6; }
+  #popup-confirm #popup-confirm-content {
+    padding: 10px;
+    text-align: center;
+    height: 100px; }
+    #popup-confirm #popup-confirm-content h3 {
+      font-weight: 300; }
+  #popup-confirm .button-container {
+    width: 390px;
+    margin: 0 auto; }
+    #popup-confirm .button-container .button {
+      width: 150px;
+      float: left;
+      padding-bottom: 3px; }
+
 /* Popup */
 .white-popup {
   position: relative;

@@ -310,6 +310,35 @@ $activity-width: 135px;
 	}
 }
 
+/* Confirm popup */
+#popup-confirm {
+	font-family: Roboto;
+	color: #fff;
+	background-color: #3367d6;
+
+	#popup-confirm-content {
+		padding: 10px;
+		text-align: center;
+		height: 100px;
+
+		h3 {
+			font-weight: 300;
+		}
+	}
+
+	.button-container {
+		width: 390px;
+		margin: 0 auto;
+
+		.button {
+			width: 150px;
+			float: left;
+			padding-bottom: 3px;
+		}
+	}
+
+}
+
 /* Popup */
 .white-popup {
 	position: relative;

@@ -197,6 +197,26 @@ $(function(){
 		resetPopup();
 	});
 
+	$('#popup-confirm-cancel').click(function(){
+		$.magnificPopup.close();
+	});
+
+	$('#popup-confirm-accept').click(function() {
+		var activity = findActivityById(editingActivityId);
+
+		if (activity.isRoute) {
+			activity.routeDisplay.setMap(null);
+			activity.routeMarkers.start.setMap(null);
+			activity.routeMarkers.end.setMap(null);
+		} else {
+			activity.marker.setMap(null);
+		}
+
+		deleteActivity(editingActivityId);
+		$.magnificPopup.close();
+	});
+
+
 	$('#days-container').on('click', '.edit-activity', function(){
 		var activityId = $(this).closest('.activity')[0].id;
 		var activity = findActivityById(activityId);
@@ -234,6 +254,24 @@ $(function(){
 
 	});
 
+	$('#days-container').on('click', '.delete-activity', function(){
+		var activityId = $(this).closest('.activity')[0].id;
+		var activity = findActivityById(activityId);
+		editingActivityId = activityId;
+
+		$.magnificPopup.open({
+			items: {
+				src: '#popup-confirm',
+				type: 'inline'
+			},
+			type:'inline',
+			removalDelay: 300,
+			mainClass: 'mfp-fade',
+			midClick: true,
+		});
+
+	});
+
 	// Edition of an activity consists in removing the old activity and creating a new one
 	$('#popup-accept-edit-activity').click(function() {
 		// Remove previous routes and markers
@@ -241,10 +279,7 @@ $(function(){
 			element.setMap(null);
 		})
 
-		$()
-
-		// Remove activity from time grid
-		$('#' + editingActivityId).remove();
+		deleteActivity(editingActivityId);
 
 		addActivity();
 		$.magnificPopup.close();
@@ -363,6 +398,24 @@ $(function(){
 		});
 
 		return activity;
+	}
+
+	function deleteActivity(id) {
+		var activity;
+		$.each(days, function(index, day) {
+
+			for (var i = day.activities.length - 1; i >= 0; i--) {
+
+				if (day.activities[i].htmlId == id) {
+					day.activities.splice(i,1);
+				}
+
+			}
+
+		});
+
+		// Remove activity from time grid
+		$('#' + editingActivityId).remove();
 	}
 
 	// Check if there is at lest one point of reference that belongs to a group in order to enable the dropdown button
