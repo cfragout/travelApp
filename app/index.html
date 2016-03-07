@@ -28,15 +28,15 @@
 
 				<div id="directions-mode-selector" class="controls" style="display:none">
 					<label for="changemode-walking">
-						<input type="radio" name="type" id="changemode-walking" style="vertical-align:bottom;">Walking
+						<input type="radio" name="type" id="changemode-walking" style="vertical-align:bottom;" class="travel-mode" data-travel-mode="walking">Walking
 					</label>
 
 					<label for="changemode-transit">
-						<input type="radio" name="type" id="changemode-transit" style="vertical-align:bottom;">Transit
+						<input type="radio" name="type" id="changemode-transit" style="vertical-align:bottom;" class="travel-mode" data-travel-mode="transit">Transit
 					</label>
 
 					<label for="changemode-driving">
-						<input type="radio" name="type" id="changemode-driving" style="vertical-align:bottom;" checked="checked">Driving
+						<input type="radio" name="type" id="changemode-driving" style="vertical-align:bottom;" checked="checked" class="travel-mode" data-travel-mode="driving">Driving
 					</label>
 				</div>
 
@@ -92,7 +92,7 @@
 									<span class="colour-opt yellow"></span>
 									<span class="colour-opt lime"></span>
 									<span class="colour-opt green"></span>
-									<span class="colour-opt aqcua"></span>
+									<span class="colour-opt acqua"></span>
 									<span class="colour-opt blue"></span>
 									<span class="colour-opt light-blue"></span>
 									<span class="colour-opt purple"></span>
@@ -121,6 +121,7 @@
 				<div id="popup-cancel" role="button" class="uppercase button red button-medium control" href="#">Cancelar</div>
 				<div id="popup-accept" role="button" class="uppercase button blue button-medium control" href="#">Aceptar</div>
 				<div id="popup-accept-point-of-reference" role="button" class="uppercase button blue button-medium control" href="#" style="display:none;">Aceptar</div>
+				<div id="popup-accept-edit-activity" role="button" class="uppercase button blue button-medium control" href="#" style="display:none;">Editar</div>
 
 			</div>
 			<!-- End popup stem two -->

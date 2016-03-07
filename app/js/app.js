@@ -1,5 +1,7 @@
 $(function(){
 	"user strict";
+	var MODE_ROUTE = 'ROUTE';
+	var MODE_PLACES = 'PLACES';
 	var origin_place_id = null;
 	var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // May need Update this
 	var placeRouteSelectedMarkerUrl = baseMarkerUrl + "/pr-selected/";
@@ -7,7 +9,10 @@ $(function(){
 	var pointOfReferenceMarkerUrl = baseMarkerUrl + "/por/";
 	var markerImgExtention = ".png";
 	var destination_place_id = null;
+	var origin_autocomplete;
+	var destination_autocomplete;
 	var popupSelectedRoute = null;
+	var editingActivityId = null; // Use this to know which activity is being edited
 	var pointsOfReferenceGroupCount = 0; // Use this var to enable or disable the points of reference dropdown
 	var pointsOfReferenceGroups = [];
 	var pointsOfReference = [];
@@ -136,7 +141,7 @@ $(function(){
 				$('#popup-point-of-reference-group, #popup-accept-point-of-reference').show();
 				$('#popup-point-of-reference-group-container, #popup-point-of-reference-icon-container').show();
 				initPopupMapAndUI();
-				togglePopupMode('PLACES');
+				togglePopupMode(MODE_PLACES);
 			},
 			close: function() {
 				$('#popup-point-of-reference-group-container, #popup-point-of-reference-icon-container').hide();
@@ -195,6 +200,54 @@ $(function(){
 	$('#days-container').on('click', '.edit-activity', function(){
 		var activityId = $(this).closest('.activity')[0].id;
 		var activity = findActivityById(activityId);
+		var popupMode = activity.isRoute ? MODE_ROUTE : MODE_PLACES;
+		editingActivityId = activityId;
+
+		$.magnificPopup.open({
+			items: {
+				src: '#popup',
+				type: 'inline'
+			},
+			type:'inline',
+			removalDelay: 300,
+			mainClass: 'mfp-fade',
+			midClick: true,
+			callbacks: {
+				beforeOpen: function() {
+					fillPopupWithActivity(activity);
+					currentDay = activity.day;
+				},
+				open: function() {
+					$('#popup-accept-edit-activity').show();
+					$('#activity-map-mode-selector, #popup-accept').hide();
+					initPopupMapAndUI();
+					togglePopupMode(popupMode);
+				},
+				close: function() {
+					$('#popup-accept-edit-activity').hide();
+					$('#activity-map-mode-selector, #popup-accept').show();
+					editingActivityId = null;
+					resetPopup();
+				}
+			}
+		});
+
+	});
+
+	// Edition of an activity consists in removing the old activity and creating a new one
+	$('#popup-accept-edit-activity').click(function() {
+		// Remove previous routes and markers
+		$.each(popupMapMarkers, function(index, element){
+			element.setMap(null);
+		})
+
+		$()
+
+		// Remove activity from time grid
+		$('#' + editingActivityId).remove();
+
+		addActivity();
+		$.magnificPopup.close();
 	});
 
 	// Update currentDay. This lets us know where will the new activity be added.
@@ -259,6 +312,41 @@ $(function(){
 		resetPopup();
 	});
 
+	function fillPopupWithActivity(activity) {
+		$('#popup-activity-name').val(activity.name);
+		$('.colour-opt').removeClass('selected');
+		if (activity.isRoute) {
+			$('#popup-activity-to').val(activity.toSearchTerm);
+			$('#popup-activity-from').val(activity.fromSearchTerm);
+
+			// Delete old directions, a new search will be made
+			activity.routeDisplay.setMap(null);
+			activity.routeMarkers.start.setMap(null);
+			activity.routeMarkers.end.setMap(null);
+
+			$('#popup-activity-icon-two').val(activity.markerIconTwoName).trigger('change');
+
+			// Perform a new search for directions
+			google.maps.event.trigger(origin_autocomplete, 'place_changed');
+			google.maps.event.trigger(destination_autocomplete, 'place_changed');
+		} else {
+			$('#popup-activity-place').val(activity.searchTerm);
+			activity.marker.setMap(popupMap);
+			popupMap.setCenter(activity.marker.getPosition());
+			popupMap.setZoom(17);
+			popupMapMarkers.push(activity.marker);
+		}
+
+		$('.' + activity.colourClass).addClass('selected');
+
+		$('#popup-activity-start').timepicker('setTime', activity.startTime);
+		$('#popup-activity-length').timepicker('setTime', activity.endTime);
+
+		$('#popup-activity-icon-one').val(activity.markerIconOneName).trigger('change')
+
+		$('.travel-mode[data-travel-mode="'+ activity.travelMode +'"]').prop('checked', 'checked');
+	}
+
 	function findActivityById(id) {
 		var activity;
 		$.each(days, function(index, day) {
@@ -295,19 +383,19 @@ $(function(){
 	}
 
 	function togglePopupMode(mode) {
-		var newMode = placeModeEnabled ? 'ROUTE' : 'PLACES';
+		var newMode = placeModeEnabled ? MODE_ROUTE : MODE_PLACES;
 
 		if (!isEmpty(mode)) {
 			newMode = mode;
 		}
 
-		if (newMode == 'ROUTE') {
+		if (newMode == MODE_ROUTE) {
 			$('#popup-activity-place').hide();
 			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').show();
 			$('#activity-map-mode-selector').text('Lugares');
 			$('#popup-activity-icon-two + span').show();
 			placeModeEnabled = false;
-		} else if (newMode == 'PLACES') {
+		} else if (newMode == MODE_PLACES) {
 			placeModeEnabled = true;
 			$('#popup-activity-icon-two + span').hide();
 			$('#activity-map-mode-selector').text('Rutas');
@@ -353,7 +441,9 @@ $(function(){
 
 		if (placeModeEnabled) {
 			if (!isEmpty(markerStart)) {
-				activity.marker.icon = placeRouteMarkerUrl + $("#popup-activity-icon-one").val() + markerImgExtention;
+				var iconName = $("#popup-activity-icon-one").val();
+				activity.marker.icon = placeRouteMarkerUrl + iconName + markerImgExtention;
+				activity.markerIconOneName = iconName;
 			}
 		} else {
 			var leg = popupSelectedRoute.routes[0].legs[0];
@@ -378,6 +468,8 @@ $(function(){
 			routeMarkers.end = makeMarker(leg.end_location, endMarkerImage, '', map);
 
 			activity.routeMarkers = routeMarkers;
+			activity.markerIconOneName = markerStart;
+			activity.markerIconTwoName = markerEnd;
 		}
 	}
 
@@ -430,7 +522,7 @@ $(function(){
 		$(liHTML).show();
 	}
 
-	function addActivity() {
+	function buildActivityObject() {
 		var startTime = $('#popup-activity-start').timepicker('getTime');
 		var endTime = $('#popup-activity-length').timepicker('getTime');
 		var length = endTime - startTime;
@@ -445,6 +537,7 @@ $(function(){
 			length: length,
 			isRoute: !placeModeEnabled,
 			colour: $('.colour-opt.selected').css('background-color'),
+			colourClass: getSelectedColourClass(),
 			htmlId: activityId
 		};
 
@@ -458,6 +551,7 @@ $(function(){
 			mainMapMarkers.push(placeMarker);
 			mainMapBounds.extend(placeMarker.position);
 			activity.marker = placeMarker;
+			activity.searchTerm = $('#popup-activity-place').val();
 		} else {
 			mainMapRoutes.push(popupSelectedRoute);
 			var routeDisplay = new google.maps.DirectionsRenderer();
@@ -467,18 +561,29 @@ $(function(){
 			mainMapBounds.union(popupSelectedRoute.routes[0].bounds);
 			mainMapDirectionDisplays.push(routeDisplay);
 			activity.routeDisplay = routeDisplay;
+			activity.fromSearchTerm = $('#popup-activity-from').val();
+			activity.toSearchTerm = $('#popup-activity-to').val();
+			activity.travelMode = $('.travel-mode:checked').attr('data-travel-mode');
 		}
 
 		replaceMarkers(popupSelectedRoute, activity);
+
+		return activity;
+	}
+
+	function addActivity() {
+		var activity = buildActivityObject();
 
 		// If days are hidden on the map, hide the new activity
 		toggleActivity(activity, !$('#toggle-days-button').hasClass('disabled'));
 
 		addActivityToTimeGrid(activity);
+
+		activity.day = currentDay;
 	}
 
 	function addActivityToTimeGrid(activity) {
-		var dayIndex = currentDay;
+		var dayIndex = isEmpty(activity.day) ? currentDay : activity.day;
 
 		days[dayIndex].activities.push(activity);
 
@@ -486,6 +591,7 @@ $(function(){
 		var activityHTML = $('#activity-template').clone()[0];
 		// var activityId = 'd'+ dayIndex +'a' + days[dayIndex].activities.length;
 		$(activityHTML).attr('id', activity.htmlId);
+
 		var activityNameHTML = $(activityHTML).find('.activity-name')[0];
 		$(activityNameHTML).text(activity.name);
 
@@ -806,9 +912,12 @@ $(function(){
 		$('.activities-container').removeClass('unselected selected');
 
 		if (popupMap != null) {
-			popupMap.fitBounds(mainMapBounds);
-			popupMap.setCenter(map.getCenter());
-			popupMap.setZoom(8);
+			if ((isEmpty($('#popup-activity-place').val())) && (isEmpty($('#popup-activity-from').val()))) {
+				// If we are not editing, center the map as the main map
+				popupMap.fitBounds(mainMapBounds);
+				popupMap.setCenter(map.getCenter());
+				popupMap.setZoom(8);
+			}
 			return;
 		}
 
@@ -972,9 +1081,9 @@ $(function(){
 		popupMap.controls[google.maps.ControlPosition.TOP_LEFT].push(destination_input);
 		popupMap.controls[google.maps.ControlPosition.TOP_LEFT].push(modes);
 
-		var origin_autocomplete = new google.maps.places.Autocomplete(origin_input);
+		origin_autocomplete = new google.maps.places.Autocomplete(origin_input);
 		origin_autocomplete.bindTo('bounds', popupMap);
-		var destination_autocomplete = new google.maps.places.Autocomplete(destination_input);
+		destination_autocomplete = new google.maps.places.Autocomplete(destination_input);
 		destination_autocomplete.bindTo('bounds', popupMap);
 
 		setupClickListener('changemode-walking', google.maps.TravelMode.WALKING);
@@ -1089,5 +1198,15 @@ $(function(){
 			icon: icon,
 			title: title
 		});
+	}
+
+	function getSelectedColourClass() {
+		var classes = $('.colour-opt.selected').attr('class').split(' ');
+		colourIndex = classes.indexOf('colour-opt');
+		classes.splice(colourIndex, 1);
+		selectedIndex = classes.indexOf('selected');
+		classes.splice(selectedIndex, 1);
+
+		return classes.pop();
 	}
 });

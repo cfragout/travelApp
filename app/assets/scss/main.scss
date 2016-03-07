@@ -428,7 +428,7 @@ $activity-width: 135px;
 			background-color:$activity-colour-blue;
 		}
 
-		&.aqcua {
+		&.acqua {
 			background-color:$activity-colour-aqcua;
 		}
 
@@ -573,7 +573,7 @@ $activity-width: 135px;
 	cursor:default;
 }
 
-#popup-accept, #popup-accept-point-of-reference {
+#popup-accept, #popup-accept-point-of-reference, #popup-accept-edit-activity {
 	padding-bottom: 3px;
 	margin-right: 50px;
 	position: absolute;
@@ -793,7 +793,8 @@ $activity-width: 135px;
 
 #map-container {
 	width: 100%;
-	height: 400px;
+	height: 450px;
+	margin-bottom: 20px;
 }
 
 /* overlay at start */
