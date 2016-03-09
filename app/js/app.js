@@ -203,7 +203,6 @@ $(function(){
 
 	$('#popup-confirm-accept').click(function() {
 		var activity = findActivityById(editingActivityId);
-		console.log('actividad', activity)
 		deleteActivity(activity);
 		$.magnificPopup.close();
 	});
@@ -254,8 +253,6 @@ $(function(){
 					$('#popup-accept-edit-activity').hide();
 					$('#activity-map-mode-selector, #popup-accept').show();
 
-console.log('editingActivityId', editingActivityId)
-
 					// if activity was not edited (i.e. user canceled the operation), replace markers on main map
 					if (editingActivityId != null) {
 
@@ -264,9 +261,9 @@ console.log('editingActivityId', editingActivityId)
 							activity.routeMarkers.start.setMap(map);
 							activity.routeMarkers.end.setMap(map);
 						} else {
-							console.log(map, "map");
 							activity.marker.setMap(map);
-							console.log("marker",activity.marker);
+							// Remove marker from popupMarkers so it is not deleted on map reset
+							popupMapMarkers.pop();
 						}
 
 						editingActivityId = null;
@@ -444,7 +441,6 @@ console.log('editingActivityId', editingActivityId)
 		// Remove markers from map markers array
 		$.each(mainMapMarkers, function(index, marker){
 			if (marker.map == null) {
-				console.log("-----> marker", marker);
 				mainMapMarkers.splice(index, 1);
 			}
 		})
@@ -677,8 +673,6 @@ console.log('editingActivityId', editingActivityId)
 	}
 
 	function addMarkerListener(activity) {
-		console.log(activity);
-
 		if (activity.isRoute) {
 
 		} else {
@@ -700,11 +694,8 @@ console.log('editingActivityId', editingActivityId)
 				$(infoBoxHTML).show();
 
 				var infoBox = activity.infoBox;
-console.log("info", infoBox)
-console.log("-----> mapMarkers", mainMapMarkers);
 
 				if (infoBox == null) {
-					console.log("infobox null", infoBox);
 					infoBox = new InfoBox({
 						content: infoBoxHTML,
 						disableAutoPan: false,
@@ -716,7 +707,7 @@ console.log("-----> mapMarkers", mainMapMarkers);
 				} else {
 					infoBox.setContent(infoBoxHTML);
 				}
-window.infobox = infoBox;
+
 				activity.infoBox = infoBox;
 				infoBox.open(map, activity.marker);
 			});
