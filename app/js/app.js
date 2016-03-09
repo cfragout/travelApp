@@ -203,20 +203,26 @@ $(function(){
 
 	$('#popup-confirm-accept').click(function() {
 		var activity = findActivityById(editingActivityId);
-
-		if (activity.isRoute) {
-			activity.routeDisplay.setMap(null);
-			activity.routeMarkers.start.setMap(null);
-			activity.routeMarkers.end.setMap(null);
-		} else {
-			activity.marker.setMap(null);
-		}
-
-		deleteActivity(editingActivityId);
+		console.log('actividad', activity)
+		deleteActivity(activity);
 		$.magnificPopup.close();
 	});
 
-	$('document').on()
+	// Edition of an activity consists in removing the old activity and creating a new one
+	$('#popup-accept-edit-activity').click(function() {
+		// Remove previous routes and markers
+		$.each(popupMapMarkers, function(index, element){
+			element.setMap(null);
+		})
+
+		deleteActivity(findActivityById(editingActivityId));
+
+		addActivity();
+
+		// Set null to this id, as the activity was succesfuly edited
+		editingActivityId = null;
+		$.magnificPopup.close();
+	});
 
 	$('#days-container').on('click', '.edit-activity', function(){
 		var activityId = $(this).closest('.activity')[0].id;
@@ -247,7 +253,25 @@ $(function(){
 				close: function() {
 					$('#popup-accept-edit-activity').hide();
 					$('#activity-map-mode-selector, #popup-accept').show();
-					editingActivityId = null;
+
+console.log('editingActivityId', editingActivityId)
+
+					// if activity was not edited (i.e. user canceled the operation), replace markers on main map
+					if (editingActivityId != null) {
+
+						if (activity.isRoute) {
+							activity.routeDisplay.setMap(map);
+							activity.routeMarkers.start.setMap(map);
+							activity.routeMarkers.end.setMap(map);
+						} else {
+							console.log(map, "map");
+							activity.marker.setMap(map);
+							console.log("marker",activity.marker);
+						}
+
+						editingActivityId = null;
+					}
+
 					resetPopup();
 				}
 			}
@@ -271,19 +295,6 @@ $(function(){
 			midClick: true,
 		});
 
-	});
-
-	// Edition of an activity consists in removing the old activity and creating a new one
-	$('#popup-accept-edit-activity').click(function() {
-		// Remove previous routes and markers
-		$.each(popupMapMarkers, function(index, element){
-			element.setMap(null);
-		})
-
-		deleteActivity(editingActivityId);
-
-		addActivity();
-		$.magnificPopup.close();
 	});
 
 	// Update currentDay. This lets us know where will the new activity be added.
@@ -401,8 +412,9 @@ $(function(){
 		return activity;
 	}
 
-	function deleteActivity(id) {
-		var activity;
+	function deleteActivity(activity) {
+		var id = activity.htmlId
+
 		$.each(days, function(index, day) {
 
 			for (var i = day.activities.length - 1; i >= 0; i--) {
@@ -415,8 +427,25 @@ $(function(){
 
 		});
 
+		if (activity.infoBox != null) {
+			activity.infoBox.close();
+			activity.infoBox.setMap(null);
+			activity.infoBox = null;
+		}
+
+		// Remove activity from map
+		if (activity.isRoute) {
+			activity.routeDisplay.setMap(null);
+			activity.routeMarkers.start.setMap(null);
+			activity.routeMarkers.end.setMap(null);
+		} else {
+			activity.marker.setMap(null);
+		}
+
 		// Remove activity from time grid
 		$('#' + editingActivityId).remove();
+
+		activity = null;
 	}
 
 	// Check if there is at lest one point of reference that belongs to a group in order to enable the dropdown button
@@ -647,24 +676,40 @@ $(function(){
 			activity.marker.addListener('click', function() {
 				$('#' + activity.htmlId).addClass('selected');
 				$('.activity[id!="' + activity.htmlId + '"]').addClass('unselected');
+
+				var startHours = activity.startTime.getHours() < 10 ? '0' + activity.startTime.getHours() : activity.startTime.getHours();
+				var endHours = activity.endTime.getHours() < 10 ? '0' + activity.endTime.getHours() : activity.endTime.getHours();
+				var startMinutes = activity.startTime.getMinutes() < 10 ? '0' + activity.startTime.getMinutes() : activity.startTime.getMinutes();
+				var endMinutes = activity.endTime.getMinutes() < 10 ? '0' + activity.endTime.getMinutes() : activity.endTime.getMinutes();
+
+				var startTime = startHours + ':' + startMinutes;
+				var endTime = endHours + ':' + startMinutes;
+				var infoBoxHTML = $('#marker-info-template').clone()[0];
+				$(infoBoxHTML).attr('id', 'info-' + activity.htmlId);
+				$(infoBoxHTML).find('.info-name').text(activity.name);
+				$(infoBoxHTML).find('.info-time').text('de ' + startTime + ' a ' + endTime);
+				$(infoBoxHTML).show();
+
+				var infoBox = activity.infoBox;
+console.log("info", infoBox)
+
+
+				if (infoBox == null) {
+					console.log("infobox null", infoBox);
+					infoBox = new InfoBox({
+						content: infoBoxHTML,
+						disableAutoPan: false,
+						pixelOffset: new google.maps.Size(20, -75),
+						zIndex: null,
+						closeBoxMargin: "12px 4px 2px 2px",
+						infoBoxClearance: new google.maps.Size(1, 1)
+					});
+				} else {
+					infoBox.setContent(infoBoxHTML);
+				}
 				
-				var infoWindowHTML = $('#marker-info-template').clone()[0];
-				$(infoWindowHTML).find('span').text(activity.name);
-				$(infoWindowHTML).show();
-
-				
-				var infoWindow = new google.maps.InfoWindow({
-					content: infoWindowHTML,
-					position: {lat: activity.marker.getPosition().lat() - 0.00007, lng: activity.marker.getPosition().lng() + 0.00008}
-				});
-				
-
-
-				infoWindow.open(map);
-
-$('.gm-style-iw').prev().remove();
-
-
+				activity.infoBox = infoBox;
+				infoBox.open(map, activity.marker);
 			});
 		}
 

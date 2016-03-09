@@ -8,8 +8,8 @@
 	<link rel="stylesheet" href="/assets/css/main.css">
 	<link rel="stylesheet" href="/vendor/EasyAutocomplete/easy-autocomplete.min.css">
 	<link rel="stylesheet" href="/vendor/jquery.timepicker/jquery.timepicker.css">
-	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
 	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
+	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
 	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
 	<!-- endinject -->
 </head>
@@ -232,9 +232,23 @@
 <!-- End day container template -->
 
 <!-- Marker information template -->
-<div id="marker-info-template" style="display:none !important; background-color:red; height: 200px; width: 150px;" class="iw_content">
-	<div class="">
-		<span>Name</span>
+<div id="marker-info-template" style="display:none !important;
+    margin-top: 8px;
+    background:#3367d6;
+    color:#FFF;
+    min-width: 100px;
+    min-height: 100px;
+    font-family:Roboto;
+    font-size:12px;
+    padding: .5em 1em;
+    text-shadow:0 -1px #000000;
+    -webkit-box-shadow: 0 0 8px #000;
+    box-shadow: 0 0 8px #000;">
+	<div>
+		<span class="info-name"></span>
+	</div>
+	<div style="margin-top:10px;">
+		<span class="info-time"></span>
 	</div>
 </div>
 <!-- End marker information template -->
@@ -333,11 +347,12 @@
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmKe1N8GjOJCDAxCHm1TGcv6-z2gcyrFo&callback=initMap&libraries=places"
 	async defer></script>
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+	<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
 	<!-- inject:vendor-scripts -->
 	<script src="/vendor/EasyAutocomplete/jquery.easy-autocomplete.min.js"></script>
 	<script src="/vendor/jquery.timepicker/jquery.timepicker.min.js"></script>
-	<script src="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
 	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
+	<script src="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
 	<script src="/vendor/select2/select2.min.js"></script>
 	<!-- endinject -->
 	<!-- inject:user-scripts -->
