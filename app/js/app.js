@@ -307,6 +307,9 @@ $(function(){
 			return;
 		}
 
+		closeInfoBoxes();
+		$('.activity').removeClass('selected unselected');
+
 		var dayIndex = $(this).attr('data-day-index');
 		var containerId = 'd' + dayIndex + '-activities-container';
 		var containerIdHashtag = '#' + containerId;
@@ -696,59 +699,68 @@ $(function(){
 
 	function addMarkerListener(activity) {
 		if (activity.isRoute) {
-
-		} else {
-			activity.marker.addListener('click', function() {
-				closeInfoBoxes();
-				scrollToElementId(activity.htmlId);
-
-				// Select activity in time grid
-				$('#' + activity.htmlId).addClass('selected');
-				$('.activity[id!="' + activity.htmlId + '"]').addClass('unselected');
-
-				var startHours = activity.startTime.getHours() < 10 ? '0' + activity.startTime.getHours() : activity.startTime.getHours();
-				var endHours = activity.endTime.getHours() < 10 ? '0' + activity.endTime.getHours() : activity.endTime.getHours();
-				var startMinutes = activity.startTime.getMinutes() < 10 ? '0' + activity.startTime.getMinutes() : activity.startTime.getMinutes();
-				var endMinutes = activity.endTime.getMinutes() < 10 ? '0' + activity.endTime.getMinutes() : activity.endTime.getMinutes();
-
-				var startTime = startHours + ':' + startMinutes;
-				var endTime = endHours + ':' + startMinutes;
-				var infoBoxHTML = $('#marker-info-template').clone()[0];
-				$(infoBoxHTML).attr('id', 'info-' + activity.htmlId);
-				$(infoBoxHTML).find('.info-name').text(activity.name);
-				$(infoBoxHTML).find('.info-time').text('de ' + startTime + ' a ' + endTime);
-				$(infoBoxHTML).show();
-
-				var infoBox = activity.infoBox;
-
-				if (infoBox == null) {
-					infoBox = new InfoBox({
-						content: infoBoxHTML,
-						disableAutoPan: true,
-						pixelOffset: new google.maps.Size(20, -75),
-						zIndex: null,
-						closeBoxMargin: "12px 4px 2px 2px",
-						infoBoxClearance: new google.maps.Size(1, 1)
-					});
-
-					infoBox.htmlId = activity.htmlId;
-				} else {
-					infoBox.setContent(infoBoxHTML);
-				}
-
-				infoBoxes.push(infoBox);
-				activity.infoBox = infoBox;
-
-				activity.infoBox.addListener('closeclick',function(){
-					$('.activity').removeClass('selected unselected');
-				});
-
-				infoBox.open(map, activity.marker);
+			activity.routeMarkers.end.addListener('click', function(){
+				markerOnClickHandler(activity, activity.routeMarkers.end);
 			});
-
+			activity.routeMarkers.start.addListener('click', function(){
+				markerOnClickHandler(activity, activity.routeMarkers.start);
+			});
+		} else {
+			activity.marker.addListener('click', function(){
+				markerOnClickHandler(activity, activity.marker);
+			});
 
 		}
 
+	}
+
+	function markerOnClickHandler(activity, marker) {
+		closeInfoBoxes();
+		scrollToElementId('#' + activity.htmlId);
+console.log("-----> activity", activity);
+		// marker.setIcon(ac)
+
+		// Select activity in time grid
+		$('#' + activity.htmlId).addClass('selected');
+		$('.activity[id!="' + activity.htmlId + '"]').addClass('unselected');
+
+		var startHours = activity.startTime.getHours() < 10 ? '0' + activity.startTime.getHours() : activity.startTime.getHours();
+		var endHours = activity.endTime.getHours() < 10 ? '0' + activity.endTime.getHours() : activity.endTime.getHours();
+		var startMinutes = activity.startTime.getMinutes() < 10 ? '0' + activity.startTime.getMinutes() : activity.startTime.getMinutes();
+		var endMinutes = activity.endTime.getMinutes() < 10 ? '0' + activity.endTime.getMinutes() : activity.endTime.getMinutes();
+
+		var startTime = startHours + ':' + startMinutes;
+		var endTime = endHours + ':' + startMinutes;
+		var infoBoxHTML = $('#marker-info-template').clone()[0];
+		$(infoBoxHTML).attr('id', 'info-' + activity.htmlId);
+		$(infoBoxHTML).find('.info-name').text(activity.name);
+		$(infoBoxHTML).find('.info-time').text('de ' + startTime + ' a ' + endTime);
+		$(infoBoxHTML).show();
+
+		var infoBox = activity.infoBox;
+		if (infoBox == null) {
+			infoBox = new InfoBox({
+				content: infoBoxHTML,
+				disableAutoPan: true,
+				pixelOffset: new google.maps.Size(20, -75),
+				zIndex: null,
+				closeBoxMargin: "12px 4px 2px 2px",
+				infoBoxClearance: new google.maps.Size(1, 1)
+			});
+
+			infoBox.htmlId = activity.htmlId;
+		} else {
+			infoBox.setContent(infoBoxHTML);
+		}
+
+		infoBoxes.push(infoBox);
+		activity.infoBox = infoBox;
+
+		activity.infoBox.addListener('closeclick',function(){
+			$('.activity').removeClass('selected unselected');
+		});
+
+		infoBox.open(map, marker);
 	}
 
 	function addActivityToTimeGrid(activity) {
