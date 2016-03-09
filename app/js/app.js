@@ -428,7 +428,6 @@ console.log('editingActivityId', editingActivityId)
 		});
 
 		if (activity.infoBox != null) {
-			activity.infoBox.close();
 			activity.infoBox.setMap(null);
 			activity.infoBox = null;
 		}
@@ -442,9 +441,19 @@ console.log('editingActivityId', editingActivityId)
 			activity.marker.setMap(null);
 		}
 
+		// Remove markers from map markers array
+		$.each(mainMapMarkers, function(index, marker){
+			if (marker.map == null) {
+				console.log("-----> marker", marker);
+				mainMapMarkers.splice(index, 1);
+			}
+		})
+
+		// Fix: Marker gets a new infobox instance everytime its activity is edited
+		activity.marker = null;
+
 		// Remove activity from time grid
 		$('#' + editingActivityId).remove();
-
 		activity = null;
 	}
 
@@ -692,7 +701,7 @@ console.log('editingActivityId', editingActivityId)
 
 				var infoBox = activity.infoBox;
 console.log("info", infoBox)
-
+console.log("-----> mapMarkers", mainMapMarkers);
 
 				if (infoBox == null) {
 					console.log("infobox null", infoBox);
@@ -707,7 +716,7 @@ console.log("info", infoBox)
 				} else {
 					infoBox.setContent(infoBoxHTML);
 				}
-				
+window.infobox = infoBox;
 				activity.infoBox = infoBox;
 				infoBox.open(map, activity.marker);
 			});
