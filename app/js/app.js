@@ -16,6 +16,7 @@ $(function(){
 	var pointsOfReferenceGroupCount = 0; // Use this var to enable or disable the points of reference dropdown
 	var pointsOfReferenceGroups = [];
 	var pointsOfReference = [];
+	var infoBoxes = []; // Use this var only to close infoboxes
 	var placeModeEnabled = true; // Use this var to know whether the user is adding a place or directions
 	var currentDay = 0; // Use this var to know which day is currently having activities added
 	var predefinedMapMarkers = [
@@ -418,16 +419,14 @@ $(function(){
 
 				if (day.activities[i].htmlId == id) {
 					day.activities.splice(i,1);
+					break;
 				}
 
 			}
 
 		});
 
-		if (activity.infoBox != null) {
-			activity.infoBox.setMap(null);
-			activity.infoBox = null;
-		}
+		deleteInfobox(activity);
 
 		// Remove activity from map
 		if (activity.isRoute) {
@@ -445,12 +444,28 @@ $(function(){
 			}
 		})
 
+
 		// Fix: Marker gets a new infobox instance everytime its activity is edited
 		activity.marker = null;
 
 		// Remove activity from time grid
 		$('#' + editingActivityId).remove();
 		activity = null;
+	}
+
+	function deleteInfobox(activity) {
+		//Remove Infobox
+		if (activity.infoBox != null) {
+			activity.infoBox.setMap(null);
+			activity.infoBox = null;
+
+			for (var i = infoBoxes.length - 1; i >= 0; i--) {
+				if (infoBoxes[i].htmlId == activity.htmlId) {
+					infoBoxes.splice(i, 1);
+					return;
+				}
+			}
+		}
 	}
 
 	// Check if there is at lest one point of reference that belongs to a group in order to enable the dropdown button
@@ -672,11 +687,22 @@ $(function(){
 		activity.day = currentDay;
 	}
 
+	function closeInfoBoxes() {
+		$.each(infoBoxes, function(index, box){
+			box.close();
+		});
+		$('.activity').removeClass('selected unselected');
+	}
+
 	function addMarkerListener(activity) {
 		if (activity.isRoute) {
 
 		} else {
 			activity.marker.addListener('click', function() {
+				closeInfoBoxes();
+				scrollToElementId(activity.htmlId);
+
+				// Select activity in time grid
 				$('#' + activity.htmlId).addClass('selected');
 				$('.activity[id!="' + activity.htmlId + '"]').addClass('unselected');
 
@@ -698,19 +724,29 @@ $(function(){
 				if (infoBox == null) {
 					infoBox = new InfoBox({
 						content: infoBoxHTML,
-						disableAutoPan: false,
+						disableAutoPan: true,
 						pixelOffset: new google.maps.Size(20, -75),
 						zIndex: null,
 						closeBoxMargin: "12px 4px 2px 2px",
 						infoBoxClearance: new google.maps.Size(1, 1)
 					});
+
+					infoBox.htmlId = activity.htmlId;
 				} else {
 					infoBox.setContent(infoBoxHTML);
 				}
 
+				infoBoxes.push(infoBox);
 				activity.infoBox = infoBox;
+
+				activity.infoBox.addListener('closeclick',function(){
+					$('.activity').removeClass('selected unselected');
+				});
+
 				infoBox.open(map, activity.marker);
 			});
+
+
 		}
 
 	}
@@ -1043,6 +1079,7 @@ $(function(){
 
 	function initPopupMapAndUI() {
 		$('.activities-container').removeClass('unselected selected');
+		$('.activity').removeClass('unselected selected');
 
 		if (popupMap != null) {
 			if ((isEmpty($('#popup-activity-place').val())) && (isEmpty($('#popup-activity-from').val()))) {
