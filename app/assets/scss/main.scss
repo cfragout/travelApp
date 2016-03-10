@@ -395,6 +395,10 @@ $activity-width: 135px;
 		&:hover {
 			border-bottom-color: $main-blue;
 		}
+
+		&.invalid {
+			border-bottom: solid 1px #DE1616 !important;
+		}
 	}
 
 	.controls:active, .controls:focus {
@@ -588,10 +592,9 @@ $activity-width: 135px;
 	font-weight: 300;
 }
 
-#directions-information {
+.popup-map-notice {
 	position: absolute;
 	z-index: 51;
-	background-color: $secondary-blue;
 	line-height: 22px;
 	color: #fff;
 	top: 500px;
@@ -604,8 +607,17 @@ $activity-width: 135px;
 	font-weight: 300;
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 	border-radius: 2px;
-	cursor:default;
+	cursor:default;	
 }
+
+#directions-information {
+	background-color: $secondary-blue;
+}
+
+#popup-map-notice {
+	background-color: #DE1616;
+}
+
 
 #popup-accept, #popup-accept-point-of-reference, #popup-accept-edit-activity {
 	padding-bottom: 3px;

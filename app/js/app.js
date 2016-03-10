@@ -354,11 +354,39 @@ $(function(){
 	})
 
 	$('#popup-accept').click(function(){
+		if (!validate()) {
+			return;
+		}
+
 		addActivity();
 		map.fitBounds(mainMapBounds);
 		$.magnificPopup.close();
 		resetPopup();
 	});
+
+	// Review this functions name
+	function validate() {
+		var isValid = true;
+
+		if ((popupMapMarkers.length == 0) && (popupSelectedRoute == null)) {
+			displayPopupMapNotification('Elija una ubicacion o ruta');
+			return false;
+		}
+
+		var timepickerStartInput = $('#popup-activity-start');
+		if (isEmpty(timepickerStartInput.timepicker('getTime'))) {
+			$(timepickerStartInput).addClass('invalid');
+			isValid = false;
+		}
+
+		var timepickerEndInput = $('#popup-activity-length');
+		if (isEmpty(timepickerEndInput.timepicker('getTime'))) {
+			$(timepickerEndInput).addClass('invalid');
+			isValid = false;
+		}
+
+		return isValid;
+	}
 
 	function fillPopupWithActivity(activity) {
 		$('#popup-activity-name').val(activity.name);
@@ -717,8 +745,6 @@ $(function(){
 	function markerOnClickHandler(activity, marker) {
 		closeInfoBoxes();
 		scrollToElementId('#' + activity.htmlId);
-console.log("-----> activity", activity);
-		// marker.setIcon(ac)
 
 		// Select activity in time grid
 		$('#' + activity.htmlId).addClass('selected');
@@ -949,6 +975,12 @@ console.log("-----> activity", activity);
 		$('#directions-information').animate({'top': '395px'});
 	}
 
+	function displayPopupMapNotification(text) {
+		goToPopupStep(0);
+		$('#popup-map-notice span').text(text);
+		$('#popup-map-notice').animate({'top': '395px'});
+	}
+
 	function secondsToDayHourMinuteObj(secondsCount) {
 		var remainingTime = secondsCount;
 		var days = Math.floor((remainingTime / 3600) / 24);
@@ -1060,6 +1092,7 @@ console.log("-----> activity", activity);
 	}
 
 	function resetPopupMapControls() {
+		$('#popup-step-two .controls').removeClass('invalid');
 		$('.popup-map-input-text').val('');
 		$('.popup-select').select2('val','');
 		resetMapInformationBox();
@@ -1068,7 +1101,7 @@ console.log("-----> activity", activity);
 	function resetMapInformationBox() {
 		$('#directions-distance').text('');
 		$('#directions-time').text('');
-		$('#directions-information').animate({'top': '500px'});
+		$('.popup-map-notice').animate({'top': '500px'});
 	}
 
 	function resetMarkers(markers) {
