@@ -322,6 +322,8 @@ $(function(){
 			$('.activities-container[id!='+ containerId +']').removeClass('selected').addClass('unselected');
 		}
 
+		var bounds = new google.maps.LatLngBounds();
+
 		// Hide or show activities on the map
 		if ($('.activities-container.selected').length > 0) {
 			$.each(days, function(index, day){
@@ -334,6 +336,7 @@ $(function(){
 					// Display activities for the selected day
 					$.each(day.activities, function(j, activity){
 						toggleActivity(activity, true);
+						fitIntoMapBounds(activity, bounds);
 					});
 				}
 			});
@@ -342,9 +345,12 @@ $(function(){
 			$.each(days, function(index, day){
 				$.each(day.activities, function(j, activity){
 					toggleActivity(activity, true);
+					fitIntoMapBounds(activity, bounds);
 				});
 			});
 		}
+
+		map.fitBounds(bounds);
 
 	});
 
@@ -363,6 +369,15 @@ $(function(){
 		$.magnificPopup.close();
 		resetPopup();
 	});
+
+	function fitIntoMapBounds(activity, bounds) {
+		if (activity.isRoute) {
+			bounds.extend(activity.routeMarkers.start.getPosition());
+			bounds.extend(activity.routeMarkers.end.getPosition());
+		} else {
+			bounds.extend(activity.marker.getPosition());
+		}
+	}
 
 	// Review this functions name
 	function validate() {
@@ -689,7 +704,7 @@ $(function(){
 		} else {
 			mainMapRoutes.push(popupSelectedRoute);
 			var routeDisplay = new google.maps.DirectionsRenderer();
-			routeDisplay.setOptions( { suppressMarkers: true } ); // Disable markers. Then, add custom ones, or create default markers
+			routeDisplay.setOptions( { suppressMarkers: true, preserveViewport: true } ); // Disable markers. Then, add custom ones, or create default markers
 			routeDisplay.setDirections(popupSelectedRoute);
 			routeDisplay.setMap(map);
 			mainMapBounds.union(popupSelectedRoute.routes[0].bounds);
@@ -1086,7 +1101,7 @@ $(function(){
 		resetMarkers(mapMarkers);
 		if (fullReset) {
 			map.setCenter(defaultLocation);
-			map.setZoom(8)
+			map.setZoom(8);
 		}
 		popupMapMarkers = [];
 	}
