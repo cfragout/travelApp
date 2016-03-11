@@ -227,6 +227,10 @@ $(function(){
 	$('#days-container').on('click', '.edit-activity', function(){
 		var activityId = $(this).closest('.activity')[0].id;
 		var activity = findActivityById(activityId);
+
+console.log('activityId', activityId)
+console.log('activity', activity)
+
 		var popupMode = activity.isRoute ? MODE_ROUTE : MODE_PLACES;
 		editingActivityId = activityId;
 
@@ -384,7 +388,7 @@ $(function(){
 		var isValid = true;
 
 		if ((popupMapMarkers.length == 0) && (popupSelectedRoute == null)) {
-			displayPopupMapNotification('Elija una ubicacion o ruta');
+			displayPopupMapNotification('Elija una ubicacion o ruta', 'warning');
 			return false;
 		}
 
@@ -485,8 +489,10 @@ $(function(){
 
 		// Remove markers from map markers array
 		$.each(mainMapMarkers, function(index, marker){
-			if (marker.map == null) {
-				mainMapMarkers.splice(index, 1);
+			if (marker != null) {
+				if (marker.map == null) {
+					mainMapMarkers.splice(index, 1);
+				}
 			}
 		})
 
@@ -990,9 +996,11 @@ $(function(){
 		$('#directions-information').animate({'top': '395px'});
 	}
 
-	function displayPopupMapNotification(text) {
+	function displayPopupMapNotification(text, notificationType) {
+		var type = isEmpty(notificationType) ? 'warning' : notificationType;
 		goToPopupStep(0);
 		$('#popup-map-notice span').text(text);
+		$('#popup-map-notice').addClass(type);
 		$('#popup-map-notice').animate({'top': '395px'});
 	}
 
@@ -1116,7 +1124,13 @@ $(function(){
 	function resetMapInformationBox() {
 		$('#directions-distance').text('');
 		$('#directions-time').text('');
-		$('.popup-map-notice').animate({'top': '500px'});
+		$('#directions-information').animate({'top': '500px'});
+		resetMapNotifications();
+	}
+
+	function resetMapNotifications() {
+		$('#popup-map-notice').removeClass('warning notice');
+		$('#popup-map-notice').animate({'top': '500px'});
 	}
 
 	function resetMarkers(markers) {
@@ -1199,6 +1213,11 @@ $(function(){
 		// Update results if user drags the route
 		directionsDisplay.addListener('directions_changed', function() {
 			popupSelectedRoute = directionsDisplay.getDirections();
+			if (routeHasTolls(popupSelectedRoute.routes[0])) {
+				displayPopupMapNotification('Esta ruta contiene peajes', 'notice')
+			} else {
+				resetMapNotifications();
+			}
 			calculateTotalTimeAndDistance(popupSelectedRoute);
 		});
 
@@ -1373,6 +1392,12 @@ $(function(){
 				directionsDisplay.setDirections(response);
 				directionsDisplay.setMap(popupMap);
 				popupSelectedRoute = response;
+				if (routeHasTolls(response.routes[0])) {
+					displayPopupMapNotification('Esta ruta contiene peajes', 'notice')
+				} else {
+					resetMapNotifications();
+				}
+				
 				calculateTotalTimeAndDistance(popupSelectedRoute);
 			} else {
 				window.alert('Directions request failed due to ' + status);
@@ -1380,6 +1405,17 @@ $(function(){
 		});
 	}
 
+	function routeHasTolls(directions) {
+		var steps = directions.legs[0].steps;
+		for (var i = steps.length - 1; i >= 0; i--) {
+			var instructions = steps[i].instructions.toLowerCase();
+			if (instructions.indexOf('toll road') >= 0) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	/* File Component */
 	var inputs = document.querySelectorAll( '.input-file' );
