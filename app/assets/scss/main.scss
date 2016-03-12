@@ -1,3 +1,6 @@
+/* Includes */
+@import "_fonts";
+
 /* Main colours*/
 $main-blue: #4d90fe;
 $secondary-blue: #3367d6;
@@ -276,6 +279,11 @@ $activity-width: 135px;
 .time-hour {
 	height: 40px;
 	border-top: dotted 1px rgba(59, 59, 60, 0.21);
+	cursor:default;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	@include transition(0.35s);
 
 	&:hover {
@@ -305,8 +313,29 @@ $activity-width: 135px;
 	padding: 0px 5px 0px 5px;
 	@include transition(0.35s);
 
+	.icons {
+		@include transition(0.35s);
+		opacity: 0;
+	}
+
+	.icons i {
+		@include transition(0.35s);
+		opacity: 0.5;
+		float: right;
+
+		&:hover {
+			text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+			opacity:1;
+			cursor: pointer;
+		}
+	}
+
 	&:hover{
-    	box-shadow:0 5px 6px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset
+		box-shadow:0 5px 6px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+
+		.icons {
+			opacity: 1;
+		}
 	}
 
 	&.unselected {
@@ -345,6 +374,14 @@ $activity-width: 135px;
 }
 
 /* Popup */
+#popup-header {
+	text-align:center;
+	font-family:'Roboto';
+	padding:10px 0px 10px 0px;
+	color:#fff;
+	background-color:#4D90FE;
+}
+
 .white-popup {
 	position: relative;
 	background: #FFF;
@@ -983,5 +1020,33 @@ span.select2-option-text {
 
 	li:hover {
 		background-color:#5897fb !important;
+	}
+}
+
+/* Tooltip */
+.activity-tooltip {
+	border-radius: 2px;
+	border: 1px solid #165DCE;
+	background: #4c4c4c;
+	color: #fff;
+	z-index: 50;
+
+	.tooltipster-content {
+		font-family: Roboto;
+		font-size: 14px;
+		line-height: 16px;
+		padding: 8px 10px;
+		background-color: $main-blue;
+	}
+
+	.tooltip-icon {
+		@include transition(0.35s);
+		opacity: 0.5;
+
+		&:hover {
+			text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+			opacity:1;
+			cursor: pointer;
+		}
 	}
 }

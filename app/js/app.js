@@ -1,5 +1,3 @@
-$(function(){
-	"user strict";
 	var MODE_ROUTE = 'ROUTE';
 	var MODE_PLACES = 'PLACES';
 	var origin_place_id = null;
@@ -96,6 +94,8 @@ $(function(){
 		{ value: 'kangaroo2', name: 'Canguro'},
 		{ value: 'alligator', name: 'Cocodrilo'}
 	];
+$(function(){
+	"user strict";
 
 
 	$('#add-day').click(function(){
@@ -226,77 +226,12 @@ $(function(){
 
 	$('#days-container').on('click', '.edit-activity', function(){
 		var activityId = $(this).closest('.activity')[0].id;
-		var activity = findActivityById(activityId);
-
-console.log('activityId', activityId)
-console.log('activity', activity)
-
-		var popupMode = activity.isRoute ? MODE_ROUTE : MODE_PLACES;
-		editingActivityId = activityId;
-
-		$.magnificPopup.open({
-			items: {
-				src: '#popup',
-				type: 'inline'
-			},
-			type:'inline',
-			removalDelay: 300,
-			mainClass: 'mfp-fade',
-			midClick: true,
-			callbacks: {
-				beforeOpen: function() {
-					fillPopupWithActivity(activity);
-					currentDay = activity.day;
-				},
-				open: function() {
-					$('#popup-accept-edit-activity').show();
-					$('#activity-map-mode-selector, #popup-accept').hide();
-					initPopupMapAndUI();
-					togglePopupMode(popupMode);
-				},
-				close: function() {
-					$('#popup-accept-edit-activity').hide();
-					$('#activity-map-mode-selector, #popup-accept').show();
-
-					// if activity was not edited (i.e. user canceled the operation), replace markers on main map
-					if (editingActivityId != null) {
-
-						if (activity.isRoute) {
-							activity.routeDisplay.setMap(map);
-							activity.routeMarkers.start.setMap(map);
-							activity.routeMarkers.end.setMap(map);
-						} else {
-							activity.marker.setMap(map);
-							// Remove marker from popupMarkers so it is not deleted on map reset
-							popupMapMarkers.pop();
-						}
-
-						editingActivityId = null;
-					}
-
-					resetPopup();
-				}
-			}
-		});
-
+		editActivityCallback(activityId);
 	});
 
 	$('#days-container').on('click', '.delete-activity', function(){
 		var activityId = $(this).closest('.activity')[0].id;
-		var activity = findActivityById(activityId);
-		editingActivityId = activityId;
-
-		$.magnificPopup.open({
-			items: {
-				src: '#popup-confirm',
-				type: 'inline'
-			},
-			type:'inline',
-			removalDelay: 300,
-			mainClass: 'mfp-fade',
-			midClick: true,
-		});
-
+		deleteActivityCallback(activityId);
 	});
 
 	// Update currentDay. This lets us know where will the new activity be added.
@@ -373,8 +308,78 @@ console.log('activity', activity)
 		$.magnificPopup.close();
 		resetPopup();
 	});
+});
 
-	function fitIntoMapBounds(activity, bounds) {
+function editActivityCallback(activityId) {
+	var activity = findActivityById(activityId);
+	var popupMode = activity.isRoute ? MODE_ROUTE : MODE_PLACES;
+	editingActivityId = activityId;
+
+	$.magnificPopup.open({
+		items: {
+			src: '#popup',
+			type: 'inline'
+		},
+		type:'inline',
+		removalDelay: 300,
+		mainClass: 'mfp-fade',
+		midClick: true,
+		callbacks: {
+			beforeOpen: function() {
+				fillPopupWithActivity(activity);
+				currentDay = activity.day;
+				$('#popup-header').text('Editar actividad');
+			},
+			open: function() {
+				$('#popup-accept-edit-activity').show();
+				$('#activity-map-mode-selector, #popup-accept').hide();
+				initPopupMapAndUI();
+				togglePopupMode(popupMode);
+			},
+			close: function() {
+				$('#popup-accept-edit-activity').hide();
+				$('#activity-map-mode-selector, #popup-accept').show();
+				$('#popup-header').text('Nueva actividad');
+
+				// if activity was not edited (i.e. user canceled the operation), replace markers on main map
+				if (editingActivityId != null) {
+
+					if (activity.isRoute) {
+						activity.routeDisplay.setMap(map);
+						activity.routeMarkers.start.setMap(map);
+						activity.routeMarkers.end.setMap(map);
+					} else {
+						activity.marker.setMap(map);
+						// Remove marker from popupMarkers so it is not deleted on map reset
+						popupMapMarkers.pop();
+					}
+
+					editingActivityId = null;
+				}
+
+				resetPopup();
+			}
+		}
+	});
+}
+
+function deleteActivityCallback(activityId) {
+	var activity = findActivityById(activityId);
+	editingActivityId = activityId;
+
+	$.magnificPopup.open({
+		items: {
+			src: '#popup-confirm',
+			type: 'inline'
+		},
+		type:'inline',
+		removalDelay: 300,
+		mainClass: 'mfp-fade',
+		midClick: true,
+	});
+}
+
+function fitIntoMapBounds(activity, bounds) {
 		if (activity.isRoute) {
 			bounds.extend(activity.routeMarkers.start.getPosition());
 			bounds.extend(activity.routeMarkers.end.getPosition());
@@ -407,1072 +412,1088 @@ console.log('activity', activity)
 		return isValid;
 	}
 
-	function fillPopupWithActivity(activity) {
-		$('#popup-activity-name').val(activity.name);
-		$('.colour-opt').removeClass('selected');
-		if (activity.isRoute) {
-			$('#popup-activity-to').val(activity.toSearchTerm);
-			$('#popup-activity-from').val(activity.fromSearchTerm);
+function fillPopupWithActivity(activity) {
+	$('#popup-activity-name').val(activity.name);
+	$('.colour-opt').removeClass('selected');
+	if (activity.isRoute) {
+		$('#popup-activity-to').val(activity.toSearchTerm);
+		$('#popup-activity-from').val(activity.fromSearchTerm);
 
-			// Delete old directions, a new search will be made
-			activity.routeDisplay.setMap(null);
-			activity.routeMarkers.start.setMap(null);
-			activity.routeMarkers.end.setMap(null);
+		// Delete old directions, a new search will be made
+		activity.routeDisplay.setMap(null);
+		activity.routeMarkers.start.setMap(null);
+		activity.routeMarkers.end.setMap(null);
 
-			$('#popup-activity-icon-two').val(activity.markerIconTwoName).trigger('change');
+		$('#popup-activity-icon-two').val(activity.markerIconTwoName).trigger('change');
 
-			// Perform a new search for directions
-			google.maps.event.trigger(origin_autocomplete, 'place_changed');
-			google.maps.event.trigger(destination_autocomplete, 'place_changed');
-		} else {
-			$('#popup-activity-place').val(activity.searchTerm);
-			activity.marker.setMap(popupMap);
-			popupMap.setCenter(activity.marker.getPosition());
-			popupMap.setZoom(17);
-			popupMapMarkers.push(activity.marker);
-		}
-
-		$('.' + activity.colourClass).addClass('selected');
-
-		$('#popup-activity-start').timepicker('setTime', activity.startTime);
-		$('#popup-activity-length').timepicker('setTime', activity.endTime);
-
-		$('#popup-activity-icon-one').val(activity.markerIconOneName).trigger('change')
-
-		$('.travel-mode[data-travel-mode="'+ activity.travelMode +'"]').prop('checked', 'checked');
+		// Perform a new search for directions
+		google.maps.event.trigger(origin_autocomplete, 'place_changed');
+		google.maps.event.trigger(destination_autocomplete, 'place_changed');
+	} else {
+		$('#popup-activity-place').val(activity.searchTerm);
+		activity.marker.setMap(popupMap);
+		popupMap.setCenter(activity.marker.getPosition());
+		popupMap.setZoom(17);
+		popupMapMarkers.push(activity.marker);
 	}
 
-	function findActivityById(id) {
-		var activity;
-		$.each(days, function(index, day) {
+	$('.' + activity.colourClass).addClass('selected');
 
-			for (var i = day.activities.length - 1; i >= 0; i--) {
+	$('#popup-activity-start').timepicker('setTime', activity.startTime);
+	$('#popup-activity-length').timepicker('setTime', activity.endTime);
 
-				if (day.activities[i].htmlId == id) {
-					activity = day.activities[i];
-					break;
-				}
+	$('#popup-activity-icon-one').val(activity.markerIconOneName).trigger('change')
 
+	$('.travel-mode[data-travel-mode="'+ activity.travelMode +'"]').prop('checked', 'checked');
+}
+
+function findActivityById(id) {
+	var activity;
+	$.each(days, function(index, day) {
+
+		for (var i = day.activities.length - 1; i >= 0; i--) {
+
+			if (day.activities[i].htmlId == id) {
+				activity = day.activities[i];
+				break;
 			}
 
-		});
-
-		return activity;
-	}
-
-	function deleteActivity(activity) {
-		var id = activity.htmlId
-
-		$.each(days, function(index, day) {
-
-			for (var i = day.activities.length - 1; i >= 0; i--) {
-
-				if (day.activities[i].htmlId == id) {
-					day.activities.splice(i,1);
-					break;
-				}
-
-			}
-
-		});
-
-		deleteInfobox(activity);
-
-		// Remove activity from map
-		if (activity.isRoute) {
-			activity.routeDisplay.setMap(null);
-			activity.routeMarkers.start.setMap(null);
-			activity.routeMarkers.end.setMap(null);
-		} else {
-			activity.marker.setMap(null);
 		}
 
-		// Remove markers from map markers array
-		$.each(mainMapMarkers, function(index, marker){
-			if (marker != null) {
-				if (marker.map == null) {
-					mainMapMarkers.splice(index, 1);
-				}
-			}
-		})
-
-
-		// Fix: Marker gets a new infobox instance everytime its activity is edited
-		activity.marker = null;
-
-		// Remove activity from time grid
-		$('#' + editingActivityId).remove();
-		activity = null;
-	}
-
-	function deleteInfobox(activity) {
-		//Remove Infobox
-		if (activity.infoBox != null) {
-			activity.infoBox.setMap(null);
-			activity.infoBox = null;
-
-			for (var i = infoBoxes.length - 1; i >= 0; i--) {
-				if (infoBoxes[i].htmlId == activity.htmlId) {
-					infoBoxes.splice(i, 1);
-					return;
-				}
-			}
-		}
-	}
-
-	// Check if there is at lest one point of reference that belongs to a group in order to enable the dropdown button
-	function togglePointsOfReferenceDropdownButton() {
-		if (pointsOfReferenceGroupCount > 0) {
-			$('#points-of-reference-dropdown-button').removeClass('disabled');
-		} else {
-			$('#points-of-reference-dropdown-button').addClass('disabled');
-		}
-	}
-
-	function toggleDays(show) {
-		$.each(days, function(index, day){
-			$.each(day.activities, function(j, activity){
-				toggleActivity(activity, show);
-			});
-		});
-	}
-
-	function togglePopupMode(mode) {
-		var newMode = placeModeEnabled ? MODE_ROUTE : MODE_PLACES;
-
-		if (!isEmpty(mode)) {
-			newMode = mode;
-		}
-
-		if (newMode == MODE_ROUTE) {
-			$('#popup-activity-place').hide();
-			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').show();
-			$('#activity-map-mode-selector').text('Lugares');
-			$('#popup-activity-icon-two + span').show();
-			placeModeEnabled = false;
-		} else if (newMode == MODE_PLACES) {
-			placeModeEnabled = true;
-			$('#popup-activity-icon-two + span').hide();
-			$('#activity-map-mode-selector').text('Rutas');
-			$('#popup-activity-place').show();
-			$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').hide();
-		}
-
-		google.maps.event.trigger(popupMap, 'resize'); // Trigger resize so that controls are updated
-	}
-
-	function togglePointsOfReference(show) {
-		$.each(pointsOfReference, function(index, point){
-			point.marker.setVisible(show);
-		});
-	}
-
-	function togglePointsOfReferenceByGroup(group, show) {
-		$.each(pointsOfReference, function(index, point){
-			if (point.group == group) {
-				point.marker.setVisible(show);
-			}
-		});
-	}
-
-	function toggleActivity(activity, shouldShow) {
-		var activityMap = shouldShow ? map : null;
-		if (activity.isRoute) {
-			activity.routeDisplay.setMap(activityMap);
-			activity.routeMarkers.start.setVisible(shouldShow);
-			activity.routeMarkers.end.setVisible(shouldShow);
-		} else {
-			activity.marker.setVisible(shouldShow);
-		}
-	}
-
-	function replaceMarkers(popupSelectedRoute, activity) {
-		// If necessary, change route markers. Otherwise create a default one, and add it to the map
-		var markerStart = $("#popup-activity-icon-one").val();
-		var markerEnd = $("#popup-activity-icon-two").val();
-		var markerStartImgUrl = "http://maps.google.com/mapfiles/markerA.png";
-		var markerEndImgUrl = "http://maps.google.com/mapfiles/markerB.png";
-		var markerPointX = 10; // Default x value to center default pins over the route
-
-		if (placeModeEnabled) {
-			if (!isEmpty(markerStart)) {
-				var iconName = $("#popup-activity-icon-one").val();
-				activity.marker.icon = placeRouteMarkerUrl + iconName + markerImgExtention;
-				activity.markerIconOneName = iconName;
-			}
-		} else {
-			var leg = popupSelectedRoute.routes[0].legs[0];
-			var routeMarkers = {};
-
-			if (!isEmpty(markerStart)) {
-				markerStartImgUrl = placeRouteMarkerUrl + markerStart + markerImgExtention;
-				markerPointX = 17;
-			}
-			var startMarkerImage = new google.maps.MarkerImage(markerStartImgUrl,
-																new google.maps.Size(45, 45), new google.maps.Point(0, 0),
-																new google.maps.Point(markerPointX, 32));
-			routeMarkers.start = makeMarker(leg.start_location, startMarkerImage, '', map);
-
-			if (!isEmpty(markerEnd)) {
-				markerEndImgUrl = placeRouteMarkerUrl + markerEnd + markerImgExtention;
-				markerPointX = 17;
-			}
-			var endMarkerImage = new google.maps.MarkerImage(markerEndImgUrl,
-																new google.maps.Size(45, 45), new google.maps.Point(0, 0),
-																new google.maps.Point(markerPointX, 32));
-			routeMarkers.end = makeMarker(leg.end_location, endMarkerImage, '', map);
-
-			activity.routeMarkers = routeMarkers;
-			activity.markerIconOneName = markerStart;
-			activity.markerIconTwoName = markerEnd;
-		}
-	}
-
-	function addPointOfReference() {
-		var pointsOfReferenceMarker = popupMapMarkers.pop();
-
-		pointsOfReferenceMarker.setMap(map);
-		mainMapMarkers.push(pointsOfReferenceMarker);
-		mainMapBounds.extend(pointsOfReferenceMarker.position);
-
-		var markerStart = $("#popup-point-of-reference-icon").val();
-		if (!isEmpty(markerStart)) {
-			pointsOfReferenceMarker.icon = pointOfReferenceMarkerUrl + markerStart + markerImgExtention;
-		}
-
-
-		var point = {
-			group: $('#popup-point-of-reference-group').val(),
-			marker: pointsOfReferenceMarker
-		};
-
-
-		if (!isEmpty(point.group)) {
-			pointsOfReferenceGroupCount++;
-			togglePointsOfReferenceDropdownButton();
-			addPointOfReferenceToMenu(point);
-		}
-
-		// If points of reference are disable, hide marker
-		point.marker.setVisible(!$('#toggle-points-of-reference-button').hasClass('disabled'));
-		pointsOfReference.push(point);
-	}
-
-	// Add point of reference group to the dropdown menu
-	function addPointOfReferenceToMenu(point) {
-		for (var i = pointsOfReferenceGroups.length - 1; i >= 0; i--) {
-			if (pointsOfReferenceGroups[i] == point.group) return;
-		}
-
-		pointsOfReferenceGroups.push(point.group);
-
-		var liHTML = $('#points-of-reference-li-template').clone()[0];
-		var liId = 'por-' + point.group.replace(' ', '-');
-		$(liHTML).attr('id', liId);
-		var spanHTML = $(liHTML).find('.por-text');
-		$(spanHTML).text(point.group)[0];
-		$(liHTML).attr('data-group', point.group);
-
-		$('#points-of-reference-dropdown-list').append(liHTML);
-		$(liHTML).show();
-	}
-
-	function buildActivityObject() {
-		var startTime = $('#popup-activity-start').timepicker('getTime');
-		var endTime = $('#popup-activity-length').timepicker('getTime');
-		var length = endTime - startTime;
-		var activityId = 'd'+ currentDay +'a' + days[currentDay].activities.length;
-
-		var activity = {
-			name: $('#popup-activity-name').val(),
-			startHour: startTime.getHours(),
-			startMinute: startTime.getMinutes(),
-			startTime: startTime,
-			endTime: endTime,
-			length: length,
-			isRoute: !placeModeEnabled,
-			colour: $('.colour-opt.selected').css('background-color'),
-			colourClass: getSelectedColourClass(),
-			htmlId: activityId
-		};
-
-		var markerImgExtention = ".png";
-		var markerStart = $("#popup-activity-icon-one").val();
-
-		if (placeModeEnabled) {
-			// Pop the first search result from the autocomplete
-			var placeMarker = popupMapMarkers.pop();
-			placeMarker.setMap(map);
-			mainMapMarkers.push(placeMarker);
-			mainMapBounds.extend(placeMarker.position);
-			activity.marker = placeMarker;
-			activity.searchTerm = $('#popup-activity-place').val();
-		} else {
-			mainMapRoutes.push(popupSelectedRoute);
-			var routeDisplay = new google.maps.DirectionsRenderer();
-			routeDisplay.setOptions( { suppressMarkers: true, preserveViewport: true } ); // Disable markers. Then, add custom ones, or create default markers
-			routeDisplay.setDirections(popupSelectedRoute);
-			routeDisplay.setMap(map);
-			mainMapBounds.union(popupSelectedRoute.routes[0].bounds);
-			mainMapDirectionDisplays.push(routeDisplay);
-			activity.routeDisplay = routeDisplay;
-			activity.fromSearchTerm = $('#popup-activity-from').val();
-			activity.toSearchTerm = $('#popup-activity-to').val();
-			activity.travelMode = $('.travel-mode:checked').attr('data-travel-mode');
-		}
-
-		replaceMarkers(popupSelectedRoute, activity);
-
-		return activity;
-	}
-
-	function addActivity() {
-		var activity = buildActivityObject();
-
-		// If days are hidden on the map, hide the new activity
-		toggleActivity(activity, !$('#toggle-days-button').hasClass('disabled'));
-
-		addActivityToTimeGrid(activity);
-
-		addMarkerListener(activity);
-
-		activity.day = currentDay;
-	}
-
-	function closeInfoBoxes() {
-		$.each(infoBoxes, function(index, box){
-			box.close();
-		});
-		$('.activity').removeClass('selected unselected');
-	}
-
-	function addMarkerListener(activity) {
-		if (activity.isRoute) {
-			activity.routeMarkers.end.addListener('click', function(){
-				markerOnClickHandler(activity, activity.routeMarkers.end);
-			});
-			activity.routeMarkers.start.addListener('click', function(){
-				markerOnClickHandler(activity, activity.routeMarkers.start);
-			});
-		} else {
-			activity.marker.addListener('click', function(){
-				markerOnClickHandler(activity, activity.marker);
-			});
-
-		}
-
-	}
-
-	function markerOnClickHandler(activity, marker) {
-		closeInfoBoxes();
-		scrollToElementId('#' + activity.htmlId);
-
-		// Select activity in time grid
-		$('#' + activity.htmlId).addClass('selected');
-		$('.activity[id!="' + activity.htmlId + '"]').addClass('unselected');
-
-		var startHours = activity.startTime.getHours() < 10 ? '0' + activity.startTime.getHours() : activity.startTime.getHours();
-		var endHours = activity.endTime.getHours() < 10 ? '0' + activity.endTime.getHours() : activity.endTime.getHours();
-		var startMinutes = activity.startTime.getMinutes() < 10 ? '0' + activity.startTime.getMinutes() : activity.startTime.getMinutes();
-		var endMinutes = activity.endTime.getMinutes() < 10 ? '0' + activity.endTime.getMinutes() : activity.endTime.getMinutes();
-
-		var startTime = startHours + ':' + startMinutes;
-		var endTime = endHours + ':' + startMinutes;
-		var infoBoxHTML = $('#marker-info-template').clone()[0];
-		$(infoBoxHTML).attr('id', 'info-' + activity.htmlId);
-		$(infoBoxHTML).find('.info-name').text(activity.name);
-		$(infoBoxHTML).find('.info-time').text('de ' + startTime + ' a ' + endTime);
-		$(infoBoxHTML).show();
-
-		var infoBox = activity.infoBox;
-		if (infoBox == null) {
-			infoBox = new InfoBox({
-				content: infoBoxHTML,
-				disableAutoPan: true,
-				pixelOffset: new google.maps.Size(20, -75),
-				zIndex: null,
-				closeBoxMargin: "12px 4px 2px 2px",
-				infoBoxClearance: new google.maps.Size(1, 1)
-			});
-
-			infoBox.htmlId = activity.htmlId;
-		} else {
-			infoBox.setContent(infoBoxHTML);
-		}
-
-		infoBoxes.push(infoBox);
-		activity.infoBox = infoBox;
-
-		activity.infoBox.addListener('closeclick',function(){
-			$('.activity').removeClass('selected unselected');
-		});
-
-		infoBox.open(map, marker);
-	}
-
-	function addActivityToTimeGrid(activity) {
-		var dayIndex = isEmpty(activity.day) ? currentDay : activity.day;
-
-		days[dayIndex].activities.push(activity);
-
-		// Get the default template and adapt it for the new activity.
-		var activityHTML = $('#activity-template').clone()[0];
-		// var activityId = 'd'+ dayIndex +'a' + days[dayIndex].activities.length;
-		$(activityHTML).attr('id', activity.htmlId);
-
-		var activityNameHTML = $(activityHTML).find('.activity-name')[0];
-		$(activityNameHTML).text(activity.name);
-
-		// Calculate the activity height and top.
-		$(activityHTML).css(getActivityCSS(activity));
-
-		// Add the new activity to the proper day, at the proper time of day and with the proper length in the grid (height);
-		var containerId = '#d'+ dayIndex +'-activities-container';
-
-		$(containerId).append(activityHTML);
-		$(activityHTML).fadeIn();
-
-		scrollToElementId('#' + activity.htmlId);
-	}
-
-	function addDay() {
-		var dayIndex = days.length;
-
-		if (days[dayIndex] == null) {
-			days[dayIndex] = {
-				activities: []
-			};
-		}
-
-		// Get the default template for days controls
-		var dayControlHtml = $('#day-template').clone()[0];
-		var dayControlId = 'd' + dayIndex;
-		$(dayControlHtml).attr('id', dayControlId);
-		var dayNameHTML = $(dayControlHtml).find('.day-name')[0];
-		$(dayNameHTML).text('Dia ' + (dayIndex + 1));
-		$(dayNameHTML).attr('data-day-index', dayIndex);
-		var openPopupLinkHTML = $(dayControlHtml).find('a')[0];
-		var openPopupLinkId = dayControlId + '-popup-trigger';
-		$(openPopupLinkHTML).attr('id', openPopupLinkId);
-		$(openPopupLinkHTML).attr('data-day-index', dayIndex);
-		$('#day-controls-container').append(dayControlHtml);
-		$(dayControlHtml).fadeIn();
-
-		// Get the default template for days container
-		var dayContainerHTML = $('#day-container-template').clone()[0];
-		var dayConatinerId = 'd' + dayIndex + 'c';
-		$(dayContainerHTML).attr('id', dayConatinerId);
-		var dayActivitiesContainerHTML = $(dayContainerHTML).find('div')[0];
-		$(dayActivitiesContainerHTML).attr('id', 'd'+ dayIndex +'-activities-container');
-		$(dayActivitiesContainerHTML).attr('class', 'activities-container');
-		$('#days-container').append(dayContainerHTML);
-		$(dayContainerHTML).fadeIn();
-
-		// Move add day button and place it to the right of the newly added day
-		var addDayButtonHTML = $('#add-day').detach();
-		$('#day-controls-container').append(addDayButtonHTML);
-
-		// Initialize the popup plugin for the newly created link
-		initializePopupPlugin('#' + openPopupLinkId);
-	}
-
-	function initializePopupPlugin(triggerElementSelector) {
-		$(triggerElementSelector).magnificPopup({
-			type:'inline',
-			removalDelay: 300,
-			mainClass: 'mfp-fade',
-			midClick: true,
-			callbacks: {
-				open: function() {
-					initPopupMapAndUI();
-				},
-				close: function() {
-					resetPopup();
-				}
-			}
-		});
-	}
-
-	$('#activity-next-button').click(function(){
-		// Try to guess activity information and autocomplete the second step
-		autoCompleteActivityInfo();
-		goToPopupStep();
 	});
 
-	function autoCompleteActivityInfo() {
-		var activityName = '';
-		if (placeModeEnabled) {
-			var place = $('#popup-activity-place').val();
-			if (place != '') {
-				activityName = place.split(',')[0];
+	return activity;
+}
+
+function deleteActivity(activity) {
+	var id = activity.htmlId
+
+	$.each(days, function(index, day) {
+
+		for (var i = day.activities.length - 1; i >= 0; i--) {
+
+			if (day.activities[i].htmlId == id) {
+				day.activities.splice(i,1);
+				break;
 			}
+
+		}
+
+	});
+
+	deleteInfobox(activity);
+
+	// Remove activity from map
+	if (activity.isRoute) {
+		activity.routeDisplay.setMap(null);
+		activity.routeMarkers.start.setMap(null);
+		activity.routeMarkers.end.setMap(null);
+	} else {
+		activity.marker.setMap(null);
+	}
+
+	// Remove markers from map markers array
+	$.each(mainMapMarkers, function(index, marker){
+		if (marker != null) {
+			if (marker.map == null) {
+				mainMapMarkers.splice(index, 1);
+			}
+		}
+	})
+
+
+	// Fix: Marker gets a new infobox instance everytime its activity is edited
+	activity.marker = null;
+
+	// Remove activity from time grid
+	$('#' + editingActivityId).remove();
+	activity = null;
+}
+
+function deleteInfobox(activity) {
+	//Remove Infobox
+	if (activity.infoBox != null) {
+		activity.infoBox.setMap(null);
+		activity.infoBox = null;
+
+		for (var i = infoBoxes.length - 1; i >= 0; i--) {
+			if (infoBoxes[i].htmlId == activity.htmlId) {
+				infoBoxes.splice(i, 1);
+				return;
+			}
+		}
+	}
+}
+
+// Check if there is at lest one point of reference that belongs to a group in order to enable the dropdown button
+function togglePointsOfReferenceDropdownButton() {
+	if (pointsOfReferenceGroupCount > 0) {
+		$('#points-of-reference-dropdown-button').removeClass('disabled');
+	} else {
+		$('#points-of-reference-dropdown-button').addClass('disabled');
+	}
+}
+
+function toggleDays(show) {
+	$.each(days, function(index, day){
+		$.each(day.activities, function(j, activity){
+			toggleActivity(activity, show);
+		});
+	});
+}
+
+function togglePopupMode(mode) {
+	var newMode = placeModeEnabled ? MODE_ROUTE : MODE_PLACES;
+
+	if (!isEmpty(mode)) {
+		newMode = mode;
+	}
+
+	if (newMode == MODE_ROUTE) {
+		$('#popup-activity-place').hide();
+		$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').show();
+		$('#activity-map-mode-selector').text('Lugares');
+		$('#popup-activity-icon-two + span').show();
+		placeModeEnabled = false;
+	} else if (newMode == MODE_PLACES) {
+		placeModeEnabled = true;
+		$('#popup-activity-icon-two + span').hide();
+		$('#activity-map-mode-selector').text('Rutas');
+		$('#popup-activity-place').show();
+		$('#popup-activity-from, #popup-activity-to, #directions-mode-selector').hide();
+	}
+
+	google.maps.event.trigger(popupMap, 'resize'); // Trigger resize so that controls are updated
+}
+
+function togglePointsOfReference(show) {
+	$.each(pointsOfReference, function(index, point){
+		point.marker.setVisible(show);
+	});
+}
+
+function togglePointsOfReferenceByGroup(group, show) {
+	$.each(pointsOfReference, function(index, point){
+		if (point.group == group) {
+			point.marker.setVisible(show);
+		}
+	});
+}
+
+function toggleActivity(activity, shouldShow) {
+	var activityMap = shouldShow ? map : null;
+	if (activity.isRoute) {
+		activity.routeDisplay.setMap(activityMap);
+		activity.routeMarkers.start.setVisible(shouldShow);
+		activity.routeMarkers.end.setVisible(shouldShow);
+	} else {
+		activity.marker.setVisible(shouldShow);
+	}
+}
+
+function replaceMarkers(popupSelectedRoute, activity) {
+	// If necessary, change route markers. Otherwise create a default one, and add it to the map
+	var markerStart = $("#popup-activity-icon-one").val();
+	var markerEnd = $("#popup-activity-icon-two").val();
+	var markerStartImgUrl = "http://maps.google.com/mapfiles/markerA.png";
+	var markerEndImgUrl = "http://maps.google.com/mapfiles/markerB.png";
+	var markerPointX = 10; // Default x value to center default pins over the route
+
+	if (placeModeEnabled) {
+		if (!isEmpty(markerStart)) {
+			var iconName = $("#popup-activity-icon-one").val();
+			activity.marker.icon = placeRouteMarkerUrl + iconName + markerImgExtention;
+			activity.markerIconOneName = iconName;
+		}
+	} else {
+		var leg = popupSelectedRoute.routes[0].legs[0];
+		var routeMarkers = {};
+
+		if (!isEmpty(markerStart)) {
+			markerStartImgUrl = placeRouteMarkerUrl + markerStart + markerImgExtention;
+			markerPointX = 17;
+		}
+		var startMarkerImage = new google.maps.MarkerImage(markerStartImgUrl,
+															new google.maps.Size(45, 45), new google.maps.Point(0, 0),
+															new google.maps.Point(markerPointX, 32));
+		routeMarkers.start = makeMarker(leg.start_location, startMarkerImage, '', map);
+
+		if (!isEmpty(markerEnd)) {
+			markerEndImgUrl = placeRouteMarkerUrl + markerEnd + markerImgExtention;
+			markerPointX = 17;
+		}
+		var endMarkerImage = new google.maps.MarkerImage(markerEndImgUrl,
+															new google.maps.Size(45, 45), new google.maps.Point(0, 0),
+															new google.maps.Point(markerPointX, 32));
+		routeMarkers.end = makeMarker(leg.end_location, endMarkerImage, '', map);
+
+		activity.routeMarkers = routeMarkers;
+		activity.markerIconOneName = markerStart;
+		activity.markerIconTwoName = markerEnd;
+	}
+}
+
+function addPointOfReference() {
+	var pointsOfReferenceMarker = popupMapMarkers.pop();
+
+	pointsOfReferenceMarker.setMap(map);
+	mainMapMarkers.push(pointsOfReferenceMarker);
+	mainMapBounds.extend(pointsOfReferenceMarker.position);
+
+	var markerStart = $("#popup-point-of-reference-icon").val();
+	if (!isEmpty(markerStart)) {
+		pointsOfReferenceMarker.icon = pointOfReferenceMarkerUrl + markerStart + markerImgExtention;
+	}
+
+
+	var point = {
+		group: $('#popup-point-of-reference-group').val(),
+		marker: pointsOfReferenceMarker
+	};
+
+
+	if (!isEmpty(point.group)) {
+		pointsOfReferenceGroupCount++;
+		togglePointsOfReferenceDropdownButton();
+		addPointOfReferenceToMenu(point);
+	}
+
+	// If points of reference are disable, hide marker
+	point.marker.setVisible(!$('#toggle-points-of-reference-button').hasClass('disabled'));
+	pointsOfReference.push(point);
+}
+
+// Add point of reference group to the dropdown menu
+function addPointOfReferenceToMenu(point) {
+	for (var i = pointsOfReferenceGroups.length - 1; i >= 0; i--) {
+		if (pointsOfReferenceGroups[i] == point.group) return;
+	}
+
+	pointsOfReferenceGroups.push(point.group);
+
+	var liHTML = $('#points-of-reference-li-template').clone()[0];
+	var liId = 'por-' + point.group.replace(' ', '-');
+	$(liHTML).attr('id', liId);
+	var spanHTML = $(liHTML).find('.por-text');
+	$(spanHTML).text(point.group)[0];
+	$(liHTML).attr('data-group', point.group);
+
+	$('#points-of-reference-dropdown-list').append(liHTML);
+	$(liHTML).show();
+}
+
+function buildActivityObject() {
+	var startTime = $('#popup-activity-start').timepicker('getTime');
+	var endTime = $('#popup-activity-length').timepicker('getTime');
+	var length = endTime - startTime;
+	var activityId = 'd'+ currentDay +'a' + days[currentDay].activities.length;
+
+	var activity = {
+		name: $('#popup-activity-name').val(),
+		startHour: startTime.getHours(),
+		startMinute: startTime.getMinutes(),
+		startTime: startTime,
+		endTime: endTime,
+		length: length,
+		isRoute: !placeModeEnabled,
+		colour: $('.colour-opt.selected').css('background-color'),
+		colourClass: getSelectedColourClass(),
+		htmlId: activityId
+	};
+
+	var markerImgExtention = ".png";
+	var markerStart = $("#popup-activity-icon-one").val();
+
+	if (placeModeEnabled) {
+		// Pop the first search result from the autocomplete
+		var placeMarker = popupMapMarkers.pop();
+		placeMarker.setMap(map);
+		mainMapMarkers.push(placeMarker);
+		mainMapBounds.extend(placeMarker.position);
+		activity.marker = placeMarker;
+		activity.searchTerm = $('#popup-activity-place').val();
+	} else {
+		mainMapRoutes.push(popupSelectedRoute);
+		var routeDisplay = new google.maps.DirectionsRenderer();
+		routeDisplay.setOptions( { suppressMarkers: true, preserveViewport: true } ); // Disable markers. Then, add custom ones, or create default markers
+		routeDisplay.setDirections(popupSelectedRoute);
+		routeDisplay.setMap(map);
+		mainMapBounds.union(popupSelectedRoute.routes[0].bounds);
+		mainMapDirectionDisplays.push(routeDisplay);
+		activity.routeDisplay = routeDisplay;
+		activity.fromSearchTerm = $('#popup-activity-from').val();
+		activity.toSearchTerm = $('#popup-activity-to').val();
+		activity.travelMode = $('.travel-mode:checked').attr('data-travel-mode');
+	}
+
+	replaceMarkers(popupSelectedRoute, activity);
+
+	return activity;
+}
+
+function addActivity() {
+	var activity = buildActivityObject();
+
+	// If days are hidden on the map, hide the new activity
+	toggleActivity(activity, !$('#toggle-days-button').hasClass('disabled'));
+
+	addActivityToTimeGrid(activity);
+
+	addMarkerListener(activity);
+
+	activity.day = currentDay;
+}
+
+function closeInfoBoxes() {
+	$.each(infoBoxes, function(index, box){
+		box.close();
+	});
+	$('.activity').removeClass('selected unselected');
+}
+
+function addMarkerListener(activity) {
+	if (activity.isRoute) {
+		activity.routeMarkers.end.addListener('click', function(){
+			markerOnClickHandler(activity, activity.routeMarkers.end);
+		});
+		activity.routeMarkers.start.addListener('click', function(){
+			markerOnClickHandler(activity, activity.routeMarkers.start);
+		});
+	} else {
+		activity.marker.addListener('click', function(){
+			markerOnClickHandler(activity, activity.marker);
+		});
+
+	}
+
+}
+
+function markerOnClickHandler(activity, marker) {
+	closeInfoBoxes();
+	scrollToElementId('#' + activity.htmlId);
+
+	// Select activity in time grid
+	$('#' + activity.htmlId).addClass('selected');
+	$('.activity[id!="' + activity.htmlId + '"]').addClass('unselected');
+
+	var startHours = activity.startTime.getHours() < 10 ? '0' + activity.startTime.getHours() : activity.startTime.getHours();
+	var endHours = activity.endTime.getHours() < 10 ? '0' + activity.endTime.getHours() : activity.endTime.getHours();
+	var startMinutes = activity.startTime.getMinutes() < 10 ? '0' + activity.startTime.getMinutes() : activity.startTime.getMinutes();
+	var endMinutes = activity.endTime.getMinutes() < 10 ? '0' + activity.endTime.getMinutes() : activity.endTime.getMinutes();
+
+	var startTime = startHours + ':' + startMinutes;
+	var endTime = endHours + ':' + startMinutes;
+	var infoBoxHTML = $('#marker-info-template').clone()[0];
+	$(infoBoxHTML).attr('id', 'info-' + activity.htmlId);
+	$(infoBoxHTML).find('.info-name').text(activity.name);
+	$(infoBoxHTML).find('.info-time').text('de ' + startTime + ' a ' + endTime);
+	$(infoBoxHTML).show();
+
+	var infoBox = activity.infoBox;
+	if (infoBox == null) {
+		infoBox = new InfoBox({
+			content: infoBoxHTML,
+			disableAutoPan: true,
+			pixelOffset: new google.maps.Size(20, -75),
+			zIndex: null,
+			closeBoxMargin: "12px 4px 2px 2px",
+			infoBoxClearance: new google.maps.Size(1, 1)
+		});
+
+		infoBox.htmlId = activity.htmlId;
+	} else {
+		infoBox.setContent(infoBoxHTML);
+	}
+
+	infoBoxes.push(infoBox);
+	activity.infoBox = infoBox;
+
+	activity.infoBox.addListener('closeclick',function(){
+		$('.activity').removeClass('selected unselected');
+	});
+
+	infoBox.open(map, marker);
+}
+
+function addActivityToTimeGrid(activity) {
+	var dayIndex = isEmpty(activity.day) ? currentDay : activity.day;
+
+	days[dayIndex].activities.push(activity);
+
+	// Get the default template and adapt it for the new activity.
+	var activityHTML = $('#activity-template').clone()[0];
+	// var activityId = 'd'+ dayIndex +'a' + days[dayIndex].activities.length;
+	$(activityHTML).attr('id', activity.htmlId);
+
+	var activityNameHTML = $(activityHTML).find('.activity-name')[0];
+	$(activityNameHTML).text(activity.name);
+
+	// Calculate the activity CSS properties.
+	var activityCSS = getActivityCSS(activity);
+	$(activityHTML).css(activityCSS);
+
+	if (parseInt(activityCSS.height) < 20) {
+		// If heigh is too small, remove activity name and icons and create a tooltip
+		$(activityHTML).tooltipster({
+			content: $('<span class="activity-tooltip-controls">'+ activity.name +'</span><span style="inline-block; margin-left:20px;"></i><i onclick="editActivityCallback(\''+activity.htmlId+'\')" class="icon-pencil tooltip-icon edit-activity"></i><i class="icon-trash tooltip-icon delete-activity" onclick="deleteActivityCallback(\''+activity.htmlId+'\')"></span>'),
+			animation: 'fade',
+			delay: 200,
+			touchDevices: false,
+			theme: 'activity-tooltip',
+			autoClose: true,
+			hideOnClick: true,
+			interactive: true
+		});
+		$(activityNameHTML).text('');
+		$(activityHTML).find('.icons').text('');
+	}
+
+	// Add the new activity to the proper day, at the proper time of day and with the proper length in the grid (height);
+	var containerId = '#d'+ dayIndex +'-activities-container';
+
+	$(containerId).append(activityHTML);
+	$(activityHTML).fadeIn();
+
+	scrollToElementId('#' + activity.htmlId);
+}
+
+function addDay() {
+	var dayIndex = days.length;
+
+	if (days[dayIndex] == null) {
+		days[dayIndex] = {
+			activities: []
+		};
+	}
+
+	// Get the default template for days controls
+	var dayControlHtml = $('#day-template').clone()[0];
+	var dayControlId = 'd' + dayIndex;
+	$(dayControlHtml).attr('id', dayControlId);
+	var dayNameHTML = $(dayControlHtml).find('.day-name')[0];
+	$(dayNameHTML).text('Dia ' + (dayIndex + 1));
+	$(dayNameHTML).attr('data-day-index', dayIndex);
+	var openPopupLinkHTML = $(dayControlHtml).find('a')[0];
+	var openPopupLinkId = dayControlId + '-popup-trigger';
+	$(openPopupLinkHTML).attr('id', openPopupLinkId);
+	$(openPopupLinkHTML).attr('data-day-index', dayIndex);
+	$('#day-controls-container').append(dayControlHtml);
+	$(dayControlHtml).fadeIn();
+
+	// Get the default template for days container
+	var dayContainerHTML = $('#day-container-template').clone()[0];
+	var dayConatinerId = 'd' + dayIndex + 'c';
+	$(dayContainerHTML).attr('id', dayConatinerId);
+	var dayActivitiesContainerHTML = $(dayContainerHTML).find('div')[0];
+	$(dayActivitiesContainerHTML).attr('id', 'd'+ dayIndex +'-activities-container');
+	$(dayActivitiesContainerHTML).attr('class', 'activities-container');
+	$('#days-container').append(dayContainerHTML);
+	$(dayContainerHTML).fadeIn();
+
+	// Move add day button and place it to the right of the newly added day
+	var addDayButtonHTML = $('#add-day').detach();
+	$('#day-controls-container').append(addDayButtonHTML);
+
+	// Initialize the popup plugin for the newly created link
+	initializePopupPlugin('#' + openPopupLinkId);
+}
+
+function initializePopupPlugin(triggerElementSelector) {
+	$(triggerElementSelector).magnificPopup({
+		type:'inline',
+		removalDelay: 300,
+		mainClass: 'mfp-fade',
+		midClick: true,
+		callbacks: {
+			open: function() {
+				initPopupMapAndUI();
+			},
+			close: function() {
+				resetPopup();
+			}
+		}
+	});
+}
+
+$('#activity-next-button').click(function(){
+	// Try to guess activity information and autocomplete the second step
+	autoCompleteActivityInfo();
+	goToPopupStep();
+});
+
+function autoCompleteActivityInfo() {
+	var activityName = '';
+	if (placeModeEnabled) {
+		var place = $('#popup-activity-place').val();
+		if (place != '') {
+			activityName = place.split(',')[0];
+		}
+	} else {
+		var from = $('#popup-activity-from').val();
+		var to = $('#popup-activity-to').val();
+		if ((to != '') && (from != '')) {
+			activityName = from.split(',')[0] + ' a ' + to.split(',')[0];
+		}
+	}
+	$('#popup-activity-name').val(activityName);
+
+}
+
+function scrollToElementId(elementId) {
+	$('#scrollable-itinerary-container').mCustomScrollbar('scrollTo', elementId);
+}
+
+function selectFormatterFunction(state) {
+	if (!state.id) {
+		return state.text;
+	}
+
+	var $state = $(
+		'<span><img src="' + placeRouteMarkerUrl + state.element.value.toLowerCase() + markerImgExtention + '" class="img-marker" /> <span class="select2-option-text">' + state.text + '</span></span>'
+	);
+	return $state;
+}
+
+function porSelectFormatterFunction(state) {
+	if (!state.id) {
+		return state.text;
+	}
+
+	var $state = $(
+		'<span><img src="' + pointOfReferenceMarkerUrl + state.element.value.toLowerCase() + markerImgExtention + '" class="img-marker" /> <span class="select2-option-text">' + state.text + '</span></span>'
+	);
+	return $state;
+}
+
+function getCSSPropertyValueAsInt(selector, property) {
+	var intValue = parseInt($(selector).css(property));
+	if (isNaN(intValue)) {
+		return 0;
+	}
+
+	return intValue;
+}
+
+function getActivityCSS(activity) {
+	var length = (activity.length / 1000) / 3600; // Miliseconds to hours
+
+	// Vertical Offset and height
+	var hourOffset = getCSSPropertyValueAsInt('.time-hour', 'height');
+	var timeHourBorderTop = getCSSPropertyValueAsInt('.time-hour', 'border-top');
+	var timeHourBorderBottom = getCSSPropertyValueAsInt('.time-hour', 'border-bottom');
+	var timeGridMargin = getCSSPropertyValueAsInt('#time-grid', 'margin-top');
+	var hourTotalHeight = hourOffset + timeHourBorderTop + timeHourBorderBottom; // Total height of an hour is its height + its borders top and bottom
+	var cssTop = (activity.startHour * hourTotalHeight) + timeGridMargin; // Top position only for the starting hour
+	cssTop += (activity.startMinute / 60) * hourTotalHeight; // Add px corresponding to the time minutes
+	var cssHeight = length * hourTotalHeight;
+	cssHeight = cssHeight == 0 ? 1 : cssHeight;
+
+	// Horizontal offset
+	var dayOffset = getCSSPropertyValueAsInt('.day-control', 'width') + getCSSPropertyValueAsInt('.day-control', 'padding-right') + getCSSPropertyValueAsInt('.day-control', 'padding-left');
+	var timeHourTextOffset = getCSSPropertyValueAsInt('.time-hour span', 'width') / 2;
+	var cssLeft = (dayOffset * currentDay) + timeHourTextOffset;
+
+	return {
+		'top': cssTop + 'px',
+		'left': cssLeft + 'px',
+		'height': cssHeight + 'px',
+		'background-color': activity.colour
+	};
+}
+
+function calculateTotalTimeAndDistance(result) {
+	var distance = 0;
+	var time = 0;
+	var route = result.routes[0];
+
+	for (var i = 0; i < route.legs.length; i++) {
+		distance += route.legs[i].distance.value;
+		time += route.legs[i].duration.value;
+	}
+
+	distance = distance / 1000;
+	distance = distance.toFixed(2);
+	$('#directions-distance').text(distance + ' km');
+	$('#directions-time').text(secondsToFriendlyTime(time));
+	$('#directions-information').animate({'top': '395px'});
+}
+
+function displayPopupMapNotification(text, notificationType) {
+	var type = isEmpty(notificationType) ? 'warning' : notificationType;
+	goToPopupStep(0);
+	$('#popup-map-notice span').text(text);
+	$('#popup-map-notice').addClass(type);
+	$('#popup-map-notice').animate({'top': '395px'});
+}
+
+function secondsToDayHourMinuteObj(secondsCount) {
+	var remainingTime = secondsCount;
+	var days = Math.floor((remainingTime / 3600) / 24);
+
+	if (days > 0) {
+		remainingTime = secondsCount - (days * 3600 * 24);
+	}
+
+	var hours = Math.floor(remainingTime / 3600);
+	var minutes = Math.floor((remainingTime - (hours * 3600)) / 60);
+	//var seconds = remainingTime - (hours * 3600) - (minutes * 60);
+
+	return {
+		days: days,
+		hours: hours,
+		minutes: minutes
+	};
+}
+
+// Translate seconds to an easy to read representation
+function secondsToFriendlyTime(secondsCount) {
+	var dayHourMinuteObj = secondsToDayHourMinuteObj(secondsCount);
+	var friendlyTimeStr;
+	var days = dayHourMinuteObj.days;
+	var hours = dayHourMinuteObj.hours;
+	var minutes = dayHourMinuteObj.minutes;
+
+	if (days > 0) {
+		friendlyTimeStr = days + ' dia';
+
+		if (days > 1) friendlyTimeStr += 's';
+	}
+
+	if (hours > 0) {
+		if (days > 0) {
+			friendlyTimeStr += ' ' + hours + ' hora';
 		} else {
-			var from = $('#popup-activity-from').val();
-			var to = $('#popup-activity-to').val();
-			if ((to != '') && (from != '')) {
-				activityName = from.split(',')[0] + ' a ' + to.split(',')[0];
-			}
-		}
-		$('#popup-activity-name').val(activityName);
-
-	}
-
-	function scrollToElementId(elementId) {
-		$('#scrollable-itinerary-container').mCustomScrollbar('scrollTo', elementId);
-	}
-
-	function selectFormatterFunction(state) {
-		if (!state.id) {
-			return state.text;
+			friendlyTimeStr = hours + ' hora';
 		}
 
-		var $state = $(
-			'<span><img src="' + placeRouteMarkerUrl + state.element.value.toLowerCase() + markerImgExtention + '" class="img-marker" /> <span class="select2-option-text">' + state.text + '</span></span>'
-		);
-		return $state;
+		if (hours > 1) friendlyTimeStr += 's';
 	}
 
-	function porSelectFormatterFunction(state) {
-		if (!state.id) {
-			return state.text;
-		}
-
-		var $state = $(
-			'<span><img src="' + pointOfReferenceMarkerUrl + state.element.value.toLowerCase() + markerImgExtention + '" class="img-marker" /> <span class="select2-option-text">' + state.text + '</span></span>'
-		);
-		return $state;
-	}
-
-	function getCSSPropertyValueAsInt(selector, property) {
-		var intValue = parseInt($(selector).css(property));
-		if (isNaN(intValue)) {
-			return 0;
-		}
-
-		return intValue;
-	}
-
-	function getActivityCSS(activity) {
-		var length = (activity.length / 1000) / 3600; // Miliseconds to hours
-
-		// Vertical Offset and height
-		var hourOffset = getCSSPropertyValueAsInt('.time-hour', 'height');
-		var timeHourBorderTop = getCSSPropertyValueAsInt('.time-hour', 'border-top');
-		var timeHourBorderBottom = getCSSPropertyValueAsInt('.time-hour', 'border-bottom');
-		var timeGridMargin = getCSSPropertyValueAsInt('#time-grid', 'margin-top');
-		var hourTotalHeight = hourOffset + timeHourBorderTop + timeHourBorderBottom; // Total height of an hour is its height + its borders top and bottom
-		var cssTop = (activity.startHour * hourTotalHeight) + timeGridMargin; // Top position only for the starting hour
-		cssTop += (activity.startMinute / 60) * hourTotalHeight; // Add px corresponding to the time minutes
-		var cssHeight = length * hourTotalHeight;
-		cssHeight = cssHeight == 0 ? 1 : cssHeight;
-
-		// Horizontal offset
-		var dayOffset = getCSSPropertyValueAsInt('.day-control', 'width') + getCSSPropertyValueAsInt('.day-control', 'padding-right') + getCSSPropertyValueAsInt('.day-control', 'padding-left');
-		var timeHourTextOffset = getCSSPropertyValueAsInt('.time-hour span', 'width') / 2;
-		var cssLeft = (dayOffset * currentDay) + timeHourTextOffset;
-
-		return {
-			'top': cssTop + 'px',
-			'left': cssLeft + 'px',
-			'height': cssHeight + 'px',
-			'background-color': activity.colour
-		};
-	}
-
-	function calculateTotalTimeAndDistance(result) {
-		var distance = 0;
-		var time = 0;
-		var route = result.routes[0];
-
-		for (var i = 0; i < route.legs.length; i++) {
-			distance += route.legs[i].distance.value;
-			time += route.legs[i].duration.value;
-		}
-
-		distance = distance / 1000;
-		distance = distance.toFixed(2);
-		$('#directions-distance').text(distance + ' km');
-		$('#directions-time').text(secondsToFriendlyTime(time));
-		$('#directions-information').animate({'top': '395px'});
-	}
-
-	function displayPopupMapNotification(text, notificationType) {
-		var type = isEmpty(notificationType) ? 'warning' : notificationType;
-		goToPopupStep(0);
-		$('#popup-map-notice span').text(text);
-		$('#popup-map-notice').addClass(type);
-		$('#popup-map-notice').animate({'top': '395px'});
-	}
-
-	function secondsToDayHourMinuteObj(secondsCount) {
-		var remainingTime = secondsCount;
-		var days = Math.floor((remainingTime / 3600) / 24);
-
-		if (days > 0) {
-			remainingTime = secondsCount - (days * 3600 * 24);
-		}
-
-		var hours = Math.floor(remainingTime / 3600);
-		var minutes = Math.floor((remainingTime - (hours * 3600)) / 60);
-		//var seconds = remainingTime - (hours * 3600) - (minutes * 60);
-
-		return {
-			days: days,
-			hours: hours,
-			minutes: minutes
-		};
-	}
-
-	// Translate seconds to an easy to read representation
-	function secondsToFriendlyTime(secondsCount) {
-		var dayHourMinuteObj = secondsToDayHourMinuteObj(secondsCount);
-		var friendlyTimeStr;
-		var days = dayHourMinuteObj.days;
-		var hours = dayHourMinuteObj.hours;
-		var minutes = dayHourMinuteObj.minutes;
-
-		if (days > 0) {
-			friendlyTimeStr = days + ' dia';
-
-			if (days > 1) friendlyTimeStr += 's';
-		}
-
+	if (minutes > 0) {
 		if (hours > 0) {
-			if (days > 0) {
-				friendlyTimeStr += ' ' + hours + ' hora';
-			} else {
-				friendlyTimeStr = hours + ' hora';
-			}
-
-			if (hours > 1) friendlyTimeStr += 's';
-		}
-
-		if (minutes > 0) {
-			if (hours > 0) {
-				friendlyTimeStr += ' ' + minutes + ' minuto';
-			} else {
-				friendlyTimeStr = minutes + ' minuto';
-			}
-
-			if (minutes > 1) friendlyTimeStr += 's';
-		}
-
-		return friendlyTimeStr;
-	}
-
-	function goToPopupStep(stepIndex) {
-		var effectDuration = 600;
-		var showingFirstStep = parseInt($('#popup-step-one').css('left')) == 0;
-		var goToStep = stepIndex;
-
-		// If stepIndex is not defined, work as a toggle;
-		if (stepIndex == null) {
-			goToStep = showingFirstStep ? 1 : 0;
-		}
-
-		if ( (goToStep == 0) && (showingFirstStep) ) {
-			return;
-		}
-
-		if ( (goToStep == 1) && (!showingFirstStep) ) {
-			return;
-		}
-
-		if (goToStep == 1) {
-			// Go to second step
-			$('#popup-step-one').animate({"left": '-2000'}, effectDuration);
-			$('#popup-step-two').animate({"left": '0'}, effectDuration);
-			$('#activity-next-button').animate({"left": '3%'}, effectDuration);
-			$('#activity-next-button span').removeClass('step-0').addClass('step-1');
+			friendlyTimeStr += ' ' + minutes + ' minuto';
 		} else {
-			// Go to first step
-			$('#activity-next-button span').removeClass('step-1').addClass('step-0');
-			$('#popup-step-two').animate({"left": '800px'}, effectDuration);
-			$('#popup-step-one').animate({"left": '0'}, effectDuration);
-			$('#activity-next-button').animate({"left": '85%'}, effectDuration);
+			friendlyTimeStr = minutes + ' minuto';
 		}
+
+		if (minutes > 1) friendlyTimeStr += 's';
 	}
 
-	function resetPopup() {
-		resetMap(popupMap, popupMapMarkers, true);
-		resetPopupMapControls();
-		goToPopupStep(0);
-		// Reset receipt component
-		resetReceiptComponent();
+	return friendlyTimeStr;
+}
+
+function goToPopupStep(stepIndex) {
+	var effectDuration = 600;
+	var showingFirstStep = parseInt($('#popup-step-one').css('left')) == 0;
+	var goToStep = stepIndex;
+
+	// If stepIndex is not defined, work as a toggle;
+	if (stepIndex == null) {
+		goToStep = showingFirstStep ? 1 : 0;
 	}
 
-	function resetMap(map, mapMarkers, fullReset) {
-		popupSelectedRoute = null;
-		directionsDisplay.setMap(null);
-		origin_place_id = null;
-		destination_place_id = null;
-		resetMarkers(mapMarkers);
-		if (fullReset) {
-			map.setCenter(defaultLocation);
-			map.setZoom(8);
+	if ( (goToStep == 0) && (showingFirstStep) ) {
+		return;
+	}
+
+	if ( (goToStep == 1) && (!showingFirstStep) ) {
+		return;
+	}
+
+	if (goToStep == 1) {
+		// Go to second step
+		$('#popup-step-one').animate({"left": '-2000'}, effectDuration);
+		$('#popup-step-two').animate({"left": '0'}, effectDuration);
+		$('#activity-next-button').animate({"left": '3%'}, effectDuration);
+		$('#activity-next-button span').removeClass('step-0').addClass('step-1');
+	} else {
+		// Go to first step
+		$('#activity-next-button span').removeClass('step-1').addClass('step-0');
+		$('#popup-step-two').animate({"left": '800px'}, effectDuration);
+		$('#popup-step-one').animate({"left": '0'}, effectDuration);
+		$('#activity-next-button').animate({"left": '85%'}, effectDuration);
+	}
+}
+
+function resetPopup() {
+	resetMap(popupMap, popupMapMarkers, true);
+	resetPopupMapControls();
+	goToPopupStep(0);
+	// Reset receipt component
+	resetReceiptComponent();
+}
+
+function resetMap(map, mapMarkers, fullReset) {
+	popupSelectedRoute = null;
+	directionsDisplay.setMap(null);
+	origin_place_id = null;
+	destination_place_id = null;
+	resetMarkers(mapMarkers);
+	if (fullReset) {
+		map.setCenter(defaultLocation);
+		map.setZoom(8);
+	}
+	popupMapMarkers = [];
+}
+
+function resetPopupMapControls() {
+	$('#popup-step-two .controls').removeClass('invalid');
+	$('.popup-map-input-text').val('');
+	$('.popup-select').select2('val','');
+	resetMapInformationBox();
+}
+
+function resetMapInformationBox() {
+	$('#directions-distance').text('');
+	$('#directions-time').text('');
+	$('#directions-information').animate({'top': '500px'});
+	resetMapNotifications();
+}
+
+function resetMapNotifications() {
+	$('#popup-map-notice').removeClass('warning notice');
+	$('#popup-map-notice').animate({'top': '500px'});
+}
+
+function resetMarkers(markers) {
+	// Clear out the old markers.
+	markers.forEach(function(marker) {
+		marker.setMap(null);
+	});
+	markers = [];
+}
+
+function centerMapToIncludeMarkers(aMap) {
+	var bounds = new google.maps.LatLngBounds();
+
+	$.each(mainMapMarkers, function(index, marker){
+		bounds.extend(marker.position);
+	});
+
+	map.fitBounds(bounds);
+}
+
+function initPopupMapAndUI() {
+	$('.activities-container').removeClass('unselected selected');
+	$('.activity').removeClass('unselected selected');
+
+	if (popupMap != null) {
+		if ((isEmpty($('#popup-activity-place').val())) && (isEmpty($('#popup-activity-from').val()))) {
+			// If we are not editing, center the map as the main map
+			popupMap.fitBounds(mainMapBounds);
+			popupMap.setCenter(map.getCenter());
+			popupMap.setZoom(8);
 		}
-		popupMapMarkers = [];
+		return;
 	}
 
-	function resetPopupMapControls() {
-		$('#popup-step-two .controls').removeClass('invalid');
-		$('.popup-map-input-text').val('');
-		$('.popup-select').select2('val','');
-		resetMapInformationBox();
+	initIconSelects();
+
+	$('#popup-point-of-reference-group').easyAutocomplete({
+		data: pointsOfReferenceGroups
+	});
+
+	var timepickerOptions = {
+		'timeFormat': 'H:i',
+		'step': 15
 	}
 
-	function resetMapInformationBox() {
-		$('#directions-distance').text('');
-		$('#directions-time').text('');
-		$('#directions-information').animate({'top': '500px'});
-		resetMapNotifications();
-	}
+	$('#popup-activity-length').timepicker(timepickerOptions);
 
-	function resetMapNotifications() {
-		$('#popup-map-notice').removeClass('warning notice');
-		$('#popup-map-notice').animate({'top': '500px'});
-	}
+	$('#popup-activity-start').timepicker(timepickerOptions)
+	.on('change', function() {
+		var startTime = $('#popup-activity-start').timepicker('getTime');
+		var startTimeStr = $('#popup-activity-start').val();
+		var endTime = $('#popup-activity-length').timepicker('getTime');
+		var options = { minTime: startTime, maxTime: '11:59pm' };
 
-	function resetMarkers(markers) {
-		// Clear out the old markers.
-		markers.forEach(function(marker) {
-			marker.setMap(null);
-		});
-		markers = [];
-	}
-
-	function centerMapToIncludeMarkers(aMap) {
-		var bounds = new google.maps.LatLngBounds();
-
-		$.each(mainMapMarkers, function(index, marker){
-			bounds.extend(marker.position);
-		});
-
-		map.fitBounds(bounds);
-	}
-
-	function initPopupMapAndUI() {
-		$('.activities-container').removeClass('unselected selected');
-		$('.activity').removeClass('unselected selected');
-
-		if (popupMap != null) {
-			if ((isEmpty($('#popup-activity-place').val())) && (isEmpty($('#popup-activity-from').val()))) {
-				// If we are not editing, center the map as the main map
-				popupMap.fitBounds(mainMapBounds);
-				popupMap.setCenter(map.getCenter());
-				popupMap.setZoom(8);
+		if (endTime != null) {
+			if (endTime < startTime) {
+				$('#popup-activity-length').timepicker('setTime', startTime);
 			}
-			return;
 		}
-
-		initIconSelects();
-
-		$('#popup-point-of-reference-group').easyAutocomplete({
-			data: pointsOfReferenceGroups
-		});
-
-		var timepickerOptions = {
-			'timeFormat': 'H:i',
-			'step': 15
-		}
-
-		$('#popup-activity-length').timepicker(timepickerOptions);
-
-		$('#popup-activity-start').timepicker(timepickerOptions)
-		.on('change', function() {
-			var startTime = $('#popup-activity-start').timepicker('getTime');
-			var startTimeStr = $('#popup-activity-start').val();
-			var endTime = $('#popup-activity-length').timepicker('getTime');
-			var options = { minTime: startTime, maxTime: '11:59pm' };
-
-			if (endTime != null) {
-				if (endTime < startTime) {
-					$('#popup-activity-length').timepicker('setTime', startTime);
-				}
-			}
 
 /*			if ($('#popup-activity-start').timepicker('getTime').getHours() == 0) {
-				options.maxTime = '11:59pm';
-			}*/
+			options.maxTime = '11:59pm';
+		}*/
 
-			$('#popup-activity-length').timepicker('option', options);
+		$('#popup-activity-length').timepicker('option', options);
+	});
+
+	var sydneyLocation = {lat: -34.397, lng: 150.644};
+	popupMap = new google.maps.Map(document.getElementById('popup-map'), {
+		center: defaultLocation || sydneyLocation,
+		zoom: 8,
+		mapTypeId: google.maps.MapTypeId.ROADMAP,
+		disableDefaultUI: true
+	});
+
+	directionsDisplay = new google.maps.DirectionsRenderer({
+		draggable: true
+	});
+
+	// Update results if user drags the route
+	directionsDisplay.addListener('directions_changed', function() {
+		popupSelectedRoute = directionsDisplay.getDirections();
+		if (routeHasTolls(popupSelectedRoute.routes[0])) {
+			displayPopupMapNotification('Esta ruta contiene peajes', 'notice')
+		} else {
+			resetMapNotifications();
+		}
+		calculateTotalTimeAndDistance(popupSelectedRoute);
+	});
+
+	initPlacesAutocomplete();
+	initDirectionsAutocompletes();
+}
+
+function initIconSelects() {
+	// Load custom map markers into select2
+	$.each(predefinedMapMarkers, function(index, marker) {
+		$('.popup-select').append('<option value="'+ marker.value +'">'+ marker.name +'</option>')
+	});
+
+	$('.popup-activity-icon-select').select2({
+		templateResult: selectFormatterFunction,
+		minimumResultsForSearch: Infinity,
+		placeholder: 'Marcador por defecto'
+	}).on('change', function(){
+		// If 'default marker' option is selected, then delete any select2 previous value
+		if ($(this).val() == 'default') {
+			$(this).select2('val','');
+		}
+	});
+	$('#popup-activity-icon-two + span').hide();
+
+	$('#popup-point-of-reference-icon').select2({
+		templateResult: porSelectFormatterFunction,
+		minimumResultsForSearch: Infinity,
+		placeholder: 'Marcador por defecto'
+	}).on('change', function(){
+		// If 'default marker' option is selected, then delete any select2 previous value
+		if ($(this).val() == 'default') {
+			$(this).select2('val','');
+		}
+	});
+	$('#popup-activity-icon-two + span').hide();
+	$($('.select2-selection__arrow')[2]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
+	$($('.select2-selection__arrow')[0]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
+}
+
+function initPlacesAutocomplete() {
+	// Create the search box and link it to the UI element.
+	var input = document.getElementById('popup-activity-place');
+	var searchBox = new google.maps.places.SearchBox(input);
+	popupMap.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+	// Bias the SearchBox results towards current map's viewport.
+	popupMap.addListener('bounds_changed', function() {
+		searchBox.setBounds(popupMap.getBounds());
+	});
+
+	// [START region_getplaces]
+	// Listen for the event fired when the user selects a prediction and retrieve
+	// more details for that place.
+	searchBox.addListener('places_changed', function() {
+		var places = searchBox.getPlaces();
+
+		if (places.length == 0) {
+			return;
+		}
+
+		resetMarkers(popupMapMarkers);
+
+		// For each place, get the icon, name and location.
+		var bounds = new google.maps.LatLngBounds();
+		places.forEach(function(place) {
+			var icon = {
+				url: place.icon,
+				size: new google.maps.Size(71, 71),
+				origin: new google.maps.Point(0, 0),
+				anchor: new google.maps.Point(17, 34),
+				scaledSize: new google.maps.Size(25, 25)
+			};
+			// Create a marker for each place.
+			popupMapMarkers.push(new google.maps.Marker({
+				map: popupMap,
+				icon: icon,
+				title: place.name,
+				position: place.geometry.location
+			}));
+
+			if (place.geometry.viewport) {
+				// Only geocodes have viewport.
+				bounds.union(place.geometry.viewport);
+			} else {
+				bounds.extend(place.geometry.location);
+			}
 		});
+		popupMap.fitBounds(bounds);
+	});
+	// [END region_getplaces]
+}
 
-		var sydneyLocation = {lat: -34.397, lng: 150.644};
-		popupMap = new google.maps.Map(document.getElementById('popup-map'), {
-			center: defaultLocation || sydneyLocation,
-			zoom: 8,
-			mapTypeId: google.maps.MapTypeId.ROADMAP,
-			disableDefaultUI: true
-		});
+// Sets a listener on a radio button to change the filter type on Places
+// Autocomplete.
+function setupClickListener(id, mode) {
+	var radioButton = document.getElementById(id);
+	radioButton.addEventListener('click', function() {
+		travel_mode = mode;
+		route(origin_place_id, destination_place_id, travel_mode, directionsService, directionsDisplay);
+	});
+}
 
-		directionsDisplay = new google.maps.DirectionsRenderer({
-			draggable: true
-		});
+function initDirectionsAutocompletes() {
+	var origin_input = document.getElementById('popup-activity-from');
+	var destination_input = document.getElementById('popup-activity-to');
+	var modes = document.getElementById('directions-mode-selector');
 
-		// Update results if user drags the route
-		directionsDisplay.addListener('directions_changed', function() {
-			popupSelectedRoute = directionsDisplay.getDirections();
-			if (routeHasTolls(popupSelectedRoute.routes[0])) {
+	popupMap.controls[google.maps.ControlPosition.TOP_LEFT].push(origin_input);
+	popupMap.controls[google.maps.ControlPosition.TOP_LEFT].push(destination_input);
+	popupMap.controls[google.maps.ControlPosition.TOP_LEFT].push(modes);
+
+	origin_autocomplete = new google.maps.places.Autocomplete(origin_input);
+	origin_autocomplete.bindTo('bounds', popupMap);
+	destination_autocomplete = new google.maps.places.Autocomplete(destination_input);
+	destination_autocomplete.bindTo('bounds', popupMap);
+
+	setupClickListener('changemode-walking', google.maps.TravelMode.WALKING);
+	setupClickListener('changemode-transit', google.maps.TravelMode.TRANSIT);
+	setupClickListener('changemode-driving', google.maps.TravelMode.DRIVING);
+
+	origin_autocomplete.addListener('place_changed', function() {
+		var place = origin_autocomplete.getPlace();
+		if (!place.geometry) {
+			window.alert("Autocomplete's returned place contains no geometry");
+			return;
+		}
+		expandViewportToFitPlace(popupMap, place);
+
+		// If the place has a geometry, store its place ID and route if we have
+		// the other place ID
+		origin_place_id = place.place_id;
+		route(origin_place_id, destination_place_id, travel_mode, directionsService, directionsDisplay);
+	});
+
+	destination_autocomplete.addListener('place_changed', function() {
+		var place = destination_autocomplete.getPlace();
+		if (!place.geometry) {
+			window.alert("Autocomplete's returned place contains no geometry");
+			return;
+		}
+		expandViewportToFitPlace(popupMap, place);
+
+		// If the place has a geometry, store its place ID and route if we have
+		// the other place ID
+		destination_place_id = place.place_id;
+		route(origin_place_id, destination_place_id, travel_mode, directionsService, directionsDisplay);
+	});
+}
+
+function expandViewportToFitPlace(map, place) {
+	if (place.geometry.viewport) {
+		map.fitBounds(place.geometry.viewport);
+	} else {
+		map.setCenter(place.geometry.location);
+		map.setZoom(17);
+	}
+}
+
+function route(origin_place_id, destination_place_id, travel_mode, directionsService, directionsDisplay) {
+	if (!origin_place_id || !destination_place_id) {
+		return;
+	}
+
+	directionsService.route({
+		origin: {'placeId': origin_place_id},
+		destination: {'placeId': destination_place_id},
+		travelMode: travel_mode,
+		provideRouteAlternatives: true
+	}, function(response, status) {
+		if (status === google.maps.DirectionsStatus.OK) {
+			directionsDisplay.setDirections(response);
+			directionsDisplay.setMap(popupMap);
+			popupSelectedRoute = response;
+			if (routeHasTolls(response.routes[0])) {
 				displayPopupMapNotification('Esta ruta contiene peajes', 'notice')
 			} else {
 				resetMapNotifications();
 			}
+
 			calculateTotalTimeAndDistance(popupSelectedRoute);
-		});
-
-		initPlacesAutocomplete();
-		initDirectionsAutocompletes();
-	}
-
-	function initIconSelects() {
-		// Load custom map markers into select2
-		$.each(predefinedMapMarkers, function(index, marker) {
-			$('.popup-select').append('<option value="'+ marker.value +'">'+ marker.name +'</option>')
-		});
-
-		$('.popup-activity-icon-select').select2({
-			templateResult: selectFormatterFunction,
-			minimumResultsForSearch: Infinity,
-			placeholder: 'Marcador por defecto'
-		}).on('change', function(){
-			// If 'default marker' option is selected, then delete any select2 previous value
-			if ($(this).val() == 'default') {
-				$(this).select2('val','');
-			}
-		});
-		$('#popup-activity-icon-two + span').hide();
-
-		$('#popup-point-of-reference-icon').select2({
-			templateResult: porSelectFormatterFunction,
-			minimumResultsForSearch: Infinity,
-			placeholder: 'Marcador por defecto'
-		}).on('change', function(){
-			// If 'default marker' option is selected, then delete any select2 previous value
-			if ($(this).val() == 'default') {
-				$(this).select2('val','');
-			}
-		});
-		$('#popup-activity-icon-two + span').hide();
-		$($('.select2-selection__arrow')[2]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
-		$($('.select2-selection__arrow')[0]).attr('style', 'height: 45px !important'); // Horrible CSS fix.
-	}
-
-	function initPlacesAutocomplete() {
-		// Create the search box and link it to the UI element.
-		var input = document.getElementById('popup-activity-place');
-		var searchBox = new google.maps.places.SearchBox(input);
-		popupMap.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-		// Bias the SearchBox results towards current map's viewport.
-		popupMap.addListener('bounds_changed', function() {
-			searchBox.setBounds(popupMap.getBounds());
-		});
-
-		// [START region_getplaces]
-		// Listen for the event fired when the user selects a prediction and retrieve
-		// more details for that place.
-		searchBox.addListener('places_changed', function() {
-			var places = searchBox.getPlaces();
-
-			if (places.length == 0) {
-				return;
-			}
-
-			resetMarkers(popupMapMarkers);
-
-			// For each place, get the icon, name and location.
-			var bounds = new google.maps.LatLngBounds();
-			places.forEach(function(place) {
-				var icon = {
-					url: place.icon,
-					size: new google.maps.Size(71, 71),
-					origin: new google.maps.Point(0, 0),
-					anchor: new google.maps.Point(17, 34),
-					scaledSize: new google.maps.Size(25, 25)
-				};
-				// Create a marker for each place.
-				popupMapMarkers.push(new google.maps.Marker({
-					map: popupMap,
-					icon: icon,
-					title: place.name,
-					position: place.geometry.location
-				}));
-
-				if (place.geometry.viewport) {
-					// Only geocodes have viewport.
-					bounds.union(place.geometry.viewport);
-				} else {
-					bounds.extend(place.geometry.location);
-				}
-			});
-			popupMap.fitBounds(bounds);
-		});
-		// [END region_getplaces]
-	}
-
-	// Sets a listener on a radio button to change the filter type on Places
-	// Autocomplete.
-	function setupClickListener(id, mode) {
-		var radioButton = document.getElementById(id);
-		radioButton.addEventListener('click', function() {
-			travel_mode = mode;
-			route(origin_place_id, destination_place_id, travel_mode, directionsService, directionsDisplay);
-		});
-	}
-
-	function initDirectionsAutocompletes() {
-		var origin_input = document.getElementById('popup-activity-from');
-		var destination_input = document.getElementById('popup-activity-to');
-		var modes = document.getElementById('directions-mode-selector');
-
-		popupMap.controls[google.maps.ControlPosition.TOP_LEFT].push(origin_input);
-		popupMap.controls[google.maps.ControlPosition.TOP_LEFT].push(destination_input);
-		popupMap.controls[google.maps.ControlPosition.TOP_LEFT].push(modes);
-
-		origin_autocomplete = new google.maps.places.Autocomplete(origin_input);
-		origin_autocomplete.bindTo('bounds', popupMap);
-		destination_autocomplete = new google.maps.places.Autocomplete(destination_input);
-		destination_autocomplete.bindTo('bounds', popupMap);
-
-		setupClickListener('changemode-walking', google.maps.TravelMode.WALKING);
-		setupClickListener('changemode-transit', google.maps.TravelMode.TRANSIT);
-		setupClickListener('changemode-driving', google.maps.TravelMode.DRIVING);
-
-		origin_autocomplete.addListener('place_changed', function() {
-			var place = origin_autocomplete.getPlace();
-			if (!place.geometry) {
-				window.alert("Autocomplete's returned place contains no geometry");
-				return;
-			}
-			expandViewportToFitPlace(popupMap, place);
-
-			// If the place has a geometry, store its place ID and route if we have
-			// the other place ID
-			origin_place_id = place.place_id;
-			route(origin_place_id, destination_place_id, travel_mode, directionsService, directionsDisplay);
-		});
-
-		destination_autocomplete.addListener('place_changed', function() {
-			var place = destination_autocomplete.getPlace();
-			if (!place.geometry) {
-				window.alert("Autocomplete's returned place contains no geometry");
-				return;
-			}
-			expandViewportToFitPlace(popupMap, place);
-
-			// If the place has a geometry, store its place ID and route if we have
-			// the other place ID
-			destination_place_id = place.place_id;
-			route(origin_place_id, destination_place_id, travel_mode, directionsService, directionsDisplay);
-		});
-	}
-
-	function expandViewportToFitPlace(map, place) {
-		if (place.geometry.viewport) {
-			map.fitBounds(place.geometry.viewport);
 		} else {
-			map.setCenter(place.geometry.location);
-			map.setZoom(17);
+			window.alert('Directions request failed due to ' + status);
+		}
+	});
+}
+
+function routeHasTolls(directions) {
+	var steps = directions.legs[0].steps;
+	for (var i = steps.length - 1; i >= 0; i--) {
+		var instructions = steps[i].instructions.toLowerCase();
+		if (instructions.indexOf('toll road') >= 0) {
+			return true;
 		}
 	}
 
-	function route(origin_place_id, destination_place_id, travel_mode, directionsService, directionsDisplay) {
-		if (!origin_place_id || !destination_place_id) {
-			return;
-		}
+	return false;
+}
 
-		directionsService.route({
-			origin: {'placeId': origin_place_id},
-			destination: {'placeId': destination_place_id},
-			travelMode: travel_mode,
-			provideRouteAlternatives: true
-		}, function(response, status) {
-			if (status === google.maps.DirectionsStatus.OK) {
-				directionsDisplay.setDirections(response);
-				directionsDisplay.setMap(popupMap);
-				popupSelectedRoute = response;
-				if (routeHasTolls(response.routes[0])) {
-					displayPopupMapNotification('Esta ruta contiene peajes', 'notice')
-				} else {
-					resetMapNotifications();
-				}
-				
-				calculateTotalTimeAndDistance(popupSelectedRoute);
-			} else {
-				window.alert('Directions request failed due to ' + status);
-			}
-		});
-	}
+/* File Component */
+var inputs = document.querySelectorAll( '.input-file' );
+Array.prototype.forEach.call( inputs, function( input )
+{
+	var label	 = input.nextElementSibling,
+		labelVal = label.innerHTML;
 
-	function routeHasTolls(directions) {
-		var steps = directions.legs[0].steps;
-		for (var i = steps.length - 1; i >= 0; i--) {
-			var instructions = steps[i].instructions.toLowerCase();
-			if (instructions.indexOf('toll road') >= 0) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/* File Component */
-	var inputs = document.querySelectorAll( '.input-file' );
-	Array.prototype.forEach.call( inputs, function( input )
+	input.addEventListener( 'change', function( e )
 	{
-		var label	 = input.nextElementSibling,
-			labelVal = label.innerHTML;
-
-		input.addEventListener( 'change', function( e )
-		{
-			var fileName = '';
+		var fileName = '';
 /*			if( this.files && this.files.length > 1 )
-				fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
-			else*/
-				fileName = e.target.value.split( '\\' ).pop();
+			fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+		else*/
+			fileName = e.target.value.split( '\\' ).pop();
 
-			if( fileName )
-				label.innerHTML = fileName;
-			else
-				label.innerHTML = labelVal;
+		if( fileName )
+			label.innerHTML = fileName;
+		else
+			label.innerHTML = labelVal;
 
-			$(label).css({'color': 'white', 'font-weight': '300'});
-			$('#popup-input-file-label + .cancel').show();
-		});
+		$(label).css({'color': 'white', 'font-weight': '300'});
+		$('#popup-input-file-label + .cancel').show();
 	});
-
-	$('#popup-input-file-label + .cancel').click(function(){
-		resetReceiptComponent();
-	});
-
-	function isEmpty(str) {
-		return (str == '') || (str == null);
-	}
-
-	function resetReceiptComponent() {
-		$('#popup-input-file').val();
-		$('#popup-input-file-label + .cancel').hide();
-		$('#popup-input-file-label').text('Comprobante').css({'color': '#8D97AD'});
-		$('#popup-input-file-label + .cancel').hide();
-	}
-
-	function makeMarker(position, icon, title, map) {
-		return new google.maps.Marker({
-			position: position,
-			map: map,
-			icon: icon,
-			title: title
-		});
-	}
-
-	function getSelectedColourClass() {
-		var classes = $('.colour-opt.selected').attr('class').split(' ');
-		colourIndex = classes.indexOf('colour-opt');
-		classes.splice(colourIndex, 1);
-		selectedIndex = classes.indexOf('selected');
-		classes.splice(selectedIndex, 1);
-
-		return classes.pop();
-	}
 });
+
+$('#popup-input-file-label + .cancel').click(function(){
+	resetReceiptComponent();
+});
+
+function isEmpty(str) {
+	return (str == '') || (str == null);
+}
+
+function resetReceiptComponent() {
+	$('#popup-input-file').val();
+	$('#popup-input-file-label + .cancel').hide();
+	$('#popup-input-file-label').text('Comprobante').css({'color': '#8D97AD'});
+	$('#popup-input-file-label + .cancel').hide();
+}
+
+function makeMarker(position, icon, title, map) {
+	return new google.maps.Marker({
+		position: position,
+		map: map,
+		icon: icon,
+		title: title
+	});
+}
+
+function getSelectedColourClass() {
+	var classes = $('.colour-opt.selected').attr('class').split(' ');
+	colourIndex = classes.indexOf('colour-opt');
+	classes.splice(colourIndex, 1);
+	selectedIndex = classes.indexOf('selected');
+	classes.splice(selectedIndex, 1);
+
+	return classes.pop();
+}

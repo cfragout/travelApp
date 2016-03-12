@@ -1,3 +1,68 @@
+@charset "UTF-8";
+/* Includes */
+@font-face {
+  font-family: 'fontello';
+  src: url("../fonts/fontello.eot?3151075");
+  src: url("../fonts/fontello.eot?3151075#iefix") format("embedded-opentype"), url("../fonts/fontello.woff2?3151075") format("woff2"), url("../fonts/fontello.woff?3151075") format("woff"), url("../fonts/fontello.ttf?3151075") format("truetype"), url("../fonts/fontello.svg?3151075#fontello") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'fontello';
+    src: url('../font/fontello.svg?3151075#fontello') format('svg');
+  }
+}
+*/
+[class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */ }
+
+.icon-pencil:before {
+  content: '\e800'; }
+
+/* 'εáÇ' */
+.icon-download-cloud:before {
+  content: '\e801'; }
+
+/* 'εáü' */
+.icon-upload-cloud:before {
+  content: '\e802'; }
+
+/* 'εáé' */
+.icon-cancel:before {
+  content: '\e803'; }
+
+/* 'εáâ' */
+.icon-trash:before {
+  content: '\e804'; }
+
+/* 'εáä' */
 /* Main colours*/
 /* Map icons colour */
 /* Button colours */
@@ -178,6 +243,11 @@ body {
 .time-hour {
   height: 40px;
   border-top: dotted 1px rgba(59, 59, 60, 0.21);
+  cursor: default;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   -webkit-transition: all 0.35s ease-out;
   -moz-transition: all 0.35s ease-out;
   transition: all 0.35s ease-out; }
@@ -205,8 +275,25 @@ body {
   -webkit-transition: all 0.35s ease-out;
   -moz-transition: all 0.35s ease-out;
   transition: all 0.35s ease-out; }
+  .activity .icons {
+    -webkit-transition: all 0.35s ease-out;
+    -moz-transition: all 0.35s ease-out;
+    transition: all 0.35s ease-out;
+    opacity: 0; }
+  .activity .icons i {
+    -webkit-transition: all 0.35s ease-out;
+    -moz-transition: all 0.35s ease-out;
+    transition: all 0.35s ease-out;
+    opacity: 0.5;
+    float: right; }
+    .activity .icons i:hover {
+      text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
+      opacity: 1;
+      cursor: pointer; }
   .activity:hover {
     box-shadow: 0 5px 6px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset; }
+    .activity:hover .icons {
+      opacity: 1; }
   .activity.unselected {
     background-color: grey !important;
     color: rgba(21, 20, 20, 0.64); }
@@ -231,6 +318,13 @@ body {
       padding-bottom: 3px; }
 
 /* Popup */
+#popup-header {
+  text-align: center;
+  font-family: 'Roboto';
+  padding: 10px 0px 10px 0px;
+  color: #fff;
+  background-color: #4D90FE; }
+
 .white-popup {
   position: relative;
   background: #FFF;
@@ -277,6 +371,8 @@ body {
     transition: all 0.5s ease-out; }
     #popup-step-two .controls:hover {
       border-bottom-color: #4d90fe; }
+    #popup-step-two .controls.invalid {
+      border-bottom: solid 1px #DE1616 !important; }
   #popup-step-two .controls:active, #popup-step-two .controls:focus {
     outline: none;
     border-bottom-color: #4d90fe; }
@@ -421,10 +517,9 @@ body {
   font-size: 13px;
   font-weight: 300; }
 
-#directions-information {
+.popup-map-notice {
   position: absolute;
   z-index: 51;
-  background-color: #3367d6;
   line-height: 22px;
   color: #fff;
   top: 500px;
@@ -438,6 +533,10 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   border-radius: 2px;
   cursor: default; }
+  .popup-map-notice.warning {
+    background-color: #DE1616; }
+  .popup-map-notice.notice {
+    background-color: #3367d6; }
 
 #popup-accept, #popup-accept-point-of-reference, #popup-accept-edit-activity {
   padding-bottom: 3px;
@@ -749,3 +848,26 @@ span.select2-option-text {
   font-family: Roboto; }
   .easy-autocomplete-container li:hover {
     background-color: #5897fb !important; }
+
+/* Tooltip */
+.activity-tooltip {
+  border-radius: 2px;
+  border: 1px solid #165DCE;
+  background: #4c4c4c;
+  color: #fff;
+  z-index: 50; }
+  .activity-tooltip .tooltipster-content {
+    font-family: Roboto;
+    font-size: 14px;
+    line-height: 16px;
+    padding: 8px 10px;
+    background-color: #4d90fe; }
+  .activity-tooltip .tooltip-icon {
+    -webkit-transition: all 0.35s ease-out;
+    -moz-transition: all 0.35s ease-out;
+    transition: all 0.35s ease-out;
+    opacity: 0.5; }
+    .activity-tooltip .tooltip-icon:hover {
+      text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
+      opacity: 1;
+      cursor: pointer; }

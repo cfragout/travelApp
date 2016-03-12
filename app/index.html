@@ -9,15 +9,16 @@
 	<link rel="stylesheet" href="/vendor/EasyAutocomplete/easy-autocomplete.min.css">
 	<link rel="stylesheet" href="/vendor/jquery.timepicker/jquery.timepicker.css">
 	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
-	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
 	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
+	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
+	<link rel="stylesheet" href="/vendor/tooltipster/tooltipster.css">
 	<!-- endinject -->
 </head>
 <body>
 	<!-- Map popup -->
 	<div id="popup" class="white-popup mfp-hide">
-		<div id="popup-header" style="text-align:center;font-family:'Roboto';padding:10px 0px 10px 0px;color:#fff;background-color:#4D90FE;">
-						Nueva actividad
+		<div id="popup-header">
+			Nueva actividad
 		</div>
 		<div id="popup-content">
 			<!-- Popup step one -->
@@ -142,7 +143,6 @@
 				<div id="popup-accept" role="button" class="uppercase button blue button-medium control" href="#">Aceptar</div>
 				<div id="popup-accept-point-of-reference" role="button" class="uppercase button blue button-medium control" href="#" style="display:none;">Aceptar</div>
 				<div id="popup-accept-edit-activity" role="button" class="uppercase button blue button-medium control" href="#" style="display:none;">Editar</div>
-
 			</div>
 			<!-- End popup stem two -->
 
@@ -285,9 +285,9 @@
 	<span class="activity-name">
 		Some random text
 	</span>
-	<span>
-		<i class="edit-activity">editar</i>
-		<i class="delete-activity">borrar</i>
+	<span class="icons">
+		<i class="icon-trash delete-activity"></i>
+		<i class="icon-pencil edit-activity"></i>
 	</span>
 </div>
 <!-- End activities template -->
@@ -372,8 +372,9 @@
 	<script src="/vendor/EasyAutocomplete/jquery.easy-autocomplete.min.js"></script>
 	<script src="/vendor/jquery.timepicker/jquery.timepicker.min.js"></script>
 	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
-	<script src="/vendor/select2/select2.min.js"></script>
 	<script src="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+	<script src="/vendor/select2/select2.min.js"></script>
+	<script src="/vendor/tooltipster/jquery.tooltipster.min.js"></script>
 	<!-- endinject -->
 	<!-- inject:user-scripts -->
 	<script src="/js/app.js"></script>
