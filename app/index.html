@@ -8,10 +8,10 @@
 	<link rel="stylesheet" href="/assets/css/main.css">
 	<link rel="stylesheet" href="/vendor/EasyAutocomplete/easy-autocomplete.min.css">
 	<link rel="stylesheet" href="/vendor/jquery.timepicker/jquery.timepicker.css">
-	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
 	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
 	<link rel="stylesheet" href="/vendor/tooltipster/tooltipster.css">
+	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<!-- endinject -->
 </head>
 <body>
@@ -186,10 +186,13 @@
 			</div>
 		</div>
 		<!-- Map controls -->
-<!-- 		<div id="floating-panel">
-			<input id="address" type="textbox" value="Sydney, NSW">
-			<input id="submit" type="button" value="Geocode">
-		</div> -->
+		<div id="map-search-control-container">
+			<div id="map-search-control" class="map-control">
+				<span id="map-sidebar-toggle"></span>
+				<input id="address" type="text" placeholder="" ="Sydney, NSW">
+				<input id="submit" type="button" value="Geocode">
+			</div>
+		</div>
 <!-- 		<div id="trip-name-control-container">
 			<input id="trip-name" type="text" placeholder="Mi viaje" />
 		</div> -->
@@ -363,6 +366,9 @@
 			map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('trip-name-control-container'));
 
 			map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(document.getElementById('map-size-control-container'));
+
+			map.controls[google.maps.ControlPosition.LEFT_TOP].push(document.getElementById('map-search-control-container'));
+
 /*
 			map.controls[google.maps.ControlPosition.LEFT_CENTER].push(document.getElementById('map-sidebar-control-container'));*/
 
@@ -395,10 +401,10 @@
 	<!-- inject:vendor-scripts -->
 	<script src="/vendor/EasyAutocomplete/jquery.easy-autocomplete.min.js"></script>
 	<script src="/vendor/jquery.timepicker/jquery.timepicker.min.js"></script>
-	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<script src="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
 	<script src="/vendor/select2/select2.min.js"></script>
 	<script src="/vendor/tooltipster/jquery.tooltipster.min.js"></script>
+	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<!-- endinject -->
 	<!-- inject:user-scripts -->
 	<script src="/js/app.js"></script>

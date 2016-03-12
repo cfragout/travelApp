@@ -238,6 +238,44 @@ $activity-width: 135px;
 	}
 }
 
+#map-search-control-container {
+	padding-top: 10px;
+
+	#map-search-control {
+		margin-left: 10px;
+		height: 38px;
+		border-radius: 0px;
+
+		&:hover {
+			background-color:#fff;
+		}
+
+		input {
+			float: left;
+			/*margin-left: 15px;*/
+			text-indent: 15px;
+			height: 36px;
+			border:none;
+			outline:none;
+			font-size: 13pt;
+			font-family: Roboto;
+			font-weight: 300;
+			/*background-color: yellow;*/
+
+			&:active {
+			}
+		}
+
+		#map-sidebar-toggle {
+			float: left;
+			display: inline-block;
+			height: 38px;
+			width: 42px;
+			background-color: red;
+		}
+	}
+}
+
 
 #itinerary-container {
 	font-family: Roboto;

@@ -248,6 +248,32 @@ body {
     #map-sidebar-control-container #map-sidebar-control #sidebar-bottom {
       height: 80%; }
 
+#map-search-control-container {
+  padding-top: 10px; }
+  #map-search-control-container #map-search-control {
+    margin-left: 10px;
+    height: 38px;
+    border-radius: 0px; }
+    #map-search-control-container #map-search-control:hover {
+      background-color: #fff; }
+    #map-search-control-container #map-search-control input {
+      float: left;
+      /*margin-left: 15px;*/
+      text-indent: 15px;
+      height: 36px;
+      border: none;
+      outline: none;
+      font-size: 13pt;
+      font-family: Roboto;
+      font-weight: 300;
+      /*background-color: yellow;*/ }
+    #map-search-control-container #map-search-control #map-sidebar-toggle {
+      float: left;
+      display: inline-block;
+      height: 38px;
+      width: 42px;
+      background-color: red; }
+
 #itinerary-container {
   font-family: Roboto;
   font-weight: 300;
