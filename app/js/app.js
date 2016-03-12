@@ -10,6 +10,7 @@
 	var origin_autocomplete;
 	var destination_autocomplete;
 	var fullMap = false;
+	var sidebarHidden = true;
 	var popupSelectedRoute = null;
 	var editingActivityId = null; // Use this to know which activity is being edited
 	var pointsOfReferenceGroupCount = 0; // Use this var to enable or disable the points of reference dropdown
@@ -100,21 +101,36 @@
 $(function(){
 	"user strict";
 
+	// Calculate the width of the sidebar and reposition its container
+/*	$('#map-sidebar-control-container').css({
+		left: getCSSPropertyValueAsInt('#map-sidebar-control', 'width') * -1
+	});*/
+
+	toggleSidebar(false);
+
 	$('#map-size-control').click(function(){
+		toggleSidebar(false);
 		if (fullMap) {
-			$('#itinerary-container').show();
 			$('#map-size-control-arrow').removeClass('full-height');
 			$('#map-container').animate({height: '500px'}, 500, function(){
+				$('#itinerary-container').show();
 				google.maps.event.trigger(map, "resize");
+				$('#map-sidebar-control-container').css({height: '500px'});
 			});
 		} else {
+			$('#itinerary-container').hide();
 			$('#map-container').animate({height: '100%'}, 500, function(){
-				$('#itinerary-container').hide();
+				$('#map-sidebar-control-container').css({height: '100%'});
 				google.maps.event.trigger(map, "resize");
 			});
+
 			$('#map-size-control-arrow').addClass('full-height');
 		}
 		fullMap = !fullMap;
+	});
+
+	$('#map-sidebar-control-toggle-button').click(function(){
+		toggleSidebar();
 	});
 
 	$('#add-day').click(function(){
@@ -543,6 +559,26 @@ function deleteInfobox(activity) {
 			}
 		}
 	}
+}
+
+function toggleSidebar(show) {
+	var shouldShow = show;
+console.log("-----> ", show);
+	if (shouldShow == null) {
+		shouldShow = sidebarHidden;
+	}
+
+	var width = getCSSPropertyValueAsInt('#map-sidebar-control', 'width');
+
+	if (shouldShow) {
+		$('#map-sidebar-control-arrow').addClass('sidebar-deployed');
+		$('#map-sidebar-control-container').animate({left: '0%'}, 300);
+	} else {
+		// left: width of the sidebar container minus width of the arrow
+		$('#map-sidebar-control-container').animate({left: width * -1}, 300);
+		$('#map-sidebar-control-arrow').removeClass('sidebar-deployed');
+	}
+	sidebarHidden = !shouldShow;
 }
 
 // Check if there is at lest one point of reference that belongs to a group in order to enable the dropdown button

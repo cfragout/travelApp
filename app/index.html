@@ -173,6 +173,19 @@
 
 	</div> -->
 	<div id="map-container">
+		<div id="map-sidebar-control-container">
+			<div id="map-sidebar-control">
+				<div id="sidebar-top">
+				 	<input id="trip-name" type="text" placeholder="Mi viaje" />
+				</div>
+				<div id="sidebar-bottom">
+				</div>
+			</div>
+			<div id="map-sidebar-control-toggle-button" class="map-control pressable">
+				<span id="map-sidebar-control-arrow">&#9656;</span>
+			</div>
+		</div>
+		<!-- Map controls -->
 <!-- 		<div id="floating-panel">
 			<input id="address" type="textbox" value="Sydney, NSW">
 			<input id="submit" type="button" value="Geocode">
@@ -195,8 +208,8 @@
 			 	<span id="map-size-control-arrow">&#9662;</span>
 			</div>
 		</div>
-		<div id="map">
-		</div>
+		<!-- End map controls -->
+		<div id="map"></div>
 	</div>
 
 	<div id="itinerary-container">
@@ -350,6 +363,9 @@
 			map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('trip-name-control-container'));
 
 			map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(document.getElementById('map-size-control-container'));
+/*
+			map.controls[google.maps.ControlPosition.LEFT_CENTER].push(document.getElementById('map-sidebar-control-container'));*/
+
 		}
 
 	function handleLocationError(browserHasGeolocation) {

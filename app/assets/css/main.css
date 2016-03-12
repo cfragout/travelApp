@@ -88,12 +88,13 @@ body {
   font-size: 45px;
   background-color: transparent;
   border: none;
-  text-indent: 5px;
   outline: none;
   font-family: Roboto;
-  font-weight: 300;
-  color: #3367d6;
-  /*text-shadow: 2px 2px 3px;*/ }
+  color: rgba(0, 0, 0, 0.6);
+  text-shadow: 2px 2px 3px rgba(255, 255, 255, 0.1);
+  margin-top: 15px;
+  text-align: center;
+  width: 100%; }
 
 /* Autocomplete container */
 .pac-container {
@@ -194,7 +195,8 @@ body {
   font-size: 17pt;
   height: 16px;
   width: 56px;
-  text-align: center; }
+  text-align: center;
+  border-radius: 0px; }
   #map-size-control-container #map-size-control span {
     display: inline-block;
     position: relative;
@@ -207,19 +209,60 @@ body {
     #map-size-control-container #map-size-control span.full-height {
       transform: rotate(180deg); }
 
+#map-sidebar-control-container {
+  position: absolute;
+  height: 500px;
+  /* Height of the map */
+  width: 25%;
+  left: -1000px;
+  z-index: 51; }
+  #map-sidebar-control-container #map-sidebar-control-toggle-button {
+    margin-top: 195px;
+    transform: rotate(0deg);
+    float: left;
+    width: 16px;
+    font-size: 17pt;
+    height: 56px;
+    border-radius: 0px; }
+    #map-sidebar-control-container #map-sidebar-control-toggle-button span {
+      display: inline-block;
+      position: relative;
+      top: 12px;
+      -webkit-transition: all 0.5s ease-out;
+      -moz-transition: all 0.5s ease-out;
+      transition: all 0.5s ease-out;
+      opacity: 0.6; }
+      #map-sidebar-control-container #map-sidebar-control-toggle-button span.sidebar-deployed {
+        transform: rotate(180deg); }
+  #map-sidebar-control-container #map-sidebar-control {
+    height: 100%;
+    width: 92%;
+    float: left;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+    background-color: #fff; }
+    #map-sidebar-control-container #map-sidebar-control #sidebar-top {
+      background-color: #3367d6;
+      color: #fff;
+      height: 100px; }
+    #map-sidebar-control-container #map-sidebar-control #sidebar-bottom {
+      height: 80%; }
+
 #itinerary-container {
   font-family: Roboto;
   font-weight: 300;
   overflow: auto;
-  width: auto; }
+  width: auto;
+  height: auto; }
 
 #scrollable-itinerary-container {
-  max-height: 400px;
+  max-height: 381px;
   overflow: auto;
   clear: both;
   width: 100%; }
 
 #day-controls-container {
+  z-index: 61;
   background-color: #3367d6;
   height: 70px;
   color: #fff;
