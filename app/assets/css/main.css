@@ -855,7 +855,7 @@ span.select2-option-text {
   border: 1px solid #165DCE;
   background: #4c4c4c;
   color: #fff;
-  z-index: 50; }
+  z-index: 50 !important; }
   .activity-tooltip .tooltipster-content {
     font-family: Roboto;
     font-size: 14px;

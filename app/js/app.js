@@ -296,6 +296,7 @@ $(function(){
 	$('#toggle-days-button').click(function(){
 		$(this).toggleClass('disabled');
 		toggleDays(!$(this).hasClass('disabled'));
+		closeInfoBoxes();
 	})
 
 	$('#popup-accept').click(function(){
