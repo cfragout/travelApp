@@ -168,23 +168,31 @@
 	</div>
 	<!-- End confirmation popup -->
 
-	<div>
+<!-- 	<div>
 		<h1>Placeholder for trip name</h1>
 
-	</div>
+	</div> -->
 	<div id="map-container">
-		<div id="floating-panel">
+<!-- 		<div id="floating-panel">
 			<input id="address" type="textbox" value="Sydney, NSW">
 			<input id="submit" type="button" value="Geocode">
-		</div>
-		<div id="points-of-reference-control-container">
-			<div id="toggle-days-button" class="toggle-markers-button points-of-reference-button" role="button" title="Ocultar dias"></div>
-			<div id="add-point-of-reference-button" class="pressable points-of-reference-button" role="button">Nueva ubicacion</div>
-			<div id="toggle-points-of-reference-button" class="toggle-markers-button points-of-reference-button" role="button" title="Ocultar puntos de referencia"></div>
-			<div id="points-of-reference-dropdown-button" class="disabled points-of-reference-button" role="dropdown"><b role="presentation">&#9662;</b></div>
+		</div> -->
+<!-- 		<div id="trip-name-control-container">
+			<input id="trip-name" type="text" placeholder="Mi viaje" />
+		</div> -->
+		<div id="points-of-reference-control-container" class="">
+			<div id="toggle-days-button" class="map-control toggle-markers-button points-of-reference-button" role="button" title="Ocultar dias"></div>
+			<div id="add-point-of-reference-button" class="map-control pressable points-of-reference-button" role="button">Nueva ubicacion</div>
+			<div id="toggle-points-of-reference-button" class="map-control toggle-markers-button points-of-reference-button" role="button" title="Ocultar puntos de referencia"></div>
+			<div id="points-of-reference-dropdown-button" class="map-control disabled points-of-reference-button" role="dropdown"><b role="presentation">&#9662;</b></div>
 			<div id="points-of-reference-dropdown-menu" style="display: none !important">
 				<ul id="points-of-reference-dropdown-list">
 				</ul>
+			</div>
+		</div>
+		<div id="map-size-control-container">
+			<div id="map-size-control" class="pressable map-control">
+			 	<span id="map-size-control-arrow">&#9662;</span>
 			</div>
 		</div>
 		<div id="map">
@@ -227,14 +235,6 @@
 		</div>
 	</div>
 </body>
-
-<style type="text/css">
-	
-.gm-style-iw {
-
-}
-
-</style>
 
 <!-- Points of reference li template -->
 <li id="points-of-reference-li-template" class="por-li" data-group="" style="display: none !important;">
@@ -311,7 +311,11 @@
 			map = new google.maps.Map(document.getElementById('map'), {
 				center: {lat: -34.397, lng: 150.644},
 				zoom: 8,
-				mapTypeId: google.maps.MapTypeId.ROADMAP
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				mapTypeControlOptions: {
+					style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+					position: google.maps.ControlPosition.TOP_RIGHT
+				}
 			});
 
 			directionsService = new google.maps.DirectionsService;
@@ -335,13 +339,17 @@
 				handleLocationError(false, infoWindow, map.getCenter());
 			}
 
-			document.getElementById('submit').addEventListener('click', function() {
+/*			document.getElementById('submit').addEventListener('click', function() {
 				var address = document.getElementById('address').value;
 				geocodeAddress(geocoder, map, address);
-			});
+			});*/
 
 
-			map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById('points-of-reference-control-container'))
+			map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById('points-of-reference-control-container'));
+
+			map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('trip-name-control-container'));
+
+			map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(document.getElementById('map-size-control-container'));
 		}
 
 	function handleLocationError(browserHasGeolocation) {

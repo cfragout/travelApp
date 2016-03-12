@@ -9,6 +9,7 @@
 	var destination_place_id = null;
 	var origin_autocomplete;
 	var destination_autocomplete;
+	var fullMap = false;
 	var popupSelectedRoute = null;
 	var editingActivityId = null; // Use this to know which activity is being edited
 	var pointsOfReferenceGroupCount = 0; // Use this var to enable or disable the points of reference dropdown
@@ -94,9 +95,27 @@
 		{ value: 'kangaroo2', name: 'Canguro'},
 		{ value: 'alligator', name: 'Cocodrilo'}
 	];
+
+
 $(function(){
 	"user strict";
 
+	$('#map-size-control').click(function(){
+		if (fullMap) {
+			$('#itinerary-container').show();
+			$('#map-size-control-arrow').removeClass('full-height');
+			$('#map-container').animate({height: '500px'}, 500, function(){
+				google.maps.event.trigger(map, "resize");
+			});
+		} else {
+			$('#map-container').animate({height: '100%'}, 500, function(){
+				$('#itinerary-container').hide();
+				google.maps.event.trigger(map, "resize");
+			});
+			$('#map-size-control-arrow').addClass('full-height');
+		}
+		fullMap = !fullMap;
+	});
 
 	$('#add-day').click(function(){
 		addDay();

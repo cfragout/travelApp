@@ -79,30 +79,48 @@ body {
 #map, #popup-map {
   height: 100%; }
 
+#map-container {
+  width: 100%;
+  height: 500px; }
+
+#trip-name {
+  height: 55px;
+  font-size: 45px;
+  background-color: transparent;
+  border: none;
+  text-indent: 5px;
+  outline: none;
+  font-family: Roboto;
+  font-weight: 300;
+  color: #3367d6;
+  /*text-shadow: 2px 2px 3px;*/ }
+
 /* Autocomplete container */
 .pac-container {
   z-index: 1051 !important; }
 
 /* Main */
+.map-control {
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.29804) 0px 1px 4px -1px;
+  background-color: white;
+  font-family: Roboto, Arial, sans-serif;
+  cursor: default;
+  font-size: 11px;
+  border-radius: 2px;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none; }
+  .map-control:hover {
+    cursor: pointer;
+    background-color: #ebebeb; }
+
 #points-of-reference-control-container {
-  padding-top: 10px;
-  padding-right: 10px; }
+  margin-top: 10px;
+  margin-right: 10px; }
   #points-of-reference-control-container .points-of-reference-button {
-    color: #565656;
-    font-family: Roboto, Arial, sans-serif;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    font-size: 11px;
-    box-shadow: rgba(0, 0, 0, 0.29804) 0px 1px 4px -1px;
-    background-color: white;
-    float: left;
-    cursor: default;
-    border-radius: 2px; }
-    #points-of-reference-control-container .points-of-reference-button:hover {
-      cursor: pointer;
-      background-color: #ebebeb; }
+    float: left; }
   #points-of-reference-control-container #add-point-of-reference-button {
     text-align: center;
     padding: 8px;
@@ -167,9 +185,27 @@ body {
           display: inline-block; }
           #points-of-reference-control-container #points-of-reference-dropdown-menu ul li label input {
             vertical-align: sub;
-            cursor: pointer; }
+            cursor: pointer;
+            outline: none; }
         #points-of-reference-control-container #points-of-reference-dropdown-menu ul li:hover {
           background-color: #ebebeb; }
+
+#map-size-control-container #map-size-control {
+  font-size: 17pt;
+  height: 16px;
+  width: 56px;
+  text-align: center; }
+  #map-size-control-container #map-size-control span {
+    display: inline-block;
+    position: relative;
+    bottom: 6px;
+    opacity: 0.6;
+    transform: rotate(0deg);
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out; }
+    #map-size-control-container #map-size-control span.full-height {
+      transform: rotate(180deg); }
 
 #itinerary-container {
   font-family: Roboto;
@@ -717,11 +753,6 @@ body {
 
 .uppercase {
   text-transform: uppercase; }
-
-#map-container {
-  width: 100%;
-  height: 450px;
-  margin-bottom: 20px; }
 
 /* overlay at start */
 .mfp-fade.mfp-bg {
