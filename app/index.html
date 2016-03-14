@@ -7,11 +7,11 @@
 	<!-- inject:styles -->
 	<link rel="stylesheet" href="/assets/css/main.css">
 	<link rel="stylesheet" href="/vendor/EasyAutocomplete/easy-autocomplete.min.css">
+	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<link rel="stylesheet" href="/vendor/jquery.timepicker/jquery.timepicker.css">
 	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
 	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
 	<link rel="stylesheet" href="/vendor/tooltipster/tooltipster.css">
-	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<!-- endinject -->
 </head>
 <body>
@@ -173,24 +173,32 @@
 
 	</div> -->
 	<div id="map-container">
-		<div id="map-sidebar-control-container">
-			<div id="map-sidebar-control">
+		<div id="map-sidebar-control-container" style="width:350px;">
+			<div id="map-sidebar-control" style="width: 100%;">
 				<div id="sidebar-top">
-				 	<input id="trip-name" type="text" placeholder="Mi viaje" />
+				 	<!-- <input id="trip-name" type="text" placeholder="Mi viaje" /> -->
+					<!-- <div id="sidebar-search-control" class="main-search-control" style="padding-top:10px;">
+						<span id="sidebar-sidebar-toggle" class="sidebar-toggle"></span>
+						<input id="sidebar-address" type="text" placeholder="" ="Sydney, NSW">
+						<input id="sidebar-submit" type="button" value="Geocode">
+					</div> -->
 				</div>
 				<div id="sidebar-bottom">
+					<span id="nothing-to-see">
+						Nada para mostrar acá
+					</span>
 				</div>
 			</div>
-			<div id="map-sidebar-control-toggle-button" class="map-control pressable">
+<!-- 			<div id="map-sidebar-control-toggle-button" class="map-control pressable">
 				<span id="map-sidebar-control-arrow">&#9656;</span>
-			</div>
+			</div> -->
 		</div>
 		<!-- Map controls -->
-		<div id="map-search-control-container">
-			<div id="map-search-control" class="map-control">
-				<span id="map-sidebar-toggle"></span>
-				<input id="address" type="text" placeholder="" ="Sydney, NSW">
-				<input id="submit" type="button" value="Geocode">
+		<div id="map-search-control-container" style="width:335px">
+			<div id="map-search-control" class="main-search-control map-control">
+				<span id="map-sidebar-toggle" class="sidebar-toggle pressable"></span>
+				<input id="address" type="text" placeholder="Sydney, NSW">
+				<input id="button-submit" type="button" value="Geocode" class="pressable">
 			</div>
 		</div>
 <!-- 		<div id="trip-name-control-container">
@@ -367,7 +375,7 @@
 
 			map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(document.getElementById('map-size-control-container'));
 
-			map.controls[google.maps.ControlPosition.LEFT_TOP].push(document.getElementById('map-search-control-container'));
+			// map.controls[google.maps.ControlPosition.LEFT_TOP].push(document.getElementById('map-search-control-container'));
 
 /*
 			map.controls[google.maps.ControlPosition.LEFT_CENTER].push(document.getElementById('map-sidebar-control-container'));*/
@@ -400,11 +408,11 @@
 	<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
 	<!-- inject:vendor-scripts -->
 	<script src="/vendor/EasyAutocomplete/jquery.easy-autocomplete.min.js"></script>
+	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<script src="/vendor/jquery.timepicker/jquery.timepicker.min.js"></script>
 	<script src="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
 	<script src="/vendor/select2/select2.min.js"></script>
 	<script src="/vendor/tooltipster/jquery.tooltipster.min.js"></script>
-	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<!-- endinject -->
 	<!-- inject:user-scripts -->
 	<script src="/js/app.js"></script>

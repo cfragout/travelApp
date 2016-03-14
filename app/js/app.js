@@ -106,7 +106,11 @@ $(function(){
 		left: getCSSPropertyValueAsInt('#map-sidebar-control', 'width') * -1
 	});*/
 
-	toggleSidebar(false);
+	// toggleSidebar(false);
+
+	$('.sidebar-toggle').click(function(){
+		toggleSidebar();
+	});
 
 	$('#map-size-control').click(function(){
 		toggleSidebar(false);
@@ -129,9 +133,9 @@ $(function(){
 		fullMap = !fullMap;
 	});
 
-	$('#map-sidebar-control-toggle-button').click(function(){
+/*	$('#map-sidebar-control-toggle-button').click(function(){
 		toggleSidebar();
-	});
+	});*/
 
 	$('#add-day').click(function(){
 		addDay();
@@ -563,7 +567,7 @@ function deleteInfobox(activity) {
 
 function toggleSidebar(show) {
 	var shouldShow = show;
-console.log("-----> ", show);
+
 	if (shouldShow == null) {
 		shouldShow = sidebarHidden;
 	}
@@ -580,6 +584,8 @@ console.log("-----> ", show);
 	}
 	sidebarHidden = !shouldShow;
 }
+
+window.toggleSidebar = toggleSidebar;
 
 // Check if there is at lest one point of reference that belongs to a group in order to enable the dropdown button
 function togglePointsOfReferenceDropdownButton() {
