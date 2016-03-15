@@ -824,7 +824,6 @@ function addActivity() {
 
 function addActivityToSidebarItinerary(activity) {
 	var dayIndex = isEmpty(activity.day) ? currentDay : activity.day;
-	var readableDayIndex = (parseInt(dayIndex) + 1);
 
 	if (activitiesCount == 0) {
 		$('#nothing-to-see').hide();
@@ -833,18 +832,7 @@ function addActivityToSidebarItinerary(activity) {
 
 	// No activities added to current day yet
 	if (days[dayIndex].activities.length == 0) {
-		var sidebarDayHTML = $('#sidebar-itinerary-day-template').clone()[0];
-		$(sidebarDayHTML).attr('id', 'sid-' + dayIndex);
-
-		var dayTitleHTML = $(sidebarDayHTML).find('.day-title')[0];
-		$(dayTitleHTML).text('Dia ' + readableDayIndex);
-
-		var activitiesListContainerHTML = $(sidebarDayHTML).find('.day-activities-list');
-		$(activitiesListContainerHTML).attr('id', 'sid-ac-' + dayIndex);
-
-		// TODO: check actual index of the day (day 8 should be at the eighth position etc)
-		$(sidebarDayHTML).appendTo('#sidebar-itinerary-list');
-		$(sidebarDayHTML).show();
+		createSidebarItineraryDay(dayIndex);
 	}
 
 	var sidebarActivityHTML = $('#sidebar-itinerary-activity-template').clone()[0];
@@ -865,6 +853,49 @@ function addActivityToSidebarItinerary(activity) {
 	$('#sidebar-bottom').mCustomScrollbar('scrollTo', '#sia-' + activity.htmlId);
 
 	activitiesCount++;
+}
+
+function createSidebarItineraryDay(dayIndex) {
+	var sidebarDayHTML = $('#sidebar-itinerary-day-template').clone()[0];
+	var readableDayIndex = (parseInt(dayIndex) + 1);
+	var dayCreated = false;
+
+	$(sidebarDayHTML).attr('id', 'sid-' + dayIndex);
+	$(sidebarDayHTML).attr('data-day-index', dayIndex);
+
+	var dayTitleHTML = $(sidebarDayHTML).find('.day-title')[0];
+	$(dayTitleHTML).text('Dia ' + readableDayIndex);
+
+	var activitiesListContainerHTML = $(sidebarDayHTML).find('.day-activities-list');
+	$(activitiesListContainerHTML).attr('id', 'sid-ac-' + dayIndex);
+
+	var daysInSidebarItinerary = $('#sidebar-itinerary-list > li');
+
+	$(sidebarDayHTML).show();
+
+	// Sort days arrays, in dom they may not be in secuential order
+	daysInSidebarItinerary.sort(sortByIndex);
+	console.log(daysInSidebarItinerary, 'sorted');
+
+	// If the current day being created is not the last one, add it on its place (is adding day 4, but day 8 is already created, day 4 goes before day 8)
+	for (var i = 0; i <= daysInSidebarItinerary.length; i++) {
+		if ($(daysInSidebarItinerary[i]).attr('data-day-index') > dayIndex) {
+			$(daysInSidebarItinerary[i]).before(sidebarDayHTML);
+			dayCreated = true;
+			break;
+		}
+	}
+
+	// If the current day being created is the last one (highest index), then add it at the end
+	if (!dayCreated) {
+		$(sidebarDayHTML).appendTo('#sidebar-itinerary-list');
+	}
+}
+
+function sortByIndex(a, b){
+	var aIndex = $(a).attr('data-day-index');
+	var bIndex = $(b).attr('data-day-index');
+	return ((aIndex < bIndex) ? -1 : ((aIndex > bIndex) ? 1 : 0));
 }
 
 function closeInfoBoxes() {
