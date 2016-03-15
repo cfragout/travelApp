@@ -216,28 +216,13 @@ body {
   width: 350px;
   /* Width of  map-search-control-container + 15 px*/
   left: -1000px;
-  z-index: 51;
-  /*	#map-sidebar-control-toggle-button {
-  		margin-top: 195px;
-  		transform: rotate(0deg);
-  		float:left;
-  		width:16px;
-  		font-size: 17pt;
-  		height: 56px;
-  		border-radius: 0px;
-  
-  		span {
-  			display: inline-block;
-  			position: relative;
-  			top: 12px;
-  			@include transition(0.5s);
-  			opacity: 0.6;
-  
-  			&.sidebar-deployed {
-  				transform: rotate(180deg);
-  			}
-  		}
-  	}*/ }
+  z-index: 51; }
+  #map-sidebar-control-container.full-sidebar {
+    height: 100%; }
+    #map-sidebar-control-container.full-sidebar #sidebar-bottom {
+      height: 90% !important; }
+      #map-sidebar-control-container.full-sidebar #sidebar-bottom #nothing-to-see {
+        margin-top: 100% !important; }
   #map-sidebar-control-container #map-sidebar-control {
     height: 100%;
     width: 100%;
@@ -246,6 +231,7 @@ body {
     position: relative;
     background-color: #fff; }
     #map-sidebar-control-container #map-sidebar-control #sidebar-top {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
       background-color: #3367d6;
       color: #fff;
       height: 100px; }
@@ -257,7 +243,65 @@ body {
         font-size: 18pt;
         display: inline-block;
         width: 100%;
+        margin-top: 50%;
         text-align: center; }
+      #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list {
+        list-style: none;
+        font-family: Roboto;
+        margin: 0px;
+        padding: 0px; }
+        #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day {
+          cursor: default;
+          padding-left: 20px;
+          margin-top: 20px;
+          border-left: 8px solid transparent;
+          -webkit-transition: all 0.5s ease-out;
+          -moz-transition: all 0.5s ease-out;
+          transition: all 0.5s ease-out; }
+          #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day:hover {
+            border-left: 8px solid #4d90fe; }
+          #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day .day-title {
+            font-size: 17pt; }
+          #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day .day-time {
+            font-size: 12pt;
+            opacity: 0.5;
+            font-weight: 300; }
+          #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day .day-activities-list {
+            list-style: none;
+            margin: 0px;
+            padding: 0px; }
+            #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day .day-activities-list .day-activity {
+              margin-bottom: 5px; }
+              #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day .day-activities-list .day-activity:hover .day-colour {
+                opacity: 1; }
+            #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day .day-activities-list .day-description {
+              font-size: 15pt;
+              font-weight: 300;
+              float: left;
+              width: 90%; }
+            #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day .day-activities-list .day-colour {
+              height: 16px;
+              -webkit-transition: all 0.35s ease-out;
+              -moz-transition: all 0.35s ease-out;
+              transition: all 0.35s ease-out;
+              width: 16px;
+              float: left;
+              opacity: 0;
+              margin-top: 5px; }
+            #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day .day-activities-list .day-length {
+              opacity: 0.5;
+              font-weight: 300;
+              clear: both; }
+            #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day .day-activities-list .day-icon span {
+              display: inline-block;
+              margin-top: 5px;
+              opacity: 0.5;
+              -webkit-transition: all 0.3s ease-out;
+              -moz-transition: all 0.3s ease-out;
+              transition: all 0.3s ease-out; }
+              #map-sidebar-control-container #map-sidebar-control #sidebar-bottom #sidebar-itinerary-list .day .day-activities-list .day-icon span:hover {
+                text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
+                cursor: pointer; }
 
 #map-search-control-container {
   position: absolute;
@@ -275,7 +319,6 @@ body {
     background-color: transparent; }
   .main-search-control input {
     float: left;
-    /*margin-left: 15px;*/
     text-indent: 15px;
     border: none;
     outline: none;
@@ -317,9 +360,7 @@ body {
   padding-left: 20px;
   text-align: center;
   cursor: default;
-  -webkit-box-shadow: 0 10px 6px -6px #777;
-  -moz-box-shadow: 0 10px 6px -6px #777;
-  box-shadow: 0 10px 6px -6px #777; }
+  box-shadow: 0 5px 6px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset; }
   #day-controls-container .day-control {
     float: left;
     padding: 0px 5px 0px 5px;
@@ -993,5 +1034,3 @@ span.select2-option-text {
       text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
       opacity: 1;
       cursor: pointer; }
-
-/*# sourceMappingURL=main.css.map */

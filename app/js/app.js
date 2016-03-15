@@ -1,6 +1,7 @@
 	var MODE_ROUTE = 'ROUTE';
 	var MODE_PLACES = 'PLACES';
 	var origin_place_id = null;
+	var activitiesCount = 0;
 	var baseMarkerUrl = "http://localhost:3000/assets/map-icons/"; // May need Update this
 	var placeRouteSelectedMarkerUrl = baseMarkerUrl + "/pr-selected/";
 	var placeRouteMarkerUrl = baseMarkerUrl + "/pr/";
@@ -119,12 +120,12 @@ $(function(){
 			$('#map-container').animate({height: '500px'}, 500, function(){
 				$('#itinerary-container').show();
 				google.maps.event.trigger(map, "resize");
-				$('#map-sidebar-control-container').css({height: '500px'});
+				$('#map-sidebar-control-container').removeClass('full-sidebar');
 			});
 		} else {
 			$('#itinerary-container').hide();
 			$('#map-container').animate({height: '100%'}, 500, function(){
-				$('#map-sidebar-control-container').css({height: '100%'});
+				$('#map-sidebar-control-container').addClass('full-sidebar');
 				google.maps.event.trigger(map, "resize");
 			});
 
@@ -133,14 +134,21 @@ $(function(){
 		fullMap = !fullMap;
 	});
 
-/*	$('#map-sidebar-control-toggle-button').click(function(){
-		toggleSidebar();
-	});*/
-
 	$('#add-day').click(function(){
 		addDay();
 		$('#itinerary-container').mCustomScrollbar('scrollTo', '#add-day');
 	});
+
+
+	$('#sidebar-bottom').mCustomScrollbar({
+		axis:"y",
+		autoHideScrollbar: true,
+		setHeight:'80%',
+		// setWidth: 300,
+		// theme: 'minimal'
+		theme: 'dark-thin'
+	});
+
 
 	$('#scrollable-itinerary-container').mCustomScrollbar({
 		axis:"yx",
@@ -548,6 +556,12 @@ function deleteActivity(activity) {
 	// Remove activity from time grid
 	$('#' + editingActivityId).remove();
 	activity = null;
+
+	activitiesCount--;
+	if (activitiesCount == 0) {
+		$('#nothing-to-see').show();
+		$('#sidebar-itinerary-list').hide();
+	}
 }
 
 function deleteInfobox(activity) {
@@ -757,6 +771,7 @@ function buildActivityObject() {
 		startTime: startTime,
 		endTime: endTime,
 		length: length,
+		durationReadable: 'de ' + $('#popup-activity-start').val() + ' a ' + $('#popup-activity-length').val(),
 		isRoute: !placeModeEnabled,
 		colour: $('.colour-opt.selected').css('background-color'),
 		colourClass: getSelectedColourClass(),
@@ -799,11 +814,57 @@ function addActivity() {
 	// If days are hidden on the map, hide the new activity
 	toggleActivity(activity, !$('#toggle-days-button').hasClass('disabled'));
 
+	addActivityToSidebarItinerary(activity);
 	addActivityToTimeGrid(activity);
 
 	addMarkerListener(activity);
 
 	activity.day = currentDay;
+}
+
+function addActivityToSidebarItinerary(activity) {
+	var dayIndex = isEmpty(activity.day) ? currentDay : activity.day;
+	var readableDayIndex = (parseInt(dayIndex) + 1);
+
+	if (activitiesCount == 0) {
+		$('#nothing-to-see').hide();
+		$('#sidebar-itinerary-list').show();
+	}
+
+	// No activities added to current day yet
+	if (days[dayIndex].activities.length == 0) {
+		var sidebarDayHTML = $('#sidebar-itinerary-day-template').clone()[0];
+		$(sidebarDayHTML).attr('id', 'sid-' + dayIndex);
+
+		var dayTitleHTML = $(sidebarDayHTML).find('.day-title')[0];
+		$(dayTitleHTML).text('Dia ' + readableDayIndex);
+
+		var activitiesListContainerHTML = $(sidebarDayHTML).find('.day-activities-list');
+		$(activitiesListContainerHTML).attr('id', 'sid-ac-' + dayIndex);
+
+		// TODO: check actual index of the day (day 8 should be at the eighth position etc)
+		$(sidebarDayHTML).appendTo('#sidebar-itinerary-list');
+		$(sidebarDayHTML).show();
+	}
+
+	var sidebarActivityHTML = $('#sidebar-itinerary-activity-template').clone()[0];
+	$(sidebarActivityHTML).attr('id', 'sia-' + activity.htmlId);
+
+	var dayDescriptionHTML = $(sidebarActivityHTML).find('.day-description')[0];
+	$(dayDescriptionHTML).text(activity.name);
+
+	var dayColourHTML = $(sidebarActivityHTML).find('.day-colour')[0];
+	$(dayColourHTML).attr('style', 'background-color:' + activity.colour);
+
+	var dayLengthHTML = $(sidebarActivityHTML).find('.day-length')[0];
+	$(dayLengthHTML).text(activity.durationReadable);
+
+	$(sidebarActivityHTML).appendTo('#sid-ac-' + dayIndex);
+	$(sidebarActivityHTML).show();
+
+	$('#sidebar-bottom').mCustomScrollbar('scrollTo', '#sia-' + activity.htmlId);
+
+	activitiesCount++;
 }
 
 function closeInfoBoxes() {
@@ -825,7 +886,6 @@ function addMarkerListener(activity) {
 		activity.marker.addListener('click', function(){
 			markerOnClickHandler(activity, activity.marker);
 		});
-
 	}
 
 }

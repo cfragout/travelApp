@@ -7,9 +7,9 @@
 	<!-- inject:styles -->
 	<link rel="stylesheet" href="/assets/css/main.css">
 	<link rel="stylesheet" href="/vendor/EasyAutocomplete/easy-autocomplete.min.css">
-	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<link rel="stylesheet" href="/vendor/jquery.timepicker/jquery.timepicker.css">
 	<link rel="stylesheet" href="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.css">
+	<link rel="stylesheet" href="/vendor/magnificPopup/magnificPopup.css">
 	<link rel="stylesheet" href="/vendor/select2/select2.min.css">
 	<link rel="stylesheet" href="/vendor/tooltipster/tooltipster.css">
 	<!-- endinject -->
@@ -176,22 +176,17 @@
 		<div id="map-sidebar-control-container" style="width:350px;">
 			<div id="map-sidebar-control" style="width: 100%;">
 				<div id="sidebar-top">
-				 	<!-- <input id="trip-name" type="text" placeholder="Mi viaje" /> -->
-					<!-- <div id="sidebar-search-control" class="main-search-control" style="padding-top:10px;">
-						<span id="sidebar-sidebar-toggle" class="sidebar-toggle"></span>
-						<input id="sidebar-address" type="text" placeholder="" ="Sydney, NSW">
-						<input id="sidebar-submit" type="button" value="Geocode">
-					</div> -->
 				</div>
 				<div id="sidebar-bottom">
 					<span id="nothing-to-see">
 						Nada para mostrar acá
 					</span>
+					<!-- Sidebar itinerary list -->
+					<ul id="sidebar-itinerary-list" style="display: none !important;">
+					</ul>
+					<!-- End sidebar itinerary list -->
 				</div>
 			</div>
-<!-- 			<div id="map-sidebar-control-toggle-button" class="map-control pressable">
-				<span id="map-sidebar-control-arrow">&#9656;</span>
-			</div> -->
 		</div>
 		<!-- Map controls -->
 		<div id="map-search-control-container" style="width:335px">
@@ -259,6 +254,33 @@
 		</div>
 	</div>
 </body>
+
+<!-- Sidebar itinerary day template -->
+<li id="sidebar-itinerary-day-template" class="day-container" style="display: none !important;">
+	<div class="day">
+		<div>
+			<span class="day-title">Dia 1</span>
+			<span class="day-time">19 de marzo de 2016</span>
+		</div>
+		<ul class="day-activities-list">
+		</ul>
+	</div>
+</li>
+<!-- End sidebar itinerary day template -->
+
+<!-- Sidebar itinerary activity template -->
+<li id="sidebar-itinerary-activity-template" class="day-activity" style="display:none !important;">
+	<div>
+		<div class="day-description"></div>
+		<div class="day-colour"></div>
+	</div>
+	<div class="day-length">
+	</div>
+	<div class="day-icon" style="display: none !important;">
+		<span class="icon-pencil"></span>
+	</div>
+</li>
+<!-- End sidebar itinerary activity template -->
 
 <!-- Points of reference li template -->
 <li id="points-of-reference-li-template" class="por-li" data-group="" style="display: none !important;">
@@ -408,9 +430,9 @@
 	<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
 	<!-- inject:vendor-scripts -->
 	<script src="/vendor/EasyAutocomplete/jquery.easy-autocomplete.min.js"></script>
-	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<script src="/vendor/jquery.timepicker/jquery.timepicker.min.js"></script>
 	<script src="/vendor/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+	<script src="/vendor/magnificPopup/magnific-popup-v1.0.1.min.js"></script>
 	<script src="/vendor/select2/select2.min.js"></script>
 	<script src="/vendor/tooltipster/jquery.tooltipster.min.js"></script>
 	<!-- endinject -->
