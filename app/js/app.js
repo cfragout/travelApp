@@ -1138,14 +1138,22 @@ function calculateTotalTimeAndDistance(result) {
 	$('#directions-distance').text(distance + ' km');
 	$('#directions-time').text(secondsToFriendlyTime(time));
 	$('#directions-information').animate({'top': '395px'});
+	$('#directions-information').addClass('show');
 }
 
 function displayPopupMapNotification(text, notificationType) {
+	$('#popup-map-notice').removeClass('warning notice');
 	var type = isEmpty(notificationType) ? 'warning' : notificationType;
 	goToPopupStep(0);
 	$('#popup-map-notice span').text(text);
 	$('#popup-map-notice').addClass(type);
-	$('#popup-map-notice').animate({'top': '395px'});
+
+	if ($('#directions-information').hasClass('show')) {
+		$('#popup-map-notice').animate({'top': '360px'});
+	} else {
+		$('#popup-map-notice').animate({'top': '395px'});
+	}
+
 }
 
 function secondsToDayHourMinuteObj(secondsCount) {
@@ -1275,6 +1283,7 @@ function resetMapInformationBox() {
 function resetMapNotifications() {
 	$('#popup-map-notice').removeClass('warning notice');
 	$('#popup-map-notice').animate({'top': '500px'});
+	$('#directions-information').removeClass('show');
 }
 
 function resetMarkers(markers) {

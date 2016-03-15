@@ -702,7 +702,7 @@ body {
   border-radius: 2px;
   cursor: default; }
   .popup-map-notice.warning {
-    background-color: #DE1616; }
+    background-color: #DE1616 !important; }
   .popup-map-notice.notice {
     background-color: #3367d6; }
 
